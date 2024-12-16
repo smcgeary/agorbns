@@ -1,0 +1,15 @@
+8mer
+7mer-m8
+7mer-A1
+6mer
+6mer-A1
+8mer-bT(4.6)
+5mer-m2.6
+8mer-w6
+CACACAC
+6mer-m8
+8mer-mmC5
+7mer-A1bT(4.6)
+8mer-mmT6
+7mer-m8w6
+4mer-m2.5

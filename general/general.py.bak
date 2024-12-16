@@ -1,0 +1,1688 @@
+################################################################################
+#MakeReadFile.py
+################################################################################
+import argparse
+# import concurrent.futures
+import collections
+import csv
+import gzip
+import itertools as it
+import math
+import matplotlib.pyplot as plt
+import multiprocessing
+import numpy as np
+import os
+import pandas as pd
+import random
+import re
+import subprocess
+import sys
+import string
+import time
+import tarfile
+from subprocess import Popen, PIPE
+from itertools import izip
+pd.set_option('display.width', 1000)
+pd.set_option('display.precision', 3)
+
+from concurrent.futures import ProcessPoolExecutor
+
+HOME_DIR = "/lab/bartel1_ata/mcgeary/computation/AgoRBNS/"
+SOLEXA_DIR = "/lab/solexa_bartel/mcgeary/AgoRBNS/"
+
+conditions_py = ["I", "I_combined", "40", "12.6", "4", "1.26", "0.4", "0"]
+
+conditions_py_tp = ["I", "I", "40", "12.6", "4", "1.26", "0.4", "0.126", "0"]
+
+conditions_py_nocombI = ["I", "I", "40", "12.6", "4", "1.26", "0.4", "0"]
+
+conditions_kinetics_py = ["I", "0", "2", "5", "8", "15", "30", "90", "300",
+                          "900", "2700", "7200", "Equil", "Equil-", "0-"]
+
+
+
+conditions_R = ["I", "I_combined", "A40", "A12.65", "A4", "A1.265", "A0.4",
+                "A0"]
+conditions_R_tp = ["I", "I", "A40", "A12.65", "A4", "A1.265", "A0.4", "A0.126",
+                   "A0"]
+
+conditions_kinetics_R = ["I", "T0", "T2", "T5", "T8", "T15", "T30", "T90", "T300",
+                          "T900", "T2700", "T7200", "Equil", "Equil-", "T0-"]
+
+
+dups_let_7 = ["2", "T2", "5", "T5",  "8", "T8", "15", "T15",  "7200", "T7200"]
+dups_rest  = ["2", "T2", "5", "T5",  "8", "T8", "15", "T15", "30", "T30"]
+
+
+
+def dup_function(cond, mirna):
+    if mirna == "let-7a":
+        dups = dups_let_7
+    else:
+        dups = dups_rest
+    if cond in dups:
+        return ["%s,1" %(cond), "%s,2" %(cond)]
+    else:
+        return [cond]
+
+CONDITIONS_PY = {
+    "equilibrium3_nb" : {
+        "miR-7-24nt" : conditions_py},
+    "equilibrium2_nb" : {
+        "miR-7-23nt" : [i for i in conditions_py if i != "4"],
+        "miR-7-24nt" : conditions_py,
+        "miR-7-25nt" : conditions_py},
+    "equilibrium_nb" : {
+        "let-7a-21nt" : conditions_py,    
+        "miR-7-22nt"  : conditions_py,
+        "miR-7-23nt"  : conditions_py,
+        "miR-7-24nt"  : conditions_py,
+        "miR-7-25nt"  : conditions_py},
+    "equilibrium_tp" : {
+        "miR-1"   : conditions_py_tp,
+        "miR-122" : conditions_py_tp},
+    "equilibrium_met_tp" : {
+        "miR-1"   : conditions_py_tp},    
+    "equilibrium" : {
+        "miR-1"   : conditions_py,
+        "let-7a"  : conditions_py,
+        "miR-155" : conditions_py,
+        "miR-124" : conditions_py,
+        "lsy-6"   : conditions_py},
+    "equil_flowthrough" : {
+        "let-7a"  : ["I", "40_2h", "40_4h", "40_2h_nc1", "40_2h_nc2",
+                     "40_2h_ft", "0_2h", "0_4h", "0_2h_nc1", "0_2h_nc2",
+                     "0_2h_ft"],
+        "miR-124" : ["I", "40_2h_ft", "0_2h", "0_4h", "0_2h_nc1", "0_2h_nc2",
+                     "0_2h_ft"]},
+    "equilibrium_mmseed_nb" : {
+        "let-7a"  : conditions_py_nocombI,
+        "miR-1"   : conditions_py_nocombI,
+        "miR-155" : conditions_py_nocombI},
+    "equil_pilot" : {
+        "miR-1"   : ["I", "L100A10", "L10A10", "L100A0", "L10A0"],
+        "miR-155" : ["I", "L100A10", "L10A10", "L100A0", "L10A0"]},
+    "kinetics"    : {
+        "miR-1"   : [j for i in conditions_kinetics_py for j in dup_function(i, "miR-1")],
+        "let-7a"   : [j for i in conditions_kinetics_py for j in dup_function(i, "let-7a")],
+        "miR-124"   : [j for i in conditions_kinetics_py for j in dup_function(i, "miR-124")],
+        "lsy-6"   : [j for i in conditions_kinetics_py for j in dup_function(i, "lsy-6")]}
+}
+
+CONDITIONS_R = {
+    "equilibrium3_nb" : {
+        "miR-7-24nt" : conditions_R},
+    "equilibrium2_nb" : {
+        "miR-7-23nt" : [i for i in conditions_R if i != "A4"],
+        "miR-7-24nt" : conditions_R,
+        "miR-7-25nt" : conditions_R},
+    "equilibrium_nb" : {
+        "let-7a-21nt" : conditions_R,    
+        "miR-7-22nt"  : conditions_R,
+        "miR-7-23nt"  : conditions_R,
+        "miR-7-24nt"  : conditions_R,
+        "miR-7-25nt"  : conditions_R},
+    "equilibrium_tp" : {
+        "miR-1"   : conditions_R_tp,
+        "miR-122" : conditions_R_tp},
+    "equilibrium_met_tp" : {
+        "miR-1"   : conditions_R_tp},    
+    "equilibrium" : {
+        "miR-1"   : conditions_R,
+        "let-7a"  : conditions_R,
+        "miR-155" : conditions_R,
+        "miR-124" : conditions_R,
+        "lsy-6"   : conditions_R},
+    "equil_flowthrough" : {
+        "let-7a"  : ["I", "A40_2h", "A40_4h", "A40_2h_nc1", "A40_2h_nc2",
+                     "A40_2h_ft", "A0_2h", "A0_4h", "A0_2h_nc1", "A0_2h_nc2",
+                     "A0_2h_ft"],
+        "miR-124" : ["I", "A40_2h_ft", "A0_2h", "A0_4h", "A0_2h_nc1", "A0_2h_nc2",
+                     "A0_2h_ft"]},
+    "equil_pilot" : {
+        "miR-1"   : ["I", "L100A10", "L10A10", "L100A0", "L10A0"],
+        "miR-155" : ["I", "L100A10", "L10A10", "L100A0", "L10A0"]},
+    "equilibrium_mmseed_nb" : {
+        "let-7a"  : conditions_R,
+        "miR-1"   : conditions_R,
+        "miR-155" : conditions_R},
+    "kinetics"    : {
+        "miR-1"   : [j for i in conditions_kinetics_R for j in dup_function(i, "miR-1")],
+        "let-7a"  : [j for i in conditions_kinetics_R for j in dup_function(i, "let-7a")],
+        "miR-124" : [j for i in conditions_kinetics_R for j in dup_function(i, "miR-124")],
+        "lsy-6"   : [j for i in conditions_kinetics_R for j in dup_function(i, "lsy-6")]}
+}
+
+INPUT_LIST_I_COMBINED = [("let-7a",  "equilibrium",     "I"),
+                         ("miR-124", "equilibrium",     "I"),
+                         ("let-7a",     "kinetics",     "I"),
+                         ("miR-1",      "kinetics",     "I"),
+                         ("miR-124",    "kinetics",     "I"),
+                         ("lsy-6",      "kinetics",     "I"),
+                         ("miR-1",     "kin_pilot", "I_TGT"),
+                         ("miR-1",     "kin_pilot", "I_ACA")]
+
+
+INPUT_LIST_I_COMBINED_NEW = [("let-7a",  "equilibrium",     "I"),
+                             ("miR-124", "equilibrium",     "I"),
+                             ("miR-1",     "kin_pilot", "I_TGT")]
+                             # ("miR-1",     "kin_pilot", "I_ACA")]
+
+
+INPUT_LIST_0_COMBINED = [("let-7a",  "equilibrium",     "0"),
+                         ("miR-1",   "equilibrium",     "0"),
+                         ("miR-155", "equilibrium",     "0"),
+                         ("miR-124", "equilibrium",     "0"),
+                         ("let-7a",     "kinetics",     "0-"),
+                         ("miR-1",      "kinetics",     "0-"),
+                         ("miR-124",    "kinetics",     "0-"),
+                         ("lsy-6",      "kinetics",     "0-"),
+                         ("let-7a",     "kinetics",     "Equil-"),
+                         ("miR-1",      "kinetics",     "Equil-"),
+                         ("miR-124",    "kinetics",     "Equil-"),
+                         ("lsy-6",      "kinetics",     "Equil-"),
+                         ("miR-1",     "kin_pilot", "I_TGT"),
+                         ("miR-1",     "kin_pilot", "I_ACA")]
+
+seq_spike_map = {
+    "s124_8mer" :         "TCTCATCTACCTCCCGGTTTTAATGAATAGTGCCTTAGAC",
+    "s430a_8mer" :        "TCTCATCTACCTCCCGGTTTTAATGAATAAGCACTTAGAC",
+    "s427_8mer" :         "TCTCATCTACCTCCCGGTTTTAATGAATAGCACTTTCGAC",
+    "s14_8mer" :          "TCTCATCTACCTCCCGGTTTTAATGAATATCGCTCCCGAC",
+    "s155_8mer" :         "TCTCATCTACCTCCCGGTTTTAATGAATAAGCATTAAGAC",
+   # "mir1_libconstruct" : "ATCTACCTCCCGGTTTTAATGAATAACATTCCAGATCGAC",
+    "mir1_libconstruct1" : "ATCTACCTCCCGGTTTTAATGAATAACATTCCAGACTCGT",
+                           #123456789!123456789@123456789#123456789$
+    "mir1_libconstruct2" : "ATCTACCTCCCGGTTTTAATGAATACTACCTCAGACTCGT"
+                          # ATCTACCTCCCGGTTTTAATGAATAACATTCCAGACTCGT
+                          # ATCTACCTCCCGGTTTTAATGAATACTACCTCAGACTCGT
+}
+
+seq_mirna_map = {
+    "miR-1"       : "UGGAAUGUAAAGAAGUAUGUAU",
+    "miR-155"     : "UUAAUGCUAAUCGUGAUAGGGGU",
+    "miR-124"     : "UAAGGCACGCGGUGAAUGCCAA",
+    "let-7a-21nt" : "UGAGGUAGUAGGUUGUAUAGU",
+    "let-7a"      : "UGAGGUAGUAGGUUGUAUAGUU",
+    "lsy-6"       : "UUUUGUAUGAGACGCAUUUCGA",
+    "miR-7"       : "UGGAAGACUAGUGAUUUUGUUGU",
+    "miR-7-22nt"  : "UGGAAGACUAGUGAUUUUGUUG",
+    "miR-7-23nt"  : "UGGAAGACUAGUGAUUUUGUUGU",
+    "miR-7-24nt"  : "UGGAAGACUAGUGAUUUUGUUGUU",
+    "miR-7-25nt"  : "UGGAAGACUAGUGAUUUUGUUGUUU",
+    "miR-671"     : "AGGAAGCCCUGGAGGGGCUGG"
+}
+
+seq_capture_map = {
+	"miR-1"       : "UCUUCCUCCGCACCACACACAUUCCAACCUUACACAC",
+    "let-7a-21nt" : "UCUUCCUGCGCACCAAGCCUACCUCAACUUUACACAC",
+    "let-7a"      : "UCUUCCUGCGCACCAAGCCUACCUCAACUUUACACAC",
+    "miR-155"     : "AAAUAAAGACGACAACUCAGCAUUAAACCUUACACAC",
+    "miR-124"     : "UCUUCCUCCGCCACAGAAGUGCCUUAACCUUACACAC",
+    "lsy-6"       : "UCUUCCUCCGCCACAGAAAUACAAAAACCUUACACAC",
+    "miR-7-22nt"  : "UCUUCCUCCGCACCACACGUCUUCCAACCUUACACAC",
+    "miR-7-23nt"  : "UCUUCCUCCGCACCACACGUCUUCCAACCUUACACAC",
+    "miR-7-24nt"  : "UCUUCCUCCGCACCACACGUCUUCCAACCUUACACAC",
+    "miR-7-25nt"  : "UCUUCCUCCGCACCACACGUCUUCCAACCUUACACAC"
+}
+
+seq_competitor_map = {
+	"miR-1"       : "AAGGTTGGAATGTGTGTGGTGCGGAGGAAGA",
+	"let-7a-21nt" : "AAAGTTGAGGTAGGCTTGGTGCGCAGGAAGA",
+	"let-7a"      : "AAAGTTGAGGTAGGCTTGGTGCGCAGGAAGA",
+	"miR-155"     : "AAGGTTTAATGCTGAGTTGTCGTCTTTATTT",
+	"miR-124"     : "AAGGTTAAGGCACTTCTGTGGCGGAGGAAGA",
+	"lsy-6"       : "AAGGTTTTTGTATTTCTGTGGCGGAGGAAGA",
+	"miR-7-22nt"  : "AAGGTTGGAAGACGTGTGGTGCGGAGGAAGA",
+	"miR-7-23nt"  : "AAGGTTGGAAGACGTGTGGTGCGGAGGAAGA",
+	"miR-7-24nt"  : "AAGGTTGGAAGACGTGTGGTGCGGAGGAAGA",
+	"miR-7-25nt"  : "AAGGTTGGAAGACGTGTGGTGCGGAGGAAGA"
+}
+
+seq_lib_map = {
+    "5p" : {
+        "miR-1_pilot"   : "GGGUUCAGAGUUCUACAGUCCGACGAUC",
+        "miR-155_pilot" : "GGGUUCAGAGUUCUACAGUCCGACGAUC",
+        "miR-1"         : "GGGCAGAGUUCUACAGUCCGACGAUC", 
+        "let-7a"        : "GGGCAGAGUUCUACAGUCCGACGAUC",
+        "miR-155"       : "GGGCAGAGUUCUACAGUCCGACGAUC",
+        "miR-124"       : "GGGCAGAGUUCUACAGUCCGACGAUC",
+        "lsy-6"         : "GGGCAGAGUUCUACAGUCCGACGAUC",
+        "miR-7-22nt"    : "GGGCAGAGUUCUACAGUCCGACGAUC", 
+        "miR-7-23nt"    : "GGGCAGAGUUCUACAGUCCGACGAUC",
+        "miR-7-24nt"    : "GGGCAGAGUUCUACAGUCCGACGAUC",
+        "miR-7-25nt"    : "GGGCAGAGUUCUACAGUCCGACGAUC"
+    },
+    "3p" : {
+        "miR-1_pilot"   : "UAUGCCGUCUUCUGCUUG",
+        "miR-155_pilot" : "UAUGCCGUCUUCUGCUUG",
+        "miR-1"         : "UAUGCCGUCUUCUGCUUG", 
+        "let-7a"        : "UGUUCGUAUGCCGUCUUCUGCUUG",
+        "miR-155"       : "UGUUCGUAUGCCGUCUUCUGCUUG",
+        "miR-124"       : "UGUUCGUAUGCCGUCUUCUGCUUG",
+        "lsy-6"         : "UGUUCGUAUGCCGUCUUCUGCUUG",
+        "miR-7-22nt"    : "UGUUCGUAUGCCGCUGUGUGCUUG", 
+        "miR-7-23nt"    : "UGUUCGUAUGCCGCUGUGUGCUUG",
+        "miR-7-24nt"    : "UGUUCGUAUGCCGCUGUGUGCUUG",
+        "miR-7-25nt"    : "UGUUCGUAUGCCGCUGUGUGCUUG"
+    }
+}
+
+read3p_mirna_map = {
+    "miR-1"      : "TCG",
+    "let-7a"     : "TGT",
+    "miR-155"    : "TGT",
+    "miR-124"    : "TGT",
+    "lsy-6"      : "TGT",
+    "miR-7-23nt" : "TGT"
+}
+
+
+marker_18nt = "AGCGUGUAGGGAUCCAAA"
+weird   =   "GGAGCGTGTAGGATCCAAATCGTATGCC"
+marker_18nt_d = "AGCGTGTAGGGATCCAAA"
+marker_30nt = "GGCAUUAACGCGGCCGCUCUACAAUAGUGA"
+               # GGTCGTTTCCCGGCCCATGCACCATCGT
+marker_30nt_d = "GGCATTAACGCGGCCGCTCTACAATAGTGA"
+
+adapter_5p = "GUUCAGAGUUCUACAGUCCGACGAUC"
+adapter_5p_d = "GTTCAGAGTTCTACAGTCCGACGATC"
+adapter_3p_sRS = "TCGTATGCCGTCTTCTGCTTG"
+dme_miR_14_5p = "GGGAGCGAGACGGGGACUCACU"
+dme_miR_14_5p_d = "GGGAGCGAGACGGGGACTCACT"
+xtr_miR_427 = "GAAAGUGCUUUCUGUUUUGGGCG"
+xtr_miR_427_d = "GAAAGTGCTTTCTGTTTTGGGCG"
+
+strange_sequence = "AGCGTGTAGGGATCCAAA"
+
+temp="GGCATTAACGCGGCCG"
+
+
+# [marker_18nt_d, marker_30nt_d, adapter_5p_d, dme_miR_14_5p_d, xtr_miR_427_d] = [
+#     re.sub("U", "T", i) for i in [marker_18nt, marker_30nt, adapter_5p,
+#                                   dme_miR_14_5p, xtr_miR_427]
+# ]
+
+constant_seqs = [marker_18nt_d,
+                 marker_30nt_d,
+                 adapter_5p_d,
+                 adapter_3p_sRS,
+                 dme_miR_14_5p_d,
+                 xtr_miR_427_d]
+
+
+
+weird_rev =                                              "3p-GCTTCGACCCCGTCTCCTTCTCCAAGCACCACTAGTAGGT-p5"
+adapter_3p =                                                                                 "TCGTATGCCGTCTTCTGCTTG"
+pilot_library =             "GGGUUCAGAGUUCUACAGUCCGACGAUCNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNUAUGCCGUCUUCUGCUUG"
+miR_1_library =               "GGGCAGAGUUCUACAGUCCGACGAUCNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNUCGUAUGCCGUCUUCUGCUUG"
+pulselibrary =             "GGGCAGAGUUCUACAGUCCGACGAUCNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNUGUUCGUAUGCCGUCUUCUGCUUG"
+rev_155 =                               "UGGGGAUAGUGCUAAUCGUAAUU"
+num_155 =                                              "87654321"
+
+chaselibrary =             "GGGCAGAGUUCUACAGUCCGACGAUCNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNACAUCGUAUGCCGUCUUCUGCUUG"
+newlibrary =               "GGGCAGAGUUCUACAGUCCGACGAUCNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNUGUUCGUAUGCCGCUGUGUGCUUG"
+
+weird =                   "5p-TGGATGATCACCACGAACCTCTTCCTCTGCCCCAGCTTCG-p3"
+rev5pconstat=                    "NCUAG CAGCCUGACAUCUUGAGACGGG"
+weird_rev = "3p-GCTTCGACCCCGTCTCCTTCTCCAAGCACCACTAGTAGGT-p5"
+
+NTS = ["A", "C", "G", "U"]
+DNTS = ["A", "C", "G", "T"]
+
+WOBBLE_NTS = ["A", "C", "G", "U", "H", "V"]
+
+RNA_comp_map = {
+    "C" : "G",
+    "G" : "C",
+    "A" : "U",
+    "U" : "A",
+    "V" : "H",
+    "H" : "V",  
+}
+
+
+
+def get_job_ids():
+    return(Popen("bjobs | cut -d ' ' -f 1", shell=True,
+          stdout=PIPE, stderr=PIPE).communicate()[0].split("\n"))[1:-1]
+
+def get_job_hosts():
+    return(Popen("bjobs | cut -c 46- | cut -d ' ' -f 1", shell=True,
+          stdout=PIPE, stderr=PIPE).communicate()[0].split("\n"))[1:-1]
+
+
+def get_job_statuses():
+    return(Popen("bjobs | cut -c 17- | cut -d ' ' -f 1", shell=True,
+          stdout=PIPE, stderr=PIPE).communicate()[0].split("\n"))[1:-1]
+
+def count_lines(path):
+    return(int(Popen("wc -l %s" %(path), shell=True,
+          stdout=PIPE).communicate()[0].split()[0]))
+
+def ls(path):
+    return(Popen("ls %s" %(path), shell=True,
+          stdout=PIPE, stderr=PIPE).communicate()[0].strip().split())
+
+def logit(vector, maximum):
+    return(-np.log(maximum/vector - 1))
+
+
+
+## FUNCTIONS
+def logit(vector, maximum):
+    return(-np.log(maximum/vector - 1))
+
+
+def pd_dict(dict, sortindex=True, sortcolumn=True):
+    df = pd.DataFrame.from_dict(dict, orient="index")
+    if sortindex:
+        df.reindex(sorted(df.index), copy=False)
+    if sortcolumn:
+        df.sort_index(axis=1, inplace=True)
+    return(df)
+
+
+def randomword(length):
+    return ''.join(random.choice(string.lowercase) for i in range(length))
+
+def randomword(length):
+    return ''.join(random.choice(string.lowercase) for i in range(length))
+
+
+
+def randomseq(length, rna=False):
+    if not rna:
+        NTS = DNTS
+    return ''.join(random.choice(NTS) for i in range(length))
+
+
+
+def geo_mean(x_vector):
+    return np.exp(np.mean(np.log(x_vector)))
+
+
+def get_kmer_list(k, rna=False):
+    if not rna:
+        NTS = DNTS
+    if k > 0:
+        return ["".join(i) for i in list(it.product(NTS,repeat=int(k)))]
+    else:
+        return []
+
+def get_site_flanks(read, site_pos_5p, site_pos_3p, num_flanks=2):
+    flanks_5p = read[site_pos_5p - num_flanks:site_pos_5p]
+    flanks_3p = read[site_pos_3p:site_pos_3p + num_flanks]
+    return "".join([flanks_5p, flanks_3p])
+
+
+def CorrectReadSequence(read, mirna, read_length, experiment):
+    barcode = read[26 + read_length : 26 + read_length + 3]
+    # Deals with the TCG instead of TGT ending for miR-1 equilibrium exp
+    if barcode == "TCG":
+        barcode = "TGT"
+        if mirna != "miR-1" or experiment != "equilibrium":
+            read = read[:26 + 37] + "TGTTCGTATGCCGTCTTCTGCTTG"
+    if barcode == "TGT" and mirna == "miR-1" and experiment == "equilibrium":
+        read = read[:26 + 37] + "TCGTATGCCGTCTTCTGCTTG"
+
+def LCSuff(seq1, seq2):
+    if len(seq1) == 0 or len(seq2) == 0:
+        return("")
+    elif seq1[-1] == seq2[-1]:
+        return(LCSuff(seq1[:-1], seq2[:-1]) + seq1[-1])
+    else:
+        return("")
+
+def LCSubString(seq1, seq2):
+    pres1 = [seq1[:i] for i in range(1, len(seq1) + 1)]
+    pres2 = [seq2[:i] for i in range(1, len(seq2) + 1)]
+    pre_pairs = [(i, j) for i in pres1 for j in pres2]
+    LCs = [LCSuff(i[0], i[1]) for i in pre_pairs]
+    LCmax = max([len(i) for i in LCs])
+    return [i for i in LCs if len(i) == LCmax]
+
+def MinimalExcludeStringList(s_list):
+    if len(s_list) > 0:
+        s_list.sort(key = lambda s: len(s))
+        min_len = len(s_list[0])
+        max_len = len(s_list[-1])
+        removes = [0]*len(s_list)
+        for s_1 in s_list:
+            for i, s_2 in enumerate(s_list):
+                if s_2.find(s_1) != -1 and s_1 != s_2:
+                    removes[i] +=1
+        s_list = [s for (i, s) in enumerate(s_list) if removes[i] == 0]
+    return(s_list)
+
+def LCSuff(seq1, seq2):
+    if len(seq1) > 0 and len(seq2) > 0 and seq1[-1] == seq2[-1]:
+        return(LCSuff(seq1[:-1], seq2[:-1]) + 1)
+    else:
+        return(0)
+
+def LCSubString(seq1, seq2):
+    # Make all prefixes of both strings
+    pre_1 = [seq1[:i] for i in range(1, len(seq1) + 1)]
+    pre_2 = [seq2[:i] for i in range(1, len(seq2) + 1)]
+    # All paired combinations between the prefixes:
+    pre_pairs = [(i, j) for i in pre_1 for j in pre_2]
+    # The Longest common suffixes of the pairs
+    LCs = [LCSuff(i[0], i[1]) for i in pre_pairs]
+    LCmax = max(LCs)
+    inds_max = [ind for (ind, lc) in enumerate(LCs) if lc == LCmax]
+    # Find the starting positions of the longest substrings in the first
+    # and second sequence, respectively:
+    inds_1 = [i/len(pre_2) - LCmax + 1 for i in inds_max]
+    inds_2 = [i%len(pre_2) - LCmax + 1 for i in inds_max]
+    return([LCmax, [inds_1, inds_2]])
+
+temp_text = ["CATTCCCTAGGTCAAATCCTCCATTCCACATTCCCACTCG",
+             "ATGCAAATCCCTTTGACATTCCCTTCCGCATCCTAAATCG",
+             "CAACATTCCATGATCTGCGTGAAAATGTTCAATAGGTTCG",
+             "CAATTGACATCTACATACCATATTTTAACTATCCTATTCG",
+             "CTAAGACATGGACATACAACGATGATCAACATCCGTGTCG",
+             "ACAATTACCCACATTCCGAGTCATTCCTCCAACCAGCTCG",
+             "CATTCCATTCTCCCAAAACTCTCCAAACATAGGTGGGTCG",
+             "TGAGCCATTCCGACATCCGTCTGACATTCCGCTCTACTCG",
+             "TTATGTGATACTTAGTCTTGTTAACGTGAAATGCGACTCG",
+             "TGTTGAAGGTCCTTGTCGACGCTAAATTCTTTGGGTATCG",]
+
+# def find_all(seq, key, start=0):
+#     match = seq.find(key, start)
+#     if match >= 0:
+#         return([match] + find_all(seq, key, match + 1))
+#     else:
+#         return([])
+
+def find_all(seq, key, start=0, iteration=0):
+    match = re.search(key, seq[start:])
+    if iteration > 3:
+        return([])
+    if match:
+        # Update the position for the substring:
+        pos = match.span()[0] + start
+        pos_output = pos
+        key_update = key
+        # Updates position 1 with respect to "[^G]:"
+        while re.match("\[\^.*\]", key_update):
+            # Shift position 1 to the left if [^N] at start:
+            pos_output += 1
+            # Update key_update to remove "[^N]" from beginning of string:
+            key_update = re.sub("^\[\^.*\]", "", key_update)
+        return([pos_output] + find_all(seq, key, pos + 1))
+    else:
+        return([])
+
+
+def calculate_local_au(utr, site_start, site_end, site_type):
+    """
+    Calculate the local AU score
+
+    Parameters
+    ----------
+    utr: string, utr sequence
+
+    site_type: string, site type
+
+    site_start: int, start of site
+
+    site_end: int, end of site
+
+    Output
+    ------
+    float: local AU score
+    """
+    # find A, U and weights upstream of site
+    up_site_adder = int(site_type not in ['7mer-m8', '8mer'])
+    
+    upstream = utr[max(0, site_start - 30): site_start]
+    upstream_str = upstream
+
+    l= max(0, site_start - 30)
+    # print(site_type)
+    # print(utr[0:100])
+    upstream = [int(x in ['A', 'T']) for x in upstream]
+    inv_upweights = [(x + 1 + up_site_adder)
+                 for x in range(len(upstream))][::-1]
+
+    upweights = [1.0 / (x + 1 + up_site_adder)
+                 for x in range(len(upstream))][::-1]
+
+    # find A,U and weights downstream of site
+    down_site_adder = int(site_type in ['7mer-A1', '8mer'])
+    downstream = utr[site_end:min(len(utr), site_end + 30)]
+    downstream_str = downstream
+    downstream = downstream + "A"*(30 - len(downstream))
+    downstream = [int(x in ['A', 'T']) for x in downstream]
+
+    inv_downweights = [(x + 1 + down_site_adder)
+                   for x in range(len(downstream))]
+    downweights = [1.0 / (x + 1 + down_site_adder)
+                   for x in range(len(downstream))]
+    # print("_"*l + upstream_str + "."*(site_end - site_start) + downstream_str)
+    # print(" "*l + "".join([str(i) for i in upstream]) + "."*(site_end - site_start) + "".join([str(i) for i in downstream]))
+    # for num, weight in enumerate(inv_upweights):
+    #     print(" "*(l + num) + str(weight) + " "*(30 + site_end - site_start - len(str(weight))) + str(inv_downweights[num]))
+
+    weighted = np.dot(upstream, upweights) + np.dot(downstream, downweights)
+    total = float(sum(upweights) + sum(downweights))
+
+    return weighted / total
+
+def get_rc(seq,rna=False):
+    nucleotide_complement_map = {
+    "C" : "G",
+    "G" : "C",
+    "T" : "A",
+    "U" : "A",
+    "N" : "N",  
+    }
+    # Assigns A to U or T depending on 'rna' flag.
+    if rna:
+        nucleotide_complement_map["A"] = "U"
+    else:
+        nucleotide_complement_map["A"] = "T"
+    # Constructs a list of the characters substituted and reversed in order.
+    rev_complement_list = [nucleotide_complement_map[i] for i in seq][::-1]
+    rev_complement = "".join(rev_complement_list)
+    return(rev_complement)
+
+def CheckRandomLibrary(lib_seq):
+    lib_seq_rc = get_rc(lib_seq)
+    print(lib_seq_rc)
+    for key, seq in seq_mirna_map.items():
+        print("________________")
+        print(key)
+        seq_rc = get_rc(seq, rna = True)
+        seq_rev = seq[::-1]
+        matches = LCSubString(seq_rc, lib_seq)
+        if len(matches) > 0:
+            print(matches)
+            for match in matches:
+                lib_seq_temp = lib_seq
+                end_pos = lib_seq_temp.find(match)
+                while end_pos != -1:
+                    print(" "*10 + lib_seq)
+                    mir_pos = seq.find(get_rc(match, rna=True))
+                    print(" "*(10 + end_pos - len(str(mir_pos + len(match))))
+                          + str(mir_pos + len(match)) + "."*len(match) + str(mir_pos + 1))
+                    # print(seq)
+                    # print(end_pos)
+                    # print(len(seq))
+                    # print(mir_pos)
+                    # print(len(match))
+                    mirna_adjust_pos = 10 + end_pos - (len(seq) - mir_pos - len(match))
+                    # print(mirna_adjust_pos)
+                    print(" "*mirna_adjust_pos + seq_rev)
+                    print("\n")
+                    lib_seq_temp = lib_seq_temp[end_pos+1:]
+                    end_pos = lib_seq_temp.find(match)
+                    mir_pos = seq.find(get_rc(match))
+
+
+    return
+
+
+
+def get_mfe_heteroduplex(rna_seq, dna_seq):
+    # This should give the delta G from the variation in RNA fold, for use with
+    # the competitor oligo.
+
+    # Make filename that is unambiguously unique:
+    temp_filename = "%s_%s.fa" %(time.time(), randomword(20))
+    with open(temp_filename, "wb") as f:
+        f.write(">RNA\n%s\n>DNA\n%s" %(rna_seq, dna_seq))
+    shell_call = "/nfs/apps/ViennaRNA/bin/RNAduplex < %s" %(temp_filename)
+    p1 = subprocess.Popen([shell_call], shell=True, stdout = subprocess.PIPE)
+    # Parse the output 
+    output = p1.communicate()[0].split("\n")[2].split(" ")[-1]
+    deltaG = output[1:-1]
+    os.remove(temp_filename)
+    return(float(deltaG))
+
+
+
+def get_competitor_oligo_mfe(mirna, len_k):
+    # Get competitor oligo sequence
+    comp_oligo = seq_competitor_map[mirna]
+    comp_seqs = [comp_oligo[i:i+len_k]
+                 for i in range(len(comp_oligo) - len_k + 1)]
+    rna_seqs = [get_rc(i, rna=True) for i in comp_seqs]
+
+    print(comp_seqs)
+    print(rna_seqs)
+    dGs = [get_mfe_heteroduplex(rna_seq, dna_seq)
+                for (rna_seq, dna_seq) in zip(rna_seqs, comp_seqs)]
+    print(dGs)
+    out_path = "CompetitorOligoMFEs/%s_k%s.txt" %(mirna, len_k)
+    with open(out_path, "wb") as file:
+        file.write("\n".join(["%s\t%s" %(comp_seq, dG)
+                              for (comp_seq, dG) in zip(comp_seqs, dGs)]))
+    return
+
+
+def get_competitor_oligo_mfe_with_lib(mirna, len_k, lib="5p"):
+    # Get competitor oligo sequence
+    comp_oligo = seq_competitor_map[mirna]
+    comp_seqs = [comp_oligo[i:i+len_k]
+                 for i in range(len(comp_oligo) - len_k + 1)]
+
+    lib_seq = seq_lib_map[lib][mirna]
+    print(lib_seq)
+    if lib == "5p":
+        rna_seqs = [lib_seq + get_rc(i, rna=True) for i in comp_seqs]
+    else:
+        rna_seqs = [get_rc(i, rna=True) + lib_seq for i in comp_seqs]
+
+    print(comp_seqs)
+    print(rna_seqs)
+    dGs = [get_mfe_heteroduplex(rna_seq, comp_oligo)
+                for rna_seq in rna_seqs]
+    print(dGs)
+    out_path = "CompetitorOligoMFEs/%s_k%s_lib%s.txt" %(mirna, len_k, lib)
+    with open(out_path, "wb") as file:
+        file.write("\n".join(["%s\t%s" %(comp_seq, dG)
+                              for (comp_seq, dG) in zip(comp_seqs, dGs)]))
+    return
+
+
+
+
+def get_mfe(seq1, seq2):
+    import RNA
+    duplex = RNA.duplexfold(seq1,seq2)
+    out = duplex.energy
+    return(out)
+
+
+
+# DELETE THIS PLEASE
+def get_nn_energy(seq1, seq2):
+    print(seq1)
+    out = [None]*len(seq1)
+    seq2r = seq2[::-1]
+    print(seq2r)
+    for i in range(len(seq1)):
+        nuc1 = seq1[i]
+        nuc2 = seq2r[i]
+        print(nuc1)
+        print(nuc2)
+        if RNA_comp_map[nuc1] == nuc2:
+            out[i] = nuc1
+        elif nuc1 == "U" and nuc2 == "G":
+            out[i] = "V"
+        elif nuc2 == "G" and nuc1 == "U":
+            out[i] = "F"
+        else:
+            out[i] = "l"
+    print(out)
+    # print(out)
+    mm_5p = 0
+    mm_3p = 0
+    mm_internal = 0
+    left = 0
+    right = len(out)
+    # if left hand mismatch exists:
+    if out[0] == "l":
+        #get the delta G energy
+        mm_5p = term_mm_dG[RNA_comp_map[out[1]]][seq2r[0]][seq1[0]]
+        #update lft hand side
+        left =1
+    # same but for right hand side:
+    if out[len(out)-1] == "l":
+        print([out[len(out)-2]])
+        print(term_mm_dG[out[len(out)-2]])
+        mm_3p = term_mm_dG[out[len(out)-2]][seq1[len(out)-1]][seq2r[len(out)-1]]
+        right -= 1
+
+
+    out = "".join(out[left:right])
+    # print(out)
+    seq1 = seq1[left:right]
+    seq2 = seq2[len(seq2)-right:len(seq2)-left]
+    seq2r = seq2[::-1]
+    AU_end = 0
+    if out[0] in ["A","U", "H", "V"]:
+        AU_end += 1
+    if out[-1] in ["A","U", "H", "V"]:
+        AU_end +=1
+    # print(seq1[left:right])
+    # print(seq2[len(seq2)-right:len(seq2)-left])
+    if seq1 == seq2:
+        sym = 1
+    else:
+        sym = 0
+    if "l" in out:
+        mmInd = out.find("l")
+        # print(mmInd)
+        m5p = out[mmInd-1]
+        m3p = out[mmInd+1]
+        x = seq1[mmInd]
+        y = seq2r[mmInd]
+        # print([m5p,m3p,x,y])
+        mm_internal += intern_mm_dG[m5p][m3p][x][y]
+        # print(mm_internal)
+        dinucs = [out[i:i+2] for i in range(mmInd-1)]+[out[i:i+2] for i in range(mmInd+1,len(out)-1)]
+    else:
+        dinucs = [out[i:i+2] for i in range(len(out)-1)]
+
+    dG_init = nn_dG["init"]
+    dG_ends = nn_dG["AU_end"]*AU_end
+    dG_sym = nn_dG["sym"]*sym
+    dG_bp = sum([nn_dG[dinuc] for dinuc in dinucs])
+    deltaG = sum([dG_init,dG_ends, dG_sym, dG_bp,mm_3p,mm_internal])
+    return(deltaG)
+
+def get_site_seq(mirna, start, stop, wobble=False,
+                           mismatch=False, bulge=False, rna=False):
+    """Returns the sequence (in DNA form) based on the complementarity of
+        the site.
+
+    Args:
+        mirna: The miRNA.
+        start: The first nucleotide contained in the site (1 = first position).
+        stop: The last nucleotide contained in the site.
+        wobble: If not False, a number specifying the identify of the wobble
+            paired site.
+
+    Returns:
+        A string giving the sequence corresponding to the requisite site.
+    """
+    # Convert miRNA sequence to list (which can be updated)
+    rc_list = [i for i in seq_mirna_map[mirna]]
+    print(rc_list)
+    # Make the sequence consistent with the A1 rule.
+    rc_list[0] = "T"
+    # Update for wobbles.
+    if wobble:
+        wobble_nucleotide_map = {"G" : "A", "U" : "C"}
+        if type(wobble) == list:
+            for wob in wobble:
+                rc_list[wob - 1] = wobble_nucleotide_map[rc_list[wob - 1]]
+        else:
+            wobble_nucleotide_map = {"G" : "A", "U" : "C"}
+            rc_list[wobble - 1] = wobble_nucleotide_map[rc_list[wobble - 1]]
+    # Update for mismatches.
+    if mismatch:
+        rc_list[mismatch[0] - 1] = get_rc(mismatch[1])
+    # Define the end before bulge introduction.
+    rc_list = rc_list[ : stop]
+    # Define bulge.
+    if bulge:
+        rc_list.insert(bulge[0] - 1, get_rc(bulge[1]))
+    # Define starting position.
+    rc_list = rc_list[start - 1 : ]
+    print(rc_list)
+    # Get and return the reverce complement of the merged string.
+    site_seq = get_rc("".join(rc_list), rna=rna)
+    return site_seq
+
+def get_miRNA_mfes(mirna, start, stop, subseq=True, alt_start=False, alt_stop=False):
+    print(mirna)
+    print(start)
+    print(stop)
+    t_seq = get_site_seq(mirna, start, stop, rna=True)
+    print(t_seq)
+    print("hi")
+    m_seq = seq_mirna_map[mirna]
+    mstart = 0
+    mstop = len(m_seq)
+    if subseq:
+        mstart = start
+        mstop = stop
+    if alt_start:
+        mstart = alt_start
+    if alt_stop:
+        mstop = alt_stop
+    m_seq = m_seq[(mstart - 1):mstop]
+    print(m_seq)
+    return(get_mfe(m_seq, t_seq))
+    
+
+def GetAllSeedSites(mirna, start, stop, mm=[]):
+    mir_seq = seq_mirna_map[mirna]
+    mir_mm_r = range(stop, 8)
+    mir_mm_l = range(0, start - 1)
+    t_seq_base = get_rc(mir_seq[start - 1:stop], rna=True)
+    if len(mir_mm_r) > 0:
+        t_seq_l = [n for n in nts if n != get_rc(mir_seq[mir_mm_r[0]], rna=True)]
+        if len(mir_mm_r) > 1:
+            t_seq_ll = get_kmer_list(len(mir_mm_r)-1, rna=True)
+            t_seq_l = ["".join(i) for i in list(it.product(t_seq_ll, t_seq_l))]
+    else:
+        t_seq_l = [""]
+    if len(mir_mm_l) > 0:
+        t_seq_r = [n for n in nts if n != get_rc(mir_seq[mir_mm_l[::-1][0]], rna=True)]
+        if len(mir_mm_l) > 1:
+            t_seq_rr = get_kmer_list(len(mir_mm_l)-1, rna=True)
+            t_seq_r = ["".join(i) for i in list(it.product(t_seq_r, t_seq_rr))]
+    else:
+        t_seq_r = [""]
+    return(["".join(i) for i in list(it.product(t_seq_l, [t_seq_base], t_seq_r))])
+
+
+
+
+def ensure_directory(directory):
+    """Checks for a directory and creates it if it does not exist.
+
+        Args:
+            directory: The directory in question.
+            string: The string being searched for the 'key' in. Note that this
+                string must be longer than the 'key' argument.
+            mismatch: the number of tolerated mismatches in the match.
+
+        Returns:
+            Does not return output, but a function call generates the directory
+            if it doesn't exist.
+    """
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+
+def get_analysis_path(mirna, experiment, condition, analysis_type, ext = "",
+                      suffix = "txt"):
+    """Generates the intended path and name reads extracted from the fastq
+        file.
+
+        Args:
+            mirna: The miRNA in the experiment to be processed.
+            experiment: The type of experiment to be processed.
+            condition: The sample type within the experiment to be processed.
+            analysis_type: The type of analysis file to be read/written.
+        Returns:
+            The string representing the full path to the output file.
+    """
+    path_outer = "/lab/solexa_bartel/mcgeary/AgoRBNS/"
+    path_inner = "%s/%s/%s" % (mirna, experiment, analysis_type)
+    directory = path_outer + path_inner
+    sys.stdout.flush()
+    ensure_directory(directory)
+
+    full_path = "%s/%s%s.%s" % (directory, condition, ext, suffix)
+    return full_path
+
+def get_exp_info(mirna, experiment, condition, rep=None, nb=None, tp=None):
+    """Retrieves the complete path to the zipped fastq file 
+        in solexa_bartel/mcgeary.
+
+        Args:
+            exp: The folder in which the data is, representing the experiment.
+            barcode: The multiplexing barcode associated with the sample.
+            lane: The lane the sample sequenced on within the sequencing run.
+
+        Returns:
+            The string representing the full path to the zipped fastq file.
+    """
+    if nb:
+        csv_file = "Libraries_NB.csv"
+    elif tp:
+        csv_file = "Libraries_TP.csv"
+    else:
+        csv_file = "Libraries_SL.csv"
+    # Load the database of experiments:
+    print(csv_file)
+    print(mirna)
+    print(experiment)
+    print(condition)
+
+    with open(csv_file, 'U') as master:
+        library_list = csv.DictReader(master)
+        # Determine the experiment to be analyzed
+        exp_file = None
+        for row in library_list:
+            if row["SL"] == "186":
+                print(row)
+                print(mirna in row["miRNA"].split(","))
+                print(experiment)
+                print(row["Exp_type"])
+                print(experiment == row["Exp_type"])
+                print(row["Sample type"])
+                print(condition)
+                print(row["Sample type"] == condition)
+                print(row["Rep"])
+            if (mirna in row["miRNA"].split(",") and
+                    row["Exp_type"] == experiment and
+                    row["Sample type"] == condition and
+                    row["Exp"] != "CANCELLED" and
+                    (rep == None or row["Rep"] == rep)):
+                exp_file = row
+    print(exp_file)
+
+    # Retrieve the path to the file, from the data in the appropriate
+    # row of the database.
+    exp, barcode, lane = [exp_file[i] for i in ["Exp", "Barcode", "Lane"]]
+    spikes, tag = [exp_file[i] for i in ["Spike", "3prime"]]
+
+    date = int(exp.split("_")[0])
+    print(date)
+    if date <= 180500:
+        tar_string = ".tar"
+    else:
+        tar_string = ""
+
+    path = "/lab/solexa_public/Bartel/%s/QualityScore/" % (exp)
+    file = "%s-s_%s_1_sequence.txt%s.gz" % (barcode, lane, tar_string)
+    full_path = path + file
+    return full_path, spikes, tag, barcode
+
+
+def get_analysis_path_burge(rbp, experiment, condition, analysis_type, ext = "",
+                      suffix = "txt"):
+    """Generates the intended path and name reads extracted from the fastq
+        file.
+
+        Args:
+            mirna: The miRNA in the experiment to be processed.
+            experiment: The type of experiment to be processed.
+            condition: The sample type within the experiment to be processed.
+            analysis_type: The type of analysis file to be read/written.
+        Returns:
+            The string representing the full path to the output file.
+    """
+    path_outer = "/lab/solexa_bartel/mcgeary/RBNS_DominguezFreese/"
+    path_inner = "%s/%s/%s" % (rbp, experiment, analysis_type)
+    directory = path_outer + path_inner
+    sys.stdout.flush()
+    ensure_directory(directory)
+
+    full_path = "%s/%s%s.%s" % (directory, condition, ext, suffix)
+    return full_path
+
+def parse_arguments(arguments):
+    """Uses argparse to parse command line arguments and gives a list with
+        each corresponding variable.
+
+        Args:
+            arguments: A list of strings representin the arguments needed in 
+            the command line.
+
+        Returns:
+            A list of values corresponding to every argument, including
+            flags arguments. Flags for which no argument was entered return a
+            None object.
+    """
+    parser = argparse.ArgumentParser()
+    for argument in arguments:
+        if "_binary" in argument:
+            parser.add_argument(argument.split("_binary")[0],
+                                action='store_true')
+        else:
+            parser.add_argument(argument)
+    args = vars(parser.parse_args())
+    arguments_no_dash = []
+    for i in arguments:
+        if i[0] == "-":
+            arguments_no_dash.append(i.split("_binary")[0][1:])
+        else:
+            arguments_no_dash.append(i)
+    return [args[i] for i in arguments_no_dash]
+
+def get_func_arg_names(func):
+    return func.__code__.co_varnames[:func.func_code.co_argcount]
+
+def multiproc_file(path, n_jobs, func, test, *args, **kwargs):
+    if "halve_reads" in kwargs and kwargs["halve_reads"]:
+      halve_reads = True
+    else:
+      halve_reads = False
+    print("number of cores:")
+    print(multiprocessing.cpu_count())
+    with ProcessPoolExecutor(max_workers=n_jobs) as executor:
+        # Initialize the list of futures (the actual processes), and the list
+        # of the iterable (called the iterator) that we be repeatedly cleared
+        # when the list is greater than the intended process size.
+        futures = []
+
+        if ("_sequence.txt.tar.gz" in path or
+            "_sequence.txt.gz" in path or
+            ".fastq.gz" in path):
+            print("in here")
+            mult = 4
+            wc_proc = Popen("zcat %s | wc -l" %(path), shell=True, stdout=PIPE)
+        else:
+            mult = 1
+            wc_proc = Popen("wc -l %s" %(path), shell=True, stdout=PIPE)
+        print(path)
+        if test:
+            process_size = 1000
+            n_jobs = 3
+        else:
+            file_lines = int(wc_proc.communicate()[0].split()[0])
+            print("file_lines: %s" %(file_lines))
+            if halve_reads:
+                if (file_lines/mult) % 2 == 0:
+                    line_mod_best = 0
+                else:
+                    line_mod_best = 1
+                line_mod = ((file_lines/mult) % n_jobs)
+                job_mod = n_jobs % 2
+                while line_mod != line_mod_best or job_mod != 0:
+                    n_jobs -= 1
+                    line_mod = ((file_lines/mult) % n_jobs)
+                    job_mod = n_jobs % 2
+            process_size = file_lines/mult/n_jobs
+        # Conditional for starting new job.
+        i_jobs = 0
+        remaining_jobs = n_jobs
+        tick = 0
+
+        if path[-7:] == ".tar.gz":
+            print("This is a tar file")
+            tar_in = tarfile.open(path, "r:gz")
+            member = tar_in.getmembers()[0]
+            file_in = tar_in.extractfile(member)
+        elif path[-3:] == ".gz":
+            file_in = gzip.open(path, "r")
+        else:
+            file_in = open(path, "r")
+        time_start = time.time()
+        job_num = 0
+        # Conditional for those scripts that require the index of the job
+        # within the script itself, so pass an additional argument.
+        if func.__name__ in ["get_read_structural_data", "get_plfold_matrix",
+                             "check_GCTTCCG"]:
+            args = [i for i in args] + [i_jobs]
+        while n_jobs > 1:
+            job_reads = [file_in.readline() for i in range(process_size*mult)]
+            i_jobs += 1
+            if func.__name__ in ["get_read_structural_data", "get_plfold_matrix",
+                                 "check_GCTTCCG"]:
+                args[-1] +=1
+            sys.stdout.flush()
+            futures.append(executor.submit(func, job_reads, *args))
+            n_jobs -= 1
+        if not test:
+            line = file_in.readline()
+            final_job = []
+            while line:
+                final_job.append(line)
+                line = file_in.readline()
+            if func.__name__ in ["get_read_structural_data", "get_plfold_matrix",
+                                 "check_GCTTCCG"]:
+                args[-1] +=1
+            futures.append(executor.submit(func, final_job, *args))
+        print("through multiprocess")
+        time.sleep(10)
+        output = [i.result() for i in futures]
+        print("made output")
+    if path[-7:] == ".tar.gz":
+        tar_in.close()
+        # print("closed tar")
+    else:
+        file_in.close()
+    # Return a list of the results from each job, to be parsed uniquely
+    # depending on the repeated_function.
+    return output
+
+def print_time_elapsed(time_start):
+    time_sec = time.time() - time_start
+    time_h = time_sec // 3600
+    time_m = (time_sec % 3600) // 60
+    time_s = time_sec % 60
+    print("%.0f:%.0f:%.2f" % (time_h, time_m, time_s))
+
+
+# TODO fix this
+def readline_one(file_in):
+    return file_in.readline()
+
+def readline_two(file_in_pair):
+    out1 = readline_one(file_in_pair[0])
+    out2 = readline_one(file_in_pair[1])
+    if out1 and out2:
+        return [out1, out2]
+    else:
+        return False
+
+def readline_three(file_in_triplet):
+    out1 = readline_one(file_in_triplet[0])
+    out2 = readline_one(file_in_triplet[1])
+    out3 = readline_one(file_in_triplet[2])
+    if out1 and out2 and out3:
+        return [out1, out2, out3]
+    else:
+        return False
+
+def readline_four(file_in_quartet):
+    out1 = readline_one(file_in_quartet[0])
+    out2 = readline_one(file_in_quartet[1])
+    out3 = readline_one(file_in_quartet[2])
+    out4 = readline_one(file_in_quartet[3])
+    if out1 and out2 and out3 and out4:
+        return [out1, out2, out3, out4]
+    else:
+        return False
+
+def test_match(key, string, mis=0):
+    """Determines if the key matches the string tolerating a certain number of
+        matches
+
+        Args:
+            key: The string to be searched for.
+            string: The string being searched for the 'key' in. Note that this
+                string must be longer than the 'key' argument.
+            mis: the number of tolerated mismatches in the match.
+
+        Returns:
+            A list of values corresponding to every argument, including
+            flags arguments. Flags for which no argument was entered return a
+            'None' object.
+    """
+    # Iterate along possibel windows of key within string
+    for i in range(0,len(string)-len(key)+1):
+        # Set mismatch counter
+        mm = 0
+        # Iterate along the string within this window 
+        for j in range(0,len(key)):
+            if string[i+j] != key[j]:
+                mm += 1
+            # If there are more mismatches than the limit,
+            # break loop to pass to the next window.
+            if mm > mis:
+                break
+            # Check if it made it to the end, and if so,
+            # return the match index.
+            if j == len(key)-1:
+                return i
+    return False
+
+def test_read_match(key,string,mis=0, indel=1):
+    """Determines if the key matches the string tolerating a certain number of
+        matches
+
+        Args:
+            key: The string to be searched for.
+            string: The string being searched for the 'key' in. Note that this
+                string must be longer than the 'key' argument.
+            mis: the number of tolerated mismatches in the match.
+
+        Returns:
+            A list of values corresponding to every argument, including
+            flags arguments. Flags for which no argument was entered return a
+            'None' object.
+    """
+    # Iterate along possibel windows of key within string
+        # Set mismatch counter
+    mm = [0]*(1+ 2 * (indel))
+    # Iterate along the string within this window 
+    for j in range(0,len(key)):
+        if string[j] != key[j]:
+            if mm[indel] > 0:
+
+                if string[j] != key[j-1]:
+                    mm[indel-1] += 1
+                if string[j] != key[j-1]:
+                    mm[indel+1] +=1
+            mm[indel] += 1
+        # If there are more mismatches than the limit,
+        # break loop to pass to the next window.
+        if True not in [m < mis for m in mm]:
+            return(False)
+
+    return True
+
+
+
+
+def get_kmer_list_constant_insert(mirna, kmer_length, mir_start, mir_stop):
+    # Define the length of the full kmer.
+
+    # Get the constant sequence that is identical to a region of the miRNA.
+    kmer_const = get_site_seq(mirna, mir_start, mir_stop)
+
+    # Get the list of random kmers.
+    kmer_length_rand = kmer_length - len(kmer_const)
+    kmer_rand_list = get_kmer_list(kmer_length_rand)
+
+    # position to insert the constant sequence within the random kmer:
+    insert_index = int(8 - mir_stop + math.ceil((kmer_length - 8)/2.0))
+    print(insert_index)
+    # Make the list of full kmers, which have inserted constant sequence.
+    kmer_list = [i[ : insert_index] + kmer_const +
+                 i[insert_index: ] for i in kmer_rand_list]
+
+    return(kmer_list)
+
+def make_trie(kmer_length, seq_length):
+    """Recursive make a full trie based on the given kmer length.
+    Each node has a child called "stop" that stores position counts.
+    """
+    if kmer_length == 0:
+        return {'stop': np.zeros(seq_length)}
+    else:
+        new_dict = {'stop': np.zeros(seq_length)}
+        for nt in ['A','C','G','T']:
+            new_dict[nt] = make_trie(kmer_length - 1, seq_length) 
+        return  new_dict
+
+def add_to_trie(seq, trie, pos):
+    """Loops through characters of a sequence and recursively update trie counts."""
+    trie['stop'][pos] += 1
+    if len(seq) > 0:
+        char = seq.pop(0)
+        add_to_trie(seq, trie[char], pos)
+
+def count_trie(trie, current_kmer):
+    """Traverses trie and returns a dictionary with all the substring and position counts"""
+    kmer_dict = {current_kmer: trie['stop']}
+    if len(trie) > 1:
+        for nt in ['A','C','G','T']:
+            kmer_dict.update(count_trie(trie[nt], current_kmer + nt))
+
+    return kmer_dict
+
+def count_kmers(seqs, kmer_length, seq_length):
+    """Given a list of sequences:
+    1. Make a full trie
+    2. Add each sequence to the trie
+    3. Aggregate counts into a dictionary and return dict
+    """
+    mytrie = make_trie(kmer_length, seq_length)
+
+    for seq in seqs:
+        for pos in range(len(seq)):
+            subseq = list(seq[pos:min(len(seq),pos+kmer_length)])
+            add_to_trie(subseq, mytrie, pos)
+
+    return count_trie(mytrie, '')
+
+
+def count_positional_kmers(seqs, len_kmer):
+    """Given a list of sequences:
+    1. Make a full trie
+    2. Add each sequence to the trie
+    3. Aggregate counts into a dictionary and return dict
+    """
+    len_seq = len(seqs[0])
+    num_pos = len_seq - len_kmer + 1
+    kmer_dict = {kmer : [0]*num_pos for kmer in get_kmer_list(2)}
+    for seq in seqs:
+        for pos in range(num_pos):
+            kmer_dict[seq[pos:pos+len_kmer]][pos] += 1
+    kmer_df = pd.DataFrame.from_dict(kmer_dict).transpose()
+    kmer_df.index = get_kmer_list(2)
+    return kmer_df
+
+
+
+def sequential(kmers, seqs, kmer_length, seq_length):
+    """Naive method that just loops through all the sequences and updates counts
+    """
+    master_kmer_dict = {kmer: np.zeros(seq_length) for kmer in kmers}
+    for seq in seqs:
+        for i in range(seq_length):
+            for j in range(i+1, min(seq_length, i+kmer_length) + 1):
+                subseq = seq[i:j]
+                if subseq in kmers:
+                    master_kmer_dict[subseq][i] += 1
+
+    return master_kmer_dict
+
+
+def GetThreePrimeBarcodeOverlap(read, adapt=adapter_3p):
+    window = len(adapt)
+    if window == 0:
+        return(None)
+    else:
+        end = read[-window:]
+        # print(end)
+        # print(" "*(len(read) - window) + adapt)
+        # print(" "*(len(read) - window) + end)
+        position = read.find(adapt)
+        # print(position)
+        if adapt != end:
+            return(GetThreePrimeBarcodeOverlap(read, adapt=adapt[:-1]))
+        else:
+            return(len(read) - window)
+
+
+def simulate_competitor_read(n, mirna, exp, len_comp):
+    """Generates reads with regions of complementarity to a particular miRNA's
+        competitor oligo, that are otherwise constructed using the dinucleotide
+        frequencies of the input-sequencing from the RBNS experiments.
+        matches
+
+        Args:
+            n: The number of reads to be generated.
+            mirna: The miRNA name.
+            exp: The particular RBNS experiment.
+            len_comp: The length of complementarity to the competitor oligo.
+
+        Returns:
+            A list of read sequences 40-nt in length, which can be used in
+            combination with the actual reads from the AGO-RBNS experiments.
+    """
+    time_start = time.time()
+    # Define constants:
+    len_rand = 37
+    dinucs = get_kmer_list(2)
+    read3p = read3p_mirna_map[mirna]
+    # Get the dinucleotide frequencies for that miRNA's input sequence:
+    dinuc_path = get_analysis_path(mirna, exp, "I", "positional_kmers",
+                                   ext="_0_k2")
+    df_dinucs = pd.read_csv(dinuc_path, sep="\t", header=None)
+    df_dinucs.index = dinucs
+    df_dinucs = df_dinucs/df_dinucs.sum()
+    # Get the competitor oligo sequence, and all possible kmers that are
+    # reverse complementary to the competitor oligo:
+    comp_rc = get_rc(seq_competitor_map[mirna])
+    comp_kmers = [comp_rc[i:i + len_comp]
+                  for i in range(len(comp_rc) - len_comp + 1)]
+    # Pre-allocate the output list:
+    reads = [None]*n
+    for i in range(n):
+        if i % (n/10) == 0:
+            print(float(i)/n)
+        # Draw random position and random kmer of complementarity to the
+        # competitor oligo.
+        pos_kmer = random.choice(range(len_rand - len_comp + 1))
+        kmer = random.choice(comp_kmers)
+
+        # Build read starting with this random kmer at this random position.
+        read = kmer
+        # Extend the sequence 5-prime and 3-prime of the kmer to the full read
+        # length using the positional dinucleotide probabilities.
+        # Five prime:
+        for j in range(0, pos_kmer)[::-1]:
+            probs = df_dinucs.filter(regex="%s$" %(read[0]), axis=0)[j]
+            probs = probs/probs.sum()
+            dinuc = np.random.choice(probs.index.tolist(), p=probs)
+            read = dinuc[0] + read
+        # Three prime:
+        for j in range(pos_kmer + len_comp - 1, df_dinucs.shape[1]):
+            probs = df_dinucs.filter(regex="^%s" %(read[-1]), axis=0)[j]
+            probs = probs/probs.sum()
+            dinuc = np.random.choice(probs.index.tolist(), p=probs)
+            read = read + dinuc[1]
+        # Add 3-prime-most constant sequence in the read, and update the list of
+        # reads.
+        read = read + read3p
+        reads[i] = read 
+    print_time_elapsed(time_start)
+    return(reads)
+
+
+def simulate_competitor_reads(n, mirna, exp, len_comp):
+    """Generates reads with regions of complementarity to a particular miRNA's
+        competitor oligo, that are otherwise constructed using the dinucleotide
+        frequencies of the input-sequencing from the RBNS experiments.
+        matches
+
+        Args:
+            n: The number of reads to be generated.
+            mirna: The miRNA name.
+            exp: The particular RBNS experiment.
+            len_comp: The length of complementarity to the competitor oligo.
+
+        Returns:
+            A list of read sequences 40-nt in length, which can be used in
+            combination with the actual reads from the AGO-RBNS experiments.
+    """
+    time_start = time.time()
+    # Define constants and call external functions:
+    len_rand = 37
+    nucs = get_kmer_list(1)
+    dinucs = get_kmer_list(2)
+    read3p = read3p_mirna_map[mirna]
+    comp_rc = get_rc(seq_competitor_map[mirna])
+
+    # Get the dinucleotide frequencies for that miRNA's input sequence:
+    dinuc_path = get_analysis_path(mirna, exp, "I", "positional_kmers",
+                                   ext="_0_k2")
+    df_dinucs = pd.read_csv(dinuc_path, sep="\t", header=None)
+    df_dinucs.index = dinucs
+
+    # Create dictionaries for adding 5-prime and 3-prime nucleotides to the
+    # initial kmer.
+    prob_pos_5pnuc_map = {}
+    prob_pos_3pnuc_map = {}
+
+    # Create dictionaries for the nucleotide to choose based on the adjacent
+    # nucleotide sequence.
+    for nuc in nucs:
+        prob_pos_5pnuc_map[nuc] = {}
+        prob_pos_3pnuc_map[nuc] = {}
+        for pos in range(df_dinucs.shape[1]):
+            df_5p = df_dinucs.filter(regex="%s$" %(nuc), axis=0)[pos]
+            df_3p = df_dinucs.filter(regex="^%s" %(nuc), axis=0)[pos]
+            prob_pos_5pnuc_map[nuc][pos] = list(df_5p/df_5p.sum())
+            prob_pos_3pnuc_map[nuc][pos] = list(df_3p/df_3p.sum())
+    
+    # Get the competitor oligo sequence, and all possible kmers that are
+    # reverse complementary to the competitor oligo:
+    comp_kmers = [comp_rc[i:i + len_comp]
+                  for i in range(len(comp_rc) - len_comp + 1)]
+    # Pre-allocate the output list:
+    reads = [None]*n
+
+    # Define a function to use for each read, that initializes the starting
+    # kmer. if the length of complementarity to the competitor is zero, the read
+    # is initialized by picking the 5-prime most dinucleotide of the read based
+    # on their dinucleotide frequencies. Other wise, the read is initialized
+    if len_comp == 0:
+        pos_kmer = 0
+        prob_start = list(df_dinucs[pos_kmer]/df_dinucs[pos_kmer].sum())
+        len_comp = 2
+        def kmer_start():
+            read = np.random.choice(dinucs, p=prob_start)
+            return((pos_kmer, read))
+    else:
+        def kmer_start():
+            pos_kmer = random.choice(range(len_rand - len_comp + 1))
+            read = random.choice(comp_kmers)
+            return((pos_kmer, read))
+    for i in range(n):
+        if i != 0 and i % (n/10) == 0:
+            print(float(i)/n)
+            if i != 0:
+                time_cur = time.time()
+                d_time = time.time() - time_start
+                time_sec = d_time/i*(n-i)
+                time_h = time_sec // 3600
+                time_m = (time_sec % 3600) // 60
+                time_s = time_sec % 60
+                print("%.0f:%.0f:%.2f remaining" % (time_h, time_m, time_s))
+
+
+        # Draw random position and random kmer of complementarity to the
+        # competitor oligo.
+        pos_kmer, read = kmer_start()
+        # else
+        # Build read starting with this random kmer at this random position.
+        # Extend the sequence 5-prime and 3-prime of the kmer to the full read
+        # length using the positional dinucleotide probabilities.
+        # Five prime:
+        for j in range(0, pos_kmer)[::-1]:
+            # probs = df_dinucs.filter(regex="%s$" %(read[0]), axis=0)[j]
+            # probs = probs/probs.sum()
+            nuc = np.random.choice(nucs, p=prob_pos_5pnuc_map[read[0]][j])
+            read = nuc + read
+        # Three prime:
+        for j in range(pos_kmer + len_comp - 1, df_dinucs.shape[1]):
+            # probs = df_dinucs.filter(regex="^%s" %(read[-1]), axis=0)[j]
+            # probs = probs/probs.sum()
+            nuc = np.random.choice(nucs, p=prob_pos_3pnuc_map[read[-1]][j])
+            read = read + nuc
+        # Add 3-prime-most constant sequence in the read, and update the list of
+        # reads.
+        read = read + read3p
+        reads[i] = read 
+    print_time_elapsed(time_start)
+    return(reads)
+
+
+
+
+
+def main():
+
+
+
+
+
+
+
+
+    # for read in reads:
+    #     print(LCSubString(read, get_rc(seq_competitor_map["miR-1"])))
+
+
+    # for len_k in range(10, 13):
+    #     for mirna in ["miR-1", "let-7a", "miR-155",
+    #                   "miR-124", "lsy-6", "miR-7-23nt"]:
+    #         get_competitor_oligo_mfe(mirna, len_k)
+    #         get_competitor_oligo_mfe_with_lib(mirna, len_k, "5p")
+    #         get_competitor_oligo_mfe_with_lib(mirna, len_k, "3p")
+    return
+
+    # print(get_miRNA_mfes("miR-1", 1, 8))
+    # print(get_miRNA_mfes("miR-1", 2, 8))
+
+    # seq_1 = "ACAUUCCA"
+    # seq_1 = "ACAUUCCAAAAAAAAAAAAAAA"
+    # import RNA
+
+    # mir_seq = "UGGAAUGU"
+
+    # duplex = RNA.duplexfold(seq_1, mir_seq)
+    # print(duplex.energy)
+    # print(duplex.structure)
+    # print(duplex)
+    # print(dir(duplex))
+    # # print(duplex.__add__)
+    # print(duplex.__sizeof__)
+    # print("dG1")
+    # print(duplex.dG1)
+    # print("dG2")
+    # print(duplex.dG2)
+    # print("ddG")
+    # print(duplex.ddG)
+    # print("end")
+    # print(duplex.end)
+    # print("energy_backtrack")
+    # print(duplex.energy_backtrack)
+    # print("energy")
+    # print(duplex.energy)
+    # print("i")
+    # print(duplex.i)
+    # print("j")
+    # print(duplex.j)
+    # print("offset")
+    # print(duplex.offset)
+    # print("opening_backtrack_x")
+    # print(duplex.opening_backtrack_x)
+    # print("opening_backtrack_y")
+    # print(duplex.opening_backtrack_y)
+    # print("qb")
+    # print(duplex.qb)
+    # print("qe")
+    # print(duplex.qe)
+    # print("structure")
+    # print(duplex.structure)
+    # print("tb")
+    # print(duplex.tb)
+    # print("te")
+    # print(duplex.te)
+    # print("this")
+    # print(duplex.this)
+    # print("thisown")
+    # print(duplex.thisown)
+    # print(duplex.__ge__)
+    # print(duplex.__getattribute__)
+    # print(duplex.__getitem__)
+    # print(duplex.__getslice__)
+    # print(duplex.__gt__)
+    # print(duplex.__hash__)
+    # print(duplex.__iadd__)
+    # print(duplex.__imul__)
+    # print(duplex.__init__)
+    # print(duplex.__iter__)
+    # print(duplex.__le__)
+    # print(duplex.__len__)
+    # print(duplex.__lt__)
+    # print(duplex.__mul__)
+    # print(duplex.__ne__)
+    # print(duplex.__new__)
+    # print(duplex.__reduce__)
+    # print(duplex.__reduce_ex__)
+    # print(duplex.__repr__)
+    # print(duplex.__reversed__)
+    # print(duplex.__rmul__)
+    # print(duplex.__setattr__)
+    # print(duplex.__setitem__)
+    # print(duplex.__setslice__)
+    # print(duplex.__sizeof__)
+    # print(duplex.__str__)
+    # print(duplex.__subclasshook__)
+    # print(duplex.append)
+    # print(duplex.count)
+    # print(duplex.extend)
+    # print(duplex.index)
+    # print(duplex.insert)
+    # print(duplex.pop)
+    # print(duplex.remove)
+    # print(duplex.reverse)
+    # print(duplex.sort)
+
+    # temp_seqs = ["CTGTTCGCTATAGGAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "GTCCTGAGCCGCTAGGCATTAACGCGGCCGCTCTACAATA",
+    #              "AGGTATCTATTAGCAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "TTTTGGTGGCAGTGGGCATTAACGCGGCCGCTCTACAATA",
+    #              "TCCTATATGCGTTGAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "TTGTTGTGCTTGCAGGCATTAACGCGGCCGCTCTACAATA",
+    #              "CAACGGGTGATAAGGGCATTAACGCGGCCGCTCTACAATA",
+    #              "GGTGGCAACCGGAAGCGTGTAGGGATCCAAATCGTATGCC",
+    #              "TCTACGCAGCTGACAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "ATTCAGCAGAGGGAGGCATTAACGCGGCNGCTCTACAATA",
+    #              "TGTTACGGNTTGGGAGCGTGTAGGGATCNNNNTCGTATGC",
+    #              "ACGGCAGGCGTGCGGGCATTAACGCGGCNGCNCTACAATA",
+    #              "GGGCGCAGATGGCGAGCGTGTAGGGATCNAANTCGTATGC",
+    #              "TATACAGTATGAGTGGCATTAACGCGGCCGCTCTACAATA",
+    #              "GGCGGCGGTTTTGGAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "TGGCAAGAGAAGATAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "GCTGGGGTACTGCCGGCATTAATGCGGCCGCTCTACAATA",
+    #              "GTTGTGTCAGCGTTAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "ATCCTATAAAAACTTCTGCTGGAAAATAAAGTCCGACGAT",
+    #              "TGATCCAAGTGGAAGGCATTAACGCGGCCGCTCTACAATA",
+    #              "ATTATACAGGCCGAGGCATTAACGCGGCCGCTCTACAATA",
+    #              "AGCGATTTGGCCTGAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "CTACCATGGCACAGGGCATTAACGCTGCCGCTCTACAATA",
+    #              "TAGCGAGCAGTTGCGGCATTAACGCGGCCGCTCTACAATA",
+    #              "ATCTTCGAGAGCGGAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "GTTTTGTCCCTAAGAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "GTAGGCACCGTGTTGGCATTAACGCGGCCGCTCTACAATA",
+    #              "TGGACAGCAAGGACGGCATTAACGCGGCCGCTCTACAATA",
+    #              "TAGGCTGCACATGGAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "AGGCAGGCGACGGAGGCATTAACGCGGCCGCTCTACAATA",
+    #              "TTAAAAGTGACGGAAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "CCAGAAGTAACGGTAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "CGGAGCAGGCAGACAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "TTTGCAACTCTTGCGGCATTAACGCGGCCGCTCTACAATA",
+    #              "AGCTTAGCGACAGCAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "TGAAAATACGTTATGGCATTAACGCGGCCGCTCTACAATA",
+    #              "CCGGAAAATTTGGCAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "GCGGTGGGGGCGGCAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "GGGTAACAGAGGGAAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "TTGCATCAGAAGAAGCATTAACGCGGCCGCTCTACAATAG",
+    #              "GGGGGTGGCGCGTGGGCATTAACGCGGCCGCTCTACAATA",
+    #              "AAGCAAAGACAGAAAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "TACGTGCGATTTGGAGCGTGTAGGGATCCAAATCGTATGC",
+    #              "TATCTAAGCGCAAGAGCTTGTAGGGATCCAAATCGTATGC",
+    #              "TCAGTCACGTGGGTAGCGTGGTAGGGATCCAAATCGTATG"]
+    # for i in temp_seqs:
+    #     pos = GetThreePrimeBarcodeOverlap(i)
+    #     if pos:
+    #         seq = i[:pos]
+    #         print(seq)
+    #         for j in constant_seqs:
+    #             print(seq in j)
+    #     else:
+    #         print("no adapter")
+    return
+
+if __name__ == "__main__":
+    main()
+
+

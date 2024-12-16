@@ -1,0 +1,1469 @@
+preprocess :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py $(mirna) $(experiment) I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py $(mirna) $(experiment) 40
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py $(mirna) $(experiment) 12.6
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py $(mirna) $(experiment) 4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py $(mirna) $(experiment) 1.26
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py $(mirna) $(experiment) 0.4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py $(mirna) $(experiment) 0
+
+
+preprocess_MBLN1 :
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 0
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 4000
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 16
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 64
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 130
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 250
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 500
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 1000
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 10000
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py MBLN1 I
+
+assignsites_MBLN1 :
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 0     $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 4     $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 16    $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 64    $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 130   $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 250   $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 500   $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 1000  $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 10000 $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py MBLN1 I     $(list) $(lim) $(lim)
+
+
+
+preprocess_RBFOX2 :
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 0
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 1.5
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 4.5
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 14
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 40
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 120
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 365
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 1100
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 3300
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 9800
+	bsub -n 20 python PreProcessReads/MakeReadFileBurge_PAPER.py RBFOX2 I
+
+assignsites_RBFOX2 :
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 0    $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 1.5  $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 4.5  $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 14   $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 40   $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 120  $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 365  $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 1100 $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 3300 $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 9800 $(list) $(lim) $(lim)
+	bsub -n 20 python AssignSiteTypes/MakeSiteTypeReadFilesBurge_PAPER.py RBFOX2 I    $(list) $(lim) $(lim)
+
+
+
+
+
+
+preprocess_let-7a_nb :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equilibrium I -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equilibrium 40 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equilibrium 12.6 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equilibrium 4 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equilibrium 1.26 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equilibrium 0.4 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equilibrium 0 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_mmseed I -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_mmseed 40 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_mmseed 12.6 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_mmseed 4 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_mmseed 1.26 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_mmseed 0.4 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_mmseed 0 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_seed I -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_seed 12.6 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_seed 12.6_2 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_seed 4 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_seed 4_2 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_seed 1.26 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_seed 0.4 -nb
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a equil_seed 0 -nb
+
+preprocess_all :
+	make mirna=let-7a experiment=equilibrium preprocess
+	make mirna=miR-1 experiment=equilibrium preprocess
+	make mirna=miR-155 experiment=equilibrium preprocess
+	make mirna=miR-124 experiment=equilibrium preprocess
+	make mirna=miR-124_alt experiment=equilibrium preprocess
+	make mirna=lsy-6_alt experiment=equilibrium preprocess
+
+preprocess_let-7a_kinetics :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 2 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 2 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 5 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 5 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 8 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 8 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 15 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 15 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 30
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 90
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 300
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 900
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 2700
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 7200 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 7200 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 0
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics 0-
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics Equil
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py let-7a kinetics Equil-
+
+preprocess_miR-1_kinetics :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 2 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 2 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 5 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 5 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 8 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 8 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 15 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 15 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 30 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 30 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 90
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 300
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 900
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 2700
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 7200
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 0
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics 0-
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics Equil
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics Equil-
+
+preprocess_miR-124_kinetics :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 2 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 2 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 5 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 5 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 8 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 8 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 15 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 15 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 30 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 30 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 90
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 300
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 900
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 2700
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 7200
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 0
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics 0-
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics Equil
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-124 kinetics Equil-
+
+preprocess_lsy-6_kinetics :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 2 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 2 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 5 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 5 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 8 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 8 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 15 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 15 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 30 -rep 1
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 30 -rep 2
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 90
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 300
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 900
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 2700
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 7200
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 0
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics 0-
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics Equil
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py lsy-6 kinetics Equil-
+
+preprocess_miR-1_kinetics_pilot :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot I_TGT
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot I_ACA
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot 0
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot 3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot 5
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot 10
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot 30
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot 90
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot 300
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot 900
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot 2700
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/PreProcessReads/MakeReadFile_PAPER.py miR-1 kinetics_pilot Equil
+
+
+
+checkpreprocess_let-7a :
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/I_reads.txt
+	head /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/I_summary.txt
+	grep TCTACCTCCCGGTTTTAATGA /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/I_reads.txt | wc -l
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/40_reads.txt
+	head /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/40_summary.txt
+	grep TCTACCTCCCGGTTTTAATGA /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/40_reads.txt | wc -l
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/12.6_reads.txt
+	head /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/12.6_summary.txt
+	grep TCTACCTCCCGGTTTTAATGA /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/12.6_reads.txt | wc -l
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/4_reads.txt
+	head /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/4_summary.txt
+	grep TCTACCTCCCGGTTTTAATGA /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/4_reads.txt | wc -l
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/1.26_reads.txt
+	head /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/1.26_summary.txt
+	grep TCTACCTCCCGGTTTTAATGA /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/1.26_reads.txt | wc -l
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/0_reads.txt
+	head /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/0_summary.txt
+	grep TCTACCTCCCGGTTTTAATGA /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/reads/0_reads.txt | wc -l
+
+sort_let7a:
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads/I.txt       | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads_unique/I.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads/40.txt      | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads_unique/40.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads/12.6.txt    | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads_unique/12.6.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads/4.txt       | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads_unique/4.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads/1.26.txt    | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads_unique/1.26.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads/0.4.txt     | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads_unique/0.4.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads/0.txt       | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_reads_unique/0.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads/I.txt    | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads_unique/I.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads/40.txt   | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads_unique/40.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads/12.6.txt | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads_unique/12.6.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads/4.txt    | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads_unique/4.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads/1.26.txt | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads_unique/1.26.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads/0.4.txt  | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads_unique/0.4.txt"
+	 bsub "cat /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reds/0.txt    | sort | uniq -c | sort -nr > /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium_nb/full_reads_unique/0.txt" 
+
+get_site_position_matrices :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/DetermineKmerOccurences/GetSecondaryKmersSimple.py $(mirna) $(exp) I    $(list) $(lim) $(lim) $(site) $(k)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/DetermineKmerOccurences/GetSecondaryKmersSimple.py $(mirna) $(exp) 0    $(list) $(lim) $(lim) $(site) $(k)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/DetermineKmerOccurences/GetSecondaryKmersSimple.py $(mirna) $(exp) 0.4  $(list) $(lim) $(lim) $(site) $(k)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/DetermineKmerOccurences/GetSecondaryKmersSimple.py $(mirna) $(exp) 1.26 $(list) $(lim) $(lim) $(site) $(k)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/DetermineKmerOccurences/GetSecondaryKmersSimple.py $(mirna) $(exp) 4    $(list) $(lim) $(lim) $(site) $(k)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/DetermineKmerOccurences/GetSecondaryKmersSimple.py $(mirna) $(exp) 12.6 $(list) $(lim) $(lim) $(site) $(k)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/DetermineKmerOccurences/GetSecondaryKmersSimple.py $(mirna) $(exp) 40   $(list) $(lim) $(lim) $(site) $(k)
+
+
+assignsites_equil :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py $(mirna) $(exp) I $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py $(mirna) $(exp) I_combined $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py $(mirna) $(exp) 40 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py $(mirna) $(exp) 12.6 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py $(mirna) $(exp) 4 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py $(mirna) $(exp) 1.26 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py $(mirna) $(exp) 0.4 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py $(mirna) $(exp) 0 $(list) $(lim) $(lim) 
+
+assignsites_equil_unique :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFilesUnique_PAPER.py $(mirna) $(exp) I $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFilesUnique_PAPER.py $(mirna) $(exp) I_combined $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFilesUnique_PAPER.py $(mirna) $(exp) 40 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFilesUnique_PAPER.py $(mirna) $(exp) 12.6 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFilesUnique_PAPER.py $(mirna) $(exp) 4 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFilesUnique_PAPER.py $(mirna) $(exp) 1.26 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFilesUnique_PAPER.py $(mirna) $(exp) 0.4 $(list) $(lim) $(lim) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFilesUnique_PAPER.py $(mirna) $(exp) 0 $(list) $(lim) $(lim) 
+
+
+
+	# bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeCombinedInputSiteTypeReadFile_PAPER.py $(mirna) equilibrium $(list) $(lim) $(lim) 
+
+assignsites_equil_kmers :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakePartialKmerReadFiles_PAPER.py $(mirna) equilibrium I $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakePartialKmerReadFiles_PAPER.py $(mirna) equilibrium 40 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakePartialKmerReadFiles_PAPER.py $(mirna) equilibrium 12.6 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakePartialKmerReadFiles_PAPER.py $(mirna) equilibrium 4 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakePartialKmerReadFiles_PAPER.py $(mirna) equilibrium 1.26 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakePartialKmerReadFiles_PAPER.py $(mirna) equilibrium 0.4 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop) 
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakePartialKmerReadFiles_PAPER.py $(mirna) equilibrium 0 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop) 
+	# bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeCombinedInputSiteTypeReadFile_PAPER.py $(mirna) equilibrium $(list) $(lim) $(lim) 
+
+
+assignsites_all :
+	make mirna=let-7a  exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil
+	make mirna=let-7a  exp=equilibrium_nb  list=$(list) lim=$(lim) assignsites_equil
+	make mirna=let-7a  exp=equil_mmseed_nb list=$(list) lim=$(lim) assignsites_equil
+	make mirna=let-7a  exp=equil_seed_nb   list=$(list) lim=$(lim) assignsites_equil
+	make mirna=miR-1   exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil
+	make mirna=miR-155 exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil
+	make mirna=miR-124 exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil
+	make mirna=lsy-6   exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil
+
+assignsites_unique_all :
+	make mirna=let-7a  exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil_unique
+	make mirna=let-7a  exp=equilibrium_nb  list=$(list) lim=$(lim) assignsites_equil_unique
+	make mirna=let-7a  exp=equil_mmseed_nb list=$(list) lim=$(lim) assignsites_equil_unique
+	make mirna=let-7a  exp=equil_seed_nb   list=$(list) lim=$(lim) assignsites_equil_unique
+	make mirna=miR-1   exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil_unique
+	make mirna=miR-155 exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil_unique
+	make mirna=miR-124 exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil_unique
+	make mirna=lsy-6   exp=equilibrium     list=$(list) lim=$(lim) assignsites_equil_unique
+
+
+assignsites_kmers_allranges :
+	make lim=5 mir_start=2 mir_stop=5 assignsites_equil_kmers
+	make lim=5 mir_start=3 mir_stop=6 assignsites_equil_kmers
+	make lim=5 mir_start=4 mir_stop=7 assignsites_equil_kmers
+	make lim=5 mir_start=5 mir_stop=8 assignsites_equil_kmers
+
+assignsites_kmers_all :
+	make mirna=let-7a  assignsites_kmers_allranges
+	make mirna=miR-1   assignsites_kmers_allranges
+	make mirna=miR-155 assignsites_kmers_allranges
+	make mirna=miR-124 assignsites_kmers_allranges
+	make mirna=lsy-6   assignsites_kmers_allranges
+
+
+assignfullsites_let-7a_nb :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equilibrium_nb  I          $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equilibrium_nb  I_combined $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equilibrium_nb  40         $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equilibrium_nb  12.6       $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equilibrium_nb  4          $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equilibrium_nb  1.26       $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equilibrium_nb  0.4        $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equilibrium_nb  0          $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_mmseed_nb I          $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_mmseed_nb 40         $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_mmseed_nb 12.6       $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_mmseed_nb 4          $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_mmseed_nb 1.26       $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_mmseed_nb 0.4        $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_mmseed_nb 0          $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_seed_nb   I          $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_seed_nb   12.6       $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_seed_nb   12.6_2     $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_seed_nb   4          $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_seed_nb   4_2        $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_seed_nb   1.26       $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_seed_nb   0.4        $(list) $(lim) $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSiteTypeReadFiles_PAPER.py let-7a equil_seed_nb   0          $(list) $(lim) $(lim)
+
+assignfullsites_let-7a_kinetics :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics I -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 2,1 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 2,2 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 5,1 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 5,2 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 8,1 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 8,2 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 15,1 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 15,2 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 30 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 90 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 300 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 900 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 2700 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 7200,1 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 7200,2 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 0 -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics 0- -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics Equil -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py let-7a kinetics Equil- -sitelist $(list) -start $(lim) -stop $(lim)
+
+assignfullsites_miR-1_kinetics :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics I -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 2,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 2,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 5,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 5,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 8,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 8,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 15,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 15,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 30,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 30,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 90 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 300 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 900 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 2700 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 7200 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 0 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics 0- -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics Equil -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-1 kinetics Equil- -sitelist $(list) -start $(sta) -stop $(stp)
+
+
+assignfullsites_miR-124_kinetics :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics I -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 2,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 2,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 5,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 5,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 8,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 8,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 15,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 15,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 30,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 30,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 90 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 300 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 900 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 2700 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 7200 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 0 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics 0- -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics Equil -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py miR-124 kinetics Equil- -sitelist $(list) -start $(sta) -stop $(stp)
+
+assignfullsites_lsy-6_kinetics :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics I -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 2,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 2,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 5,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 5,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 8,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 8,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 15,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 15,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 30,1 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 30,2 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 90 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 300 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 900 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 2700 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 7200 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 0 -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics 0- -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics Equil -sitelist $(list) -start $(sta) -stop $(stp)
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFullSiteTypeReadFiles.py lsy-6 kinetics Equil- -sitelist $(list) -start $(sta) -stop $(stp)
+
+
+assignflanking_equil :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFlankingNucleotideFiles_PAPER.py $(mirna) equilibrium I $(list) $(lim) $(lim)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFlankingNucleotideFiles_PAPER.py $(mirna) equilibrium I_combined $(list) $(lim) $(lim)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFlankingNucleotideFiles_PAPER.py $(mirna) equilibrium 40 $(list) $(lim) $(lim)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFlankingNucleotideFiles_PAPER.py $(mirna) equilibrium 12.6 $(list) $(lim) $(lim)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFlankingNucleotideFiles_PAPER.py $(mirna) equilibrium 4 $(list) $(lim) $(lim)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFlankingNucleotideFiles_PAPER.py $(mirna) equilibrium 1.26 $(list) $(lim) $(lim)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFlankingNucleotideFiles_PAPER.py $(mirna) equilibrium 0.4 $(list) $(lim) $(lim)
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeFlankingNucleotideFiles_PAPER.py $(mirna) equilibrium 0 $(list) $(lim) $(lim)
+	# bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeCombinedInputFlankingNucleotideFile_PAPER.py $(mirna) equilibrium $(list) $(lim) $(lim)
+
+assignflanking_all :
+	make mirna=let-7a list=$(list) lim=$(lim) assignflanking_equil
+	make mirna=miR-1  list=$(list) lim=$(lim) assignflanking_equil
+	make mirna=miR-155  list=$(list) lim=$(lim) assignflanking_equil
+	make mirna=miR-124  list=$(list) lim=$(lim) assignflanking_equil
+	make mirna=miR-124_alt  list=$(list) lim=$(lim) assignflanking_equil
+	make mirna=lsy-6  list=$(list) lim=$(lim) assignflanking_equil
+
+
+
+analyzeflankingkds_real_let-7a :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullFlankingKds.py let-7a $(list) $(lim) $(lim)
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/full_site_count_tables/*_flanking_$(lim)-$(lim)_$(list).txt; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		echo $$i; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds_combinedinput_PAPER.R let-7a $(lim) $(lim) $(list) $$FILE; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds_combinedinput_logresidual_PAPER.R let-7a $(lim) $(lim) $(list) $$FILE; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds_PAPER.R let-7a $(lim) $(lim) $(list) $$FILE; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds_logresidual_PAPER.R let-7a $(lim) $(lim) $(list) $$FILE;} \
+	done
+
+analyzeflankingkds_real :
+	# python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullFlankingKds.py $(mirna) $(list) $(lim) $(lim)
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/$(mirna)/equilibrium/full_site_count_tables/*_flanking_$(lim)-$(lim)_$(list).txt; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		echo $$FILE; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds_combinedinput_PAPER.R $(mirna) $(lim) $(lim) $(list) $$FILE; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds_combinedinput_logresidual_PAPER.R $(mirna) $(lim) $(lim) $(list) $$FILE; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds_PAPER.R $(mirna) $(lim) $(lim) $(list) $$FILE; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds_logresidual_PAPER.R $(mirna) $(lim) $(lim) $(list) $$FILE;} \
+	done
+
+
+
+
+analyzeflankingkds_let-7a :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py let-7a
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.R let-7a $$FILE;} \
+	done
+
+analyzeflankingkds_miR-1 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py miR-1
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.R miR-1 $$FILE;} \
+	done
+
+analyzeflankingkds_miR-155 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py miR-155
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.R miR-155 $$FILE;} \
+	done
+
+analyzeflankingkds_miR-124 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py miR-124
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.R miR-124 $$FILE;} \
+	done
+
+analyzeflankingkds_lsy-6 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py lsy-6
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.R lsy-6 $$FILE;} \
+	done
+
+analyzeflankingkds_all :
+	make analyzeflankingkds_let-7a
+	make analyzeflankingkds_miR-1
+	make analyzeflankingkds_miR-155
+	make analyzeflankingkds_miR-124
+	make analyzeflankingkds_lsy-6	
+
+analyzesplitflankingkds_let-7a :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py let-7a
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSplitInputFlankingKds.R let-7a $$FILE;} \
+	done
+
+analyzesplitflankingkds_miR-1 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py miR-1
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSplitInputFlankingKds.R miR-1 $$FILE;} \
+	done
+
+analyzesplitflankingkds_miR-155 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py miR-155
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSplitInputFlankingKds.R miR-155 $$FILE;} \
+	done
+
+analyzesplitflankingkds_miR-124 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py miR-124
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSplitInputFlankingKds.R miR-124 $$FILE;} \
+	done
+
+analyzesplitflankingkds_lsy-6 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py lsy-6
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSplitInputFlankingKds.R lsy-6 $$FILE;} \
+	done
+
+analyzesplitflankingkds_all :
+	make analyzesplitflankingkds_let-7a
+	make analyzesplitflankingkds_miR-1
+	make analyzesplitflankingkds_miR-155
+	make analyzesplitflankingkds_miR-124
+	make analyzesplitflankingkds_lsy-6	
+
+analyzeflankingindividualkds_let-7a :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py let-7a
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateIndividualFlankingKds.R let-7a $$FILE;} \
+	done
+
+analyzeflankingindividualkds_miR-1 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py miR-1
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateIndividualFlankingKds.R miR-1 $$FILE;} \
+	done
+
+analyzeflankingindividualkds_miR-155 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py miR-155
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateIndividualFlankingKds.R miR-155 $$FILE;} \
+	done
+
+analyzeflankingindividualkds_miR-124 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py miR-124
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateIndividualFlankingKds.R miR-124 $$FILE;} \
+	done
+
+analyzeflankingindividualkds_lsy-6 :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankingKds.py lsy-6
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateIndividualFlankingKds.R lsy-6 $$FILE;} \
+	done
+
+analyzeflankingindividualkds_all :
+	make analyzeflankingindividualkds_let-7a
+	make analyzeflankingindividualkds_miR-1
+	make analyzeflankingindividualkds_miR-155
+	make analyzeflankingindividualkds_miR-124
+	make analyzeflankingindividualkds_lsy-6	
+
+generatebeeswarms :
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateKdBeeswarmAndTable.R let-7a
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateKdBeeswarmAndTable.R miR-1
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateKdBeeswarmAndTable.R miR-155
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateKdBeeswarmAndTable.R miR-124
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateKdBeeswarmAndTable.R lsy-6
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateFullKdBeeswarmAndTable.R let-7a
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateFullKdBeeswarmAndTable.R miR-1
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateFullKdBeeswarmAndTable.R miR-155
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateFullKdBeeswarmAndTable.R miR-124
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/GenerateKdBeeswarms/GenerateFullKdBeeswarmAndTable.R lsy-6
+
+
+
+getsitepositions_let-7a :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 40
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 12.6
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 1.26
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 0.4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 0
+
+getsitepositions_miR-1 :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 40
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 12.6
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 1.26
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 0.4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 0
+
+getsitepositions_miR-155 :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 40
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 12.6
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 1.26
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 0.4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 0
+
+getsitepositions_miR-124 :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 40
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 12.6
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 1.26
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 0.4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 0
+
+getsitepositions_lsy-6 :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium I
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 40
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 12.6
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 1.26
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 0.4
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 0
+
+getsitepositions_all :
+	make getsitepositions_let-7a
+	make getsitepositions_miR-1
+	make getsitepositions_miR-155
+	make getsitepositions_miR-124
+	make getsitepositions_lsy-6
+
+getfullsitepositions_let-7a :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium I -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 40 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 12.6 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 1.26 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 0.4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py let-7a equilibrium 0 -start -3 -stop -3
+
+getfullsitepositions_miR-1 :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium I -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 40 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 12.6 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 1.26 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 0.4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-1 equilibrium 0 -start -3 -stop -3
+
+getfullsitepositions_miR-155 :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium I -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 40 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 12.6 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 1.26 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 0.4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-155 equilibrium 0 -start -3 -stop -3
+
+getfullsitepositions_miR-124 :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium I -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 40 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 12.6 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 1.26 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 0.4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py miR-124 equilibrium 0 -start -3 -stop -3
+
+getfullsitepositions_lsy-6 :
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium I -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 40 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 12.6 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 1.26 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 0.4 -start -3 -stop -3
+	bsub -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/MakeSitePositionTables.py lsy-6 equilibrium 0 -start -3 -stop -3
+
+getfullsitepositions_all :
+	make getfullsitepositions_let-7a
+	make getfullsitepositions_miR-1
+	make getfullsitepositions_miR-155
+	make getfullsitepositions_miR-124
+	make getfullsitepositions_lsy-6
+
+
+makefullsitetables_all :	# python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GenerateFullOffRates.py miR-1 kinetics $(list) $(sta) $(stp)
+	# python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GenerateFullOffRates.py miR-124 kinetics $(list) $(sta) $(stp)
+	# python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GenerateFullOffRates.py lsy-6 kinetics $(list) $(sta) $(stp)
+
+
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds.py let-7a equilibrium $(list) $(lim) $(lim)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds.py miR-1 equilibrium $(list) $(lim) $(lim)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds.py miR-155 equilibrium $(list) $(lim) $(lim)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds.py miR-124 equilibrium $(list) $(lim) $(lim)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds.py lsy-6 equilibrium $(list) $(lim) $(lim)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds_combinedinput.py let-7a equilibrium $(list) $(lim) $(lim)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds_combinedinput.py miR-1 equilibrium $(list) $(lim) $(lim)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds_combinedinput.py miR-155 equilibrium $(list) $(lim) $(lim)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds_combinedinput.py miR-124 equilibrium $(list) $(lim) $(lim)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds_combinedinput.py lsy-6 equilibrium $(list) $(lim) $(lim)
+
+
+makefullsitetables_all_kinetics :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GenerateFullOffRates.py let-7a kinetics $(list) $(sta) $(stp)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GenerateFullOffRates.py miR-1 kinetics $(list) $(sta) $(stp)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GenerateFullOffRates.py miR-124 kinetics $(list) $(sta) $(stp)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GenerateFullOffRates.py lsy-6 kinetics $(list) $(sta) $(stp)
+
+analyzefullflankingkds :
+	python SolveForKds/GenerateFullFlankingKds.py $(mirna) $(list) $(lim) $(lim)
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/$(mirna)/equilibrium/full_site_count_tables/*_flanking_$(lim)-$(lim)_$(list).txt; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankKdsMultinomialGradientcombinedinputNoSite.R $(mirna) $(lim) $(lim) $$FILE $(list); \
+		bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFlankKdsMultinomialGradientNoSite.R $(mirna) $(lim) $(lim) $$FILE $(list);} \
+	done
+
+analyzefullflankingkdsall:
+	make mirna=let-7a list=$(list) lim=$(lim) analyzefullflankingkds; \
+	make mirna=miR-1 list=$(list) lim=$(lim) analyzefullflankingkds; \
+	make mirna=miR-155 list=$(list) lim=$(lim) analyzefullflankingkds; \
+	make mirna=miR-124 list=$(list) lim=$(lim) analyzefullflankingkds; \
+	make mirna=lsy-6 list=$(list) lim=$(lim) analyzefullflankingkds; \
+
+analyzesitekds_prot_range_miR-155 :
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.0
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.1
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.2
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.3
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.4
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.5
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.6
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.7
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.8
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.9
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 3.0
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 3.1
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 3.2
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.05
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.15
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.25
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.35
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.45
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.55
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.65
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.75
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.85
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 2.95
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 3.05
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 3.15
+	bsub Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateSiteKds.R miR-155 Nelder-Mead 3.25
+
+
+
+
+makestructurefiles_let-7a :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py let-7a equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py let-7a equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py let-7a equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py let-7a equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py let-7a equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py let-7a equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py let-7a equilibrium 0
+
+makestructurefiles_miR-1 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-1 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-1 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-1 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-1 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-1 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-1 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-1 equilibrium 0
+
+makestructurefiles_miR-155 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-155 equilibrium I
+	bsub -q 14 -n 22 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-155 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-155 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-155 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-155 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-155 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-155 equilibrium 0
+
+makestructurefiles_miR-124 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124 equilibrium 0
+
+makestructurefiles_miR-124-alt :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124-alt equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124-alt equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124-alt equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124-alt equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124-alt equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124-alt equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py miR-124-alt equilibrium 0
+
+makestructurefiles_lsy-6 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py lsy-6 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py lsy-6 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py lsy-6 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py lsy-6 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py lsy-6 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py lsy-6 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeStructureFile.py lsy-6 equilibrium 0
+
+makestructurefiles_all :
+	make makestructurefiles_let-7a
+	make makestructurefiles_miR-1
+	make makestructurefiles_miR-155
+	make makestructurefiles_miR-124
+	make makestructurefiles_lsy-6
+
+makeaveragesitestructurefiles_let-7a :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py let-7a equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py let-7a equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py let-7a equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py let-7a equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py let-7a equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py let-7a equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py let-7a equilibrium 0
+
+makeaveragesitestructurefiles_miR-1 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-1 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-1 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-1 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-1 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-1 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-1 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-1 equilibrium 0
+
+makeaveragesitestructurefiles_miR-155 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-155 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-155 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-155 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-155 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-155 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-155 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-155 equilibrium 0
+
+makeaveragesitestructurefiles_miR-124 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-124 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-124 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-124 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-124 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-124 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-124 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py miR-124 equilibrium 0
+
+makeaveragesitestructurefiles_lsy-6 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py lsy-6 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py lsy-6 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py lsy-6 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py lsy-6 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py lsy-6 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py lsy-6 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFiles.py lsy-6 equilibrium 0
+
+makeaveragesitestructurefiles_all :
+	make makeaveragesitestructurefiles_let-7a
+	make makeaveragesitestructurefiles_miR-1
+	make makeaveragesitestructurefiles_miR-155
+	make makeaveragesitestructurefiles_miR-124
+	make makeaveragesitestructurefiles_lsy-6
+
+
+makegeoaveragesitestructurefiles_let-7a :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py let-7a equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py let-7a equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py let-7a equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py let-7a equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py let-7a equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py let-7a equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py let-7a equilibrium 0
+
+makegeoaveragesitestructurefiles_miR-1 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-1 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-1 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-1 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-1 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-1 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-1 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-1 equilibrium 0
+
+makegeoaveragesitestructurefiles_miR-155 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-155 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-155 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-155 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-155 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-155 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-155 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-155 equilibrium 0
+
+makegeoaveragesitestructurefiles_miR-124 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-124 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-124 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-124 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-124 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-124 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-124 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py miR-124 equilibrium 0
+
+makegeoaveragesitestructurefiles_lsy-6 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py lsy-6 equilibrium I
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py lsy-6 equilibrium 40
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py lsy-6 equilibrium 12.6
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py lsy-6 equilibrium 4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py lsy-6 equilibrium 1.26
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py lsy-6 equilibrium 0.4
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesGeometric.py lsy-6 equilibrium 0
+
+makegeoaveragesitestructurefiles_all :
+	make makegeoaveragesitestructurefiles_let-7a
+	make makegeoaveragesitestructurefiles_miR-1
+	make makegeoaveragesitestructurefiles_miR-155
+	make makegeoaveragesitestructurefiles_miR-124
+	make makegeoaveragesitestructurefiles_lsy-6
+
+
+count_lines_structures :
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/structures_bp_prob/I.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/structures_bp_prob/0.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/structures_bp_prob/0.4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/structures_bp_prob/1.26.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/structures_bp_prob/4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/structures_bp_prob/12.6.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/structures_bp_prob/40.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/structures_bp_prob/I.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/structures_bp_prob/0.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/structures_bp_prob/0.4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/structures_bp_prob/1.26.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/structures_bp_prob/4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/structures_bp_prob/12.6.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/structures_bp_prob/40.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/structures_bp_prob/I.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/structures_bp_prob/0.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/structures_bp_prob/0.4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/structures_bp_prob/1.26.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/structures_bp_prob/4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/structures_bp_prob/12.6.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/structures_bp_prob/40.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/structures_bp_prob/I.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/structures_bp_prob/0.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/structures_bp_prob/0.4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/structures_bp_prob/1.26.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/structures_bp_prob/4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/structures_bp_prob/12.6.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/structures_bp_prob/40.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/structures_bp_prob/I.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/structures_bp_prob/0.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/structures_bp_prob/0.4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/structures_bp_prob/1.26.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/structures_bp_prob/4.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/structures_bp_prob/12.6.txt
+	wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/structures_bp_prob/40.txt
+
+separatesitestructures_let-7a :
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py let-7a equilibrium I
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py let-7a equilibrium 40
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py let-7a equilibrium 12.6
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py let-7a equilibrium 4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py let-7a equilibrium 1.26
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py let-7a equilibrium 0.4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py let-7a equilibrium 0
+
+separatesitestructures_miR-1 :
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-1 equilibrium I
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-1 equilibrium 40
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-1 equilibrium 12.6
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-1 equilibrium 4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-1 equilibrium 1.26
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-1 equilibrium 0.4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-1 equilibrium 0
+
+separatesitestructures_miR-155 :
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-155 equilibrium I
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-155 equilibrium 40
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-155 equilibrium 12.6
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-155 equilibrium 4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-155 equilibrium 1.26
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-155 equilibrium 0.4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-155 equilibrium 0
+
+separatesitestructures_miR-124 :
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-124 equilibrium I
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-124 equilibrium 40
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-124 equilibrium 12.6
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-124 equilibrium 4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-124 equilibrium 1.26
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-124 equilibrium 0.4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py miR-124 equilibrium 0
+
+separatesitestructures_lsy-6 :
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py lsy-6 equilibrium I
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py lsy-6 equilibrium 40
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py lsy-6 equilibrium 12.6
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py lsy-6 equilibrium 4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py lsy-6 equilibrium 1.26
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py lsy-6 equilibrium 0.4
+	bsub -q 14 -n 20 -o temp_output.txt python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndPos.py lsy-6 equilibrium 0
+
+separatesitestructures_all :
+	make separatesitestructures_let-7a
+	make separatesitestructures_miR-1
+	make separatesitestructures_miR-155
+	make separatesitestructures_miR-124
+	make separatesitestructures_lsy-6
+
+plotaveragesitestructure_let-7a :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeSiteAverageStructureFiles.R let-7a $$FILE;} \
+	done
+
+plotaveragesitestructure_miR-1 :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeSiteAverageStructureFiles.R miR-1 $$FILE;} \
+	done
+
+plotaveragesitestructure_miR-155 :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeSiteAverageStructureFiles.R miR-155 $$FILE;} \
+	done
+
+plotaveragesitestructure_miR-124 :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeSiteAverageStructureFiles.R miR-124 $$FILE;} \
+	done
+
+plotaveragesitestructure_lsy-6 :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeSiteAverageStructureFiles.R lsy-6 $$FILE;} \
+	done
+
+
+plotaveragesitestructure_all :
+	make plotaveragesitestructure_let-7a
+	make plotaveragesitestructure_miR-1
+	make plotaveragesitestructure_miR-155
+	make plotaveragesitestructure_miR-124
+	make plotaveragesitestructure_lsy-6
+
+plotgeoaveragesitestructure_let-7a :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/let-7a/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeGeoSiteAverageStructureFiles.R let-7a $$FILE;} \
+	done
+
+plotgeoaveragesitestructure_miR-1 :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-1/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeGeoSiteAverageStructureFiles.R miR-1 $$FILE;} \
+	done
+
+plotgeoaveragesitestructure_miR-155 :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-155/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeGeoSiteAverageStructureFiles.R miR-155 $$FILE;} \
+	done
+
+plotgeoaveragesitestructure_miR-124 :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeGeoSiteAverageStructureFiles.R miR-124 $$FILE;} \
+	done
+
+plotgeoaveragesitestructure_lsy-6 :
+	for i in /lab/solexa_bartel/mcgeary/AgoRBNS/lsy-6/equilibrium/site_count_tables/*_flanking*; \
+		do { FILE="$$(basename $$i | cut -d"_" -f 1)"; \
+		bsub -o temp_output.txt Rscript /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/AnalyzeGeoSiteAverageStructureFiles.R lsy-6 $$FILE;} \
+	done
+
+
+plotgeoaveragesitestructure_all :
+	make plotgeoaveragesitestructure_let-7a
+	make plotgeoaveragesitestructure_miR-1
+	make plotgeoaveragesitestructure_miR-155
+	make plotgeoaveragesitestructure_miR-124
+	make plotgeoaveragesitestructure_lsy-6
+
+make test :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 11
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 12
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 13
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 14
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 16
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 17
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 18
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 19
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium I 8mer 20
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 11
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 12
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 13
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 14
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 16
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 17
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 18
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 19
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 8mer 20
+
+
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 40 7mer-m8
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 12.6 7mer-m8
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 4 7mer-m8
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 1.26 7mer-m8
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0.4 7mer-m8
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByLeftFlank.py let-7a equilibrium 0 7mer-m8
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByRightFlank.py let-7a equilibrium I 7mer-A1
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByRightFlank.py let-7a equilibrium 40 7mer-A1
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByRightFlank.py let-7a equilibrium 12.6 7mer-A1
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByRightFlank.py let-7a equilibrium 4 7mer-A1
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByRightFlank.py let-7a equilibrium 1.26 7mer-A1
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByRightFlank.py let-7a equilibrium 0.4 7mer-A1
+	# bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/MakeSiteTypeStructureFilesByRightFlank.py let-7a equilibrium 0 7mer-A1
+
+
+analyze_kmer_structure_let-7a :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py let-7a equilibrium I 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py let-7a equilibrium 40 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py let-7a equilibrium 12.6 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py let-7a equilibrium 4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py let-7a equilibrium 1.26 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py let-7a equilibrium 0.4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py let-7a equilibrium 0 6 2 0
+
+analyze_kmer_structure_miR-1 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-1 equilibrium I 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-1 equilibrium 40 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-1 equilibrium 12.6 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-1 equilibrium 4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-1 equilibrium 1.26 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-1 equilibrium 0.4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-1 equilibrium 0 6 2 0
+
+analyze_kmer_structure_miR-155 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-155 equilibrium I 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-155 equilibrium 40 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-155 equilibrium 12.6 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-155 equilibrium 4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-155 equilibrium 1.26 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-155 equilibrium 0.4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-155 equilibrium 0 6 2 0
+
+analyze_kmer_structure_miR-124 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-124 equilibrium I 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-124 equilibrium 40 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-124 equilibrium 12.6 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-124 equilibrium 4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-124 equilibrium 1.26 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-124 equilibrium 0.4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py miR-124 equilibrium 0 6 2 0
+
+analyze_kmer_structure_lsy-6 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py lsy-6 equilibrium I 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py lsy-6 equilibrium 40 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py lsy-6 equilibrium 12.6 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py lsy-6 equilibrium 4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py lsy-6 equilibrium 1.26 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py lsy-6 equilibrium 0.4 6 2 0
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/GetAverageKmerUnpairedProbability.py lsy-6 equilibrium 0 6 2 0
+
+analyze_kmer_structure_all :
+	make analyze_kmer_structure_let-7a
+	make analyze_kmer_structure_miR-1
+	make analyze_kmer_structure_miR-155
+	make analyze_kmer_structure_miR-124
+	make analyze_kmer_structure_lsy-6
+
+
+
+make_site_flank_structure_files_let-7a :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py let-7a equilibrium I -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py let-7a equilibrium 40 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py let-7a equilibrium 12.6 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py let-7a equilibrium 4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py let-7a equilibrium 1.26 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py let-7a equilibrium 0.4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py let-7a equilibrium 0 -3 -3 1 15
+
+make_site_flank_structure_files_miR-1 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-1 equilibrium I -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-1 equilibrium 40 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-1 equilibrium 12.6 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-1 equilibrium 4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-1 equilibrium 1.26 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-1 equilibrium 0.4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-1 equilibrium 0 -3 -3 1 15
+
+make_all_site_flank_structure_files_miR-155 :
+	for i in $$(seq -4 15); \
+		do { NUM=$$(($$i + 6)); \
+			for j in $$(seq $$NUM 22); \
+				do { bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium I -3 -3 "$$i" "$$j"; \
+					 bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 40 -3 -3 "$$i" "$$j"; \
+					 bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 12.6 -3 -3 "$$i" "$$j"; \
+					 bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 4 -3 -3 "$$i" "$$j"; \
+					 bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 1.26 -3 -3 "$$i" "$$j"; \
+					 bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 4 -3 -3 "$$i" "$$j"; \
+					 bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 0 -3 -3 "$$i" "$$j";} \
+			done;} \
+	done
+	
+
+make_site_flank_structure_files_miR-155 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium I -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 40 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 12.6 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 1.26 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 0.4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-155 equilibrium 0 -3 -3 1 15
+	
+make_site_flank_structure_files_miR-124 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124 equilibrium I -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124 equilibrium 40 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124 equilibrium 12.6 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124 equilibrium 4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124 equilibrium 1.26 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124 equilibrium 0.4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124 equilibrium 0 -3 -3 1 15
+	
+make_site_flank_structure_files_miR-124-alt :
+	bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124-alt equilibrium I -3 -3 1 15
+	bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124-alt equilibrium 40 -3 -3 1 15
+	bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124-alt equilibrium 12.6 -3 -3 1 15
+	bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124-alt equilibrium 4 -3 -3 1 15
+	bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124-alt equilibrium 1.26 -3 -3 1 15
+	bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124-alt equilibrium 0.4 -3 -3 1 15
+	bsub -q bartel -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py miR-124-alt equilibrium 0 -3 -3 1 15
+
+
+make_site_flank_structure_files_lsy-6 :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py lsy-6 equilibrium I -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py lsy-6 equilibrium 40 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py lsy-6 equilibrium 12.6 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py lsy-6 equilibrium 4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py lsy-6 equilibrium 1.26 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py lsy-6 equilibrium 4 -3 -3 1 15
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/SplitStructuresBySiteAndMiRNAPos.py lsy-6 equilibrium 0 -3 -3 1 15
+
+make_site_flank_structure_files_all :
+	make make_site_flank_structure_files_let-7a
+	make make_site_flank_structure_files_miR-1
+	make make_site_flank_structure_files_miR-155
+	make make_site_flank_structure_files_miR-124
+	make make_site_flank_structure_files_lsy-6
+
+getNonekmers_let-7a_kinetics :
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a I None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 2,1 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 2,2 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 5,1 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 5,2 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 8,1 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 8,2 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 15,1 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 15,2 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 30 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 90 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 300 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 900 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 2700 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 7200,1 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 7200,2 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 0 None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a 0- None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a Equil None 8
+	bsub -q 14 -n 20 python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForOffRates/GetAllKmersKinetics.py let-7a Equil- None 8
+
+
+
+
+SolveforOffrates :
+	bsub -q bartel Rscript SolveForOffRates/GenerateFullOffRateslin_script.R let-7a
+	bsub -q bartel Rscript SolveForOffRates/GenerateFullOffRateslin_script.R miR-1
+	bsub -q bartel Rscript SolveForOffRates/GenerateFullOffRateslin_script.R miR-124
+	bsub -q bartel Rscript SolveForOffRates/GenerateFullOffRateslin_script.R lsy-6
+	bsub -q bartel Rscript SolveForOffRates/GenerateFullOffRateslog_script.R let-7a
+	bsub -q bartel Rscript SolveForOffRates/GenerateFullOffRateslog_script.R miR-1
+	bsub -q bartel Rscript SolveForOffRates/GenerateFullOffRateslog_script.R miR-124
+	bsub -q bartel Rscript SolveForOffRates/GenerateFullOffRateslog_script.R lsy-6
+
+MakeCombinedInputEquilibrium :
+	bsub python AssignSiteTypes/MakeCombinedInputReadsFile_PAPER.py let-7a equilibrium
+	bsub python AssignSiteTypes/MakeCombinedInputReadsFile_PAPER.py miR-1 equilibrium
+	bsub python AssignSiteTypes/MakeCombinedInputReadsFile_PAPER.py miR-155 equilibrium
+	bsub python AssignSiteTypes/MakeCombinedInputReadsFile_PAPER.py miR-124 equilibrium
+	bsub python AssignSiteTypes/MakeCombinedInputReadsFile_PAPER.py lsy-6 equilibrium
+
+
+SolveforKds :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds.py $(mirna) $(exp) $(list) $(lim) $(lim)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientNoSite.R $(mirna) $(exp) $(lim) $(lim) $(list)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds_combinedinput.py $(mirna) $(exp) $(list) $(lim) $(lim)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientcombinedinputNoSite.R $(mirna) $(exp) $(lim) $(lim) $(list)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientcombinedinput.R $(mirna) $(exp) $(lim) $(lim) $(list)
+	bsub Rscript SolveForKds/GenerateSiteKdsLogResidualsGradientcombinedinput.R $(mirna) $(exp) $(lim) $(lim) $(list)
+
+SolveforKdsUnique :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds_unique.py $(mirna) $(exp) $(list) $(lim) $(lim)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientNoSiteUnique.R $(mirna) $(exp) $(lim) $(lim) $(list)
+
+
+
+SolveforKdsNb :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds.py let-7a equilibrium_nb $(list) $(lim) $(lim)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientNoSite.R let-7a equilibrium_nb  $(lim) $(lim) $(list)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds.py let-7a equil_mmseed_nb $(list) $(lim) $(lim)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientNoSite.R let-7a equil_mmseed_nb $(lim) $(lim) $(list)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKds.py let-7a equil_seed_nb $(list) $(lim) $(lim)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientNoSite.R let-7a equil_seed_nb   $(lim) $(lim) $(list)
+
+SolveforKdsNbUnique :
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKdsUniue.py let-7a equilibrium_nb $(list) $(lim) $(lim)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientNoSiteUnique.R let-7a equilibrium_nb  $(lim) $(lim) $(list)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKdsUniue.py let-7a equil_mmseed_nb $(list) $(lim) $(lim)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientNoSiteUnique.R let-7a equil_mmseed_nb $(lim) $(lim) $(list)
+	python /lab/bartel1_ata/mcgeary/computation/AgoRBNS/SolveForKds/GenerateFullSiteKdsUniue.py let-7a equil_seed_nb $(list) $(lim) $(lim)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientNoSiteUnique.R let-7a equil_seed_nb   $(lim) $(lim) $(list)
+
+
+
+SolveforKdsAll :
+	make mirna=let-7a lim=$(lim) list=$(list) SolveforKds
+	make mirna=miR-1 lim=$(lim) list=$(list) SolveforKds
+	make mirna=miR-155 lim=$(lim) list=$(list) SolveforKds
+	make mirna=miR-124 lim=$(lim) list=$(list) SolveforKds
+	make mirna=lsy-6 lim=$(lim) list=$(list) SolveforKds
+
+BootstrapKds :
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientBootStrapcombinedinputNoSite.R $(mirna) $(lim) $(lim) $(list)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientBootStrapcombinedinput.R $(mirna) $(lim) $(lim) $(list)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradientBootStrapNoSite.R $(mirna) $(lim) $(lim) $(list)
+	bsub Rscript SolveForKds/GenerateSiteKdsLogResidualsBootStrapGradientNoSite.R $(mirna) $(lim) $(lim) $(list)
+	bsub Rscript SolveForKds/GenerateSiteKdsLogResidualsBootStrapGradientcombinedinput.R $(mirna) $(lim) $(lim) $(list)
+
+BootstrapKdsAll :
+	make mirna=let-7a lim=$(lim) list=$(list) BootstrapKds
+	make mirna=miR-1 lim=$(lim) list=$(list) BootstrapKds
+	make mirna=miR-155 lim=$(lim) list=$(list) BootstrapKds
+	make mirna=miR-124 lim=$(lim) list=$(list) BootstrapKds
+	make mirna=lsy-6 lim=$(lim) list=$(list) BootstrapKds
+
+
+PreSolveforKdsKmer :
+	bsub python SolveForKds/GeneratePartialKmerKds_PAPER.py let-7a equilibrium $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub python SolveForKds/GeneratePartialKmerKds_PAPER.py miR-1 equilibrium $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub python SolveForKds/GeneratePartialKmerKds_PAPER.py miR-155 equilibrium $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub python SolveForKds/GeneratePartialKmerKds_PAPER.py miR-124 equilibrium $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub python SolveForKds/GeneratePartialKmerKds_PAPER.py lsy-6 equilibrium $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+
+PreSolveforKdsKmerRange :
+	make lim=5 kmer=$(kmer) mir_start=2 mir_stop=5 PreSolveforKdsKmer
+	make lim=5 kmer=$(kmer) mir_start=3 mir_stop=6 PreSolveforKdsKmer
+	make lim=5 kmer=$(kmer) mir_start=4 mir_stop=7 PreSolveforKdsKmer
+	make lim=5 kmer=$(kmer) mir_start=5 mir_stop=8 PreSolveforKdsKmer
+
+
+
+SolveforKdsKmer :
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradient.R let-7a $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradient.R miR-1 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradient.R miR-155 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradient.R miR-124 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub Rscript SolveForKds/GenerateSiteKdsMultinomialGradient.R lsy-6 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub Rscript SolveForKds/GenerateSiteKdsPoissonResidualsGradient.R let-7a $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub Rscript SolveForKds/GenerateSiteKdsPoissonResidualsGradient.R miR-1 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub Rscript SolveForKds/GenerateSiteKdsPoissonResidualsGradient.R miR-155 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub Rscript SolveForKds/GenerateSiteKdsPoissonResidualsGradient.R miR-124 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+	bsub Rscript SolveForKds/GenerateSiteKdsPoissonResidualsGradient.R lsy-6 $(lim) $(lim) $(kmer) $(mir_start) $(mir_stop)
+
+SolveforKdsKmerRange :
+	make lim=5 kmer=$(kmer) mir_start=2 mir_stop=5 SolveforKdsKmer
+	make lim=5 kmer=$(kmer) mir_start=3 mir_stop=6 SolveforKdsKmer
+	make lim=5 kmer=$(kmer) mir_start=4 mir_stop=7 SolveforKdsKmer
+	make lim=5 kmer=$(kmer) mir_start=5 mir_stop=8 SolveforKdsKmer
+
+
+
+
+GetFullInputPulse :
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) let-7a equilibrium -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) lsy-6 equilibrium -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) let-7a kinetics -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) miR-1 kinetics -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) miR-124 kinetics -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) lsy-6 kinetics -sitelist $(list) -start $(lim) -stop $(lim)
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) miR-1 kinetics_pilot -sitelist $(list) -start $(lim) -stop $(lim)
+
+GetFullInputChase :
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) let-7a kinetics -sitelist $(list) -start $(lim) -stop $(lim) -chase_barcode True
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) miR-1 kinetics -sitelist $(list) -start $(lim) -stop $(lim) -chase_barcode True
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) miR-124 kinetics -sitelist $(list) -start $(lim) -stop $(lim) -chase_barcode True
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) lsy-6 kinetics -sitelist $(list) -start $(lim) -stop $(lim) -chase_barcode True
+	bsub -n 20 python AssignSiteTypes/AssignAllInputSiteTypes.py $(mirna) $(experiment) miR-1 kinetics_pilot -sitelist $(list) -start $(lim) -stop $(lim) -chase_barcode True
+
+
+make_get_kmer :
+	STR='CTAAGTGTCC'; \
+	NUM=$$(grep $$STR /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/full_reads/I.txt | wc -l); \
+	NUM2=$$(wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/full_reads/I.txt | cut -d " " -f 1); \
+	NUM3=$$(grep $$STR /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/full_reads/12.6.txt | wc -l); \
+	echo $$NUM3; \
+	echo $$NUM; \
+	NUM4=$$(wc -l /lab/solexa_bartel/mcgeary/AgoRBNS/miR-124/equilibrium/full_reads/12.6.txt | cut -d " " -f 1); \
+	R1=$$(awk "BEGIN {printf \"%.20f\",$${NUM}/$${NUM2}}"); \
+	R2=$$(awk "BEGIN {printf \"%.20f\",$${NUM3}/$${NUM4}}"); \
+	echo $$(awk "BEGIN {printf \"%.3f\",$${R2}/$${R1}}")
+
+make_get_site_structure_geo_averages_let-7a :
+	for i in {$$((-21 - $(win)/2))..$$((21 - $(win)/2))}; \
+		do { echo $$i; \
+		bsub -n 20 python AnalyzeStructure/SplitStructuresBySiteFINAL.py $(mirna) equilibrium $(condition) $(start) $(stop) $(list) $$i $(win) False True;} \
+	done
+
+
+
+
+
+
+

@@ -1,0 +1,11 @@
+8mer
+7mer-m8
+7mer-A1
+6mer
+7mer-m3.9
+6mer-m8
+6mer-A1
+CDNST.1
+CDNST.2
+CDNST.3
+CDNST.4

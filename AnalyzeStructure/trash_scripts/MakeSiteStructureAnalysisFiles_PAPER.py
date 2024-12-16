@@ -1,0 +1,419 @@
+################################################################################
+#MakeSiteTypeReadFiles.py
+################################################################################
+import imp # Used to import general.py
+import time # Used for time
+import os
+import subprocess
+import numpy as np
+import pandas as pd
+import math
+import sys
+import itertools as it
+imp.load_source("general",
+                ("/lab/bartel1_ata/mcgeary/computation/"
+                 "AgoRBNS/general/general.py"
+                )
+               )
+
+imp.load_source("sitetypes",
+                ("/lab/bartel1_ata/mcgeary/computation/"
+                 "AgoRBNS/AssignSiteTypes/sitetypes.py"
+                )
+               )
+from general import parse_arguments, print_time_elapsed, get_kmer_list, get_analysis_path, multiprocess_file, multiprocess_test, readline_two, geo_mean, get_site_flanks
+from sitetypes import get_seq_site_map
+import random, string
+
+def randomword(length):
+   return ''.join(random.choice(string.lowercase) for i in range(length))
+
+# This script reads one read file and outputs multiple .txt files to be used in all
+# downstream applications. Inputs are:
+
+# mirna: The miRNA in the experiment to be processed.
+# experiment: The type of experiment to be processed.
+# condition: The sampel type within the experiment to be processed.
+
+# Functions from general this uses:
+
+
+# Constants
+
+# FUNCTIONS
+
+AU_weights_left = [1.0 / i for i in range(30,0,-1)]
+AU_weights_right = [1.0 / i for i in range(1,31)]
+# AU_weights_right[0] = 0.5
+
+def RNAplfold(read, mir_start, mir_stop, file_num, logprob=False):
+    # This should give the probability of the region in the read complementary
+    # to position "mir_start" to "mir_stop" in the miRNA sequence.
+    read_name = randomword(20)
+    temp_fa_filename = "%s%s.fa" %(read_name, file_num)
+    with open(temp_fa_filename, "wb") as f:
+        f.write(">%s%s\n%s" %(read_name, file_num, read))
+    # call RNAplfold:
+    l_param = len(read)
+    w_param = l_param
+    u_param = mir_stop - mir_start + 1
+    if logprob:
+        log_param = "-O "
+        temp_plfold_filename = '%s%s_openen' %(read_name, file_num)
+    else:
+        log_param = ""
+        temp_plfold_filename = '%s%s_lunp' %(read_name, file_num)
+
+    call = 'RNAplfold -L %s -W %s -u %s %s< %s%s.fa' %(l_param, w_param,
+                                                       u_param, log_param,
+                                                       read_name, file_num)
+    subprocess.call([call], shell=True, stdout = subprocess.PIPE)
+    rnaplfold_data = pd.read_csv(temp_plfold_filename, sep = '\t',
+                                 header = 1).set_index(' #i$')
+    os.remove(temp_fa_filename)
+    os.remove(temp_plfold_filename)
+    os.remove('%s%s_dp.ps' %(read_name, file_num))
+    return rnaplfold_data
+
+
+def calculate_local_au(utr, site_start, site_end, site_type):
+    """
+    Calculate the local AU score
+
+    Parameters
+    ----------
+    utr: string, utr sequence
+
+    site_type: string, site type
+
+    site_start: int, start of site
+
+    site_end: int, end of site
+
+    Output
+    ------
+    float: local AU score
+    """
+    # find A, U and weights upstream of site
+    up_site_adder = int(site_type not in ['7mer-m8', '8mer'])
+    
+    upstream = utr[max(0, site_start - 30): site_start]
+    upstream_str = upstream
+
+    l= max(0, site_start - 30)
+    upstream = [int(x in ['A', 'T']) for x in upstream]
+    inv_upweights = [(x + 1 + up_site_adder)
+                 for x in range(len(upstream))][::-1]
+
+    upweights = [1.0 / (x + 1 + up_site_adder)
+                 for x in range(len(upstream))][::-1]
+
+    # find A,U and weights downstream of site
+    down_site_adder = int(site_type in ['7mer-A1', '8mer'])
+    downstream = utr[site_end:min(len(utr), site_end + 30)]
+    downstream_str = downstream
+    downstream = downstream + "A"*(30 - len(downstream))
+    downstream = [int(x in ['A', 'T']) for x in downstream]
+
+    inv_downweights = [(x + 1 + down_site_adder)
+                   for x in range(len(downstream))]
+    downweights = [1.0 / (x + 1 + down_site_adder)
+                   for x in range(len(downstream))]
+    # print("_"*l + upstream_str + "."*(site_end - site_start) + downstream_str)
+    # print(" "*l + "".join([str(i) for i in upstream]) + "."*(site_end - site_start) + "".join([str(i) for i in downstream]))
+    # for num, weight in enumerate(inv_upweights):
+    #     print(" "*(l + num) + str(weight) + " "*(30 + site_end - site_start - len(str(weight))) + str(inv_downweights[num]))
+
+    weighted = np.dot(upstream, upweights) + np.dot(downstream, downweights)
+    total = float(sum(upweights) + sum(downweights))
+
+    return weighted / total
+
+
+
+
+def get_local_au_score(read, start, stop, sitetype):
+    if sitetype not in ["8mer", "7mer-m8", "7mer-A1", "6mer"]:
+        return False
+    else:
+        upstream_site = int(sitetype not in ["7mer-m8", "8mer"])
+        upstream_seq = read[max(0, start - 30):start]
+
+        upstream = [int(x in ["A", "T"]) for x in upstream_seq]
+        upweights = [1.0 / (x + 1 + upstream_site)
+                     for x in range(len(upstream))][::-1]
+        upweights_total = [1.0 / (x + 1 + upstream_site)
+                     for x in range(30)][::-1]
+        downstream_site = int(sitetype in ["7mer-A1", "8mer"])
+        downstream_seq = read[stop:min(len(read), stop + 30)]
+        downstream = [int(x in ["A", "T"]) for x in downstream_seq]
+        downstream = downstream + [1 for i in range(30 - len(downstream))]
+        downweights = [1.0 / (x + 1 + downstream_site)
+                       for x in range(len(downstream))]
+        downweights_total = [1.0 / (x + 1 + downstream_site)
+                       for x in range(30)]
+
+        weighted = np.dot(upstream, upweights) + np.dot(downstream, downweights)
+        total = float(sum(upweights_total) + sum(downweights_total))
+
+        return(weighted / total)
+    return
+
+def get_read_structural_data(read_seqs, order_site_map, site_pos_map, n_constant,
+                             read_length, mirna, experiment, win_start = -1,
+                             win_stop = 15):
+    """Takes a read sequence and identifies the position of all site types'.
+
+    Args:
+        read_sequence: The read sequence.
+        sites: A list of sequences corresponding to each site type.
+
+    Returns:
+        A tuple containing the list of reads and a dictionary of read types.
+    """
+
+    # Initialize count dictionary with keys as site names and a value of
+    # for each item.
+    sites_range = range(26 - n_constant, 26 + 37 + n_constant + 1)
+    site_flanks_map = {site: {"".join(kmer): [] for kmer in get_kmer_list(4)} 
+                       for site in ["8mer"]}
+    # Pre-allocate output with "None" for each line.
+    time_start = time.time()
+    tick = 0
+    for num_i, i in enumerate(read_seqs):
+        tick +=1
+        if tick % 10000 == 0:
+            print(tick)
+            print_time_elapsed(time_start)
+            sys.stdout.flush()
+        read, sites = (j.strip() for j in i)
+        # Define the barcode portion of the read.
+        barcode = read[26 + read_length : 26 + read_length + 3]
+        # Deals with the TCG instead of TGT ending for miR-1 equilibrium exp
+        if barcode == "TCG":
+            barcode = "TGT"
+            if mirna != "miR-1" or experiment != "equilibrium":
+                read = read[:26 + 37] + "TGTTCGTATGCCGTCTTCTGCTTG"
+        if barcode == "TGT" and mirna == "miR-1" and experiment == "equilibrium":
+            read = read[:26 + 37] + "TCGTATGCCGTCTTCTGCTTG"
+        # Take the constant region + the number of constant sequences
+        # Find all sites within the read
+        if sites != "None":
+            # CONVERT ALL COORDINATES TO 0 is 1, start of the read!
+            coords = [i.split(":")[1] for i in sites.split(", ")]
+            sites = [i.split(":")[0] for i in sites.split(", ")]
+            coord_site_map = {site: coord for site, coord in zip(sites,coords)}
+            ranks = [order_site_map[site] for site in sites]
+            [(coord, site)] = [i for i in zip(coords, sites)
+                               if order_site_map[i[1]] == min(ranks)]
+            # Get the start and stop positions of the site, in pythonic
+            # coordinates.
+            start = int(coord.split("-")[0]) + 26 - n_constant
+            stop = int(coord.split("-")[1]) + 1 + 26 - n_constant
+            if start in sites_range and stop in sites_range and site in ["8mer"]:
+                mirp1_span = site_pos_map[site] - 1
+                print("mirp1_span")
+                print(mirp1_span)
+                mirp1 = start + mirp1_span
+                win_r = mirp1 - win_start + 1 + 1 
+                win_l = mirp1 - win_stop + 1
+                if "b" in site:
+                    win_l -= 1
+                # Perform plfold on the entire read:
+                plfold = RNAplfold(read,win_start, win_stop, num_i)
+                print(plfold.iloc[:10, :10])
+                df_cols = plfold.shape[1]
+                print(df_cols)
+                logplfold = RNAplfold(read,win_start, win_stop, num_i, logprob=True)
+
+                # print(win_r - 1)
+                # print(df_cols - 2)
+                # print(win_r-win_l)
+                # print(read)
+                # print(" "*start + read[start:stop])
+                # print(" "*(mirp1) + "X")
+                # print("_"*win_r)
+                # print("_"*win_l)
+
+                # Get average secondary structure
+                p_acc_pl = plfold.iloc[win_r - 1, df_cols - 2]
+                p_acc_pl_geo = p_acc_pl**(1/(float(win_r - win_l)))
+                p_acc_log_pl = plfold.iloc[win_r - 1, df_cols - 2]
+                p_acc_pl_log_geo = p_acc_log_pl/(float(win_r - win_l))
+                print(p_acc_pl_log_geo)
+                print(p_acc_pl_geo)
+                print(np.exp(p_acc_pl_log_geo))
+                p_acc_single = list(plfold.iloc[:, 0])
+                p_acc_single_log = list(logplfold.iloc[:, 0])
+                for i in range(5):
+                    print(np.log10(p_acc_single[i]) - p_acc_single_log[i])
+                print(p_acc_single[:5])
+                print(np.log10(p_acc_single[:5]))
+
+                print(p_acc_single_log[:5])
+                p_acc_double = list(plfold.iloc[:, 1])
+                p_acc_double_log = list(logplfold.iloc[:, 1])
+                p_acc_win = list(plfold.iloc[:, df_cols - 2])
+
+                # for num_p, p in enumerate(p_acc_single):
+                #     if num_p >= start and num_p <= stop:
+                #         print(" "*num_p + "_")
+                #         print(" "*num_p + str(p))
+                for num_p, p in enumerate(p_acc_double):
+                    # if num_p >= start + 1 and num_p <= stop:
+                    print(read)
+                    print(" "*(num_p - 1) + "_"*2)
+                    print(" "*num_p + str(p))
+                    print(" "*num_p + str(np.log(p)))
+                    print(" "*num_p + str(np.log10(p)))
+                    print("_"*num_p + str(p_acc_double_log[num_p]))
+                    print("_"*num_p + str(p_acc_double_log[num_p]/np.log(p)))
+                    print("_"*num_p + str(p_acc_double_log[num_p]/np.log10(p)))
+
+                # for num_p, p in enumerate(p_acc_win):
+                #     if np.isnan(p) == False:
+                #         print(read)
+
+                #         print(" "*(num_p - 14) + "_"*15)
+
+                #         print(" "*num_p + str(p))
+                # for num_p, p in enumerate(p_acc_win):
+                #     if num_p == (win_r - 1):
+                #         print(read)
+
+                #         print(" "*(num_p - 14) + "_"*15)
+                #         print(" "*(num_p - 14) + "54321!987654321")
+
+                #         print(" "*num_p + str(p))
+                # print(read)
+                # print(" "*start + read[start:stop])
+                # print(p_acc_pl)
+                # print(p_acc_pl_geo)
+                p_acc_geo = geo_mean(plfold.iloc[win_l:win_r, 0])
+
+                # Get the flanking nucleotides:
+                flank = get_site_flanks(read, start, stop)
+                print(flank)
+                AU_cs = get_local_au_score(read, start, stop, site)
+
+                AU = [int(x in ["A", "T"]) for x in read]
+                AU_win = AU[win_l:win_r]
+                AU_read = AU[26 : 26 + 37]
+                AU_win_wo = [AU[i_au] for i_au in range(win_l, win_r)
+                                  if i_au not in range(start, stop)]
+                AU_read_wo = [AU[i_au] for i_au in range(26,26+37)
+                                  if i_au not in range(start, stop)]
+                AU_win, AU_read, AU_win_wo, AU_read_wo = [
+                    float(sum(i))/len(i) for i in [
+                        AU_win, AU_read, AU_win_wo, AU_read_wo]]
+                print([AU_cs, AU_win, AU_read, AU_win_wo, AU_read_wo])
+                site_flanks_map[site][flank].append((p_acc_pl, p_acc_geo, AU_cs, AU_win, AU_read, AU_win_wo, AU_read_wo))
+    return site_flanks_map
+
+def main():
+    time_start = time.time()
+    # Define all the relevant arguments.
+    arguments = ["miRNA", "experiment", "condition", "n_constant", "sitelist", "win_start", "win_stop"]
+    mirna, experiment, condition, n_constant, sitelist, win_start, win_stop = parse_arguments(arguments)
+    # Load file with site types for the miRNA.
+    sites_file_name = ("/lab/bartel1_ata/mcgeary/computation/AgoRBNS/"
+                       "AssignSiteTypes/sites.%s_%s.txt" % (mirna.split("-alt")[0], sitelist))
+    # Initialize the dictionary with all sites, and two more dictionaries,
+    # one mapping to the site name from the sequence, and one from site name
+    # to the count.
+    with open(sites_file_name) as file_in:
+        sites = file_in.read().split("\n")
+    order_site_map = {site: i for i, site in enumerate(sites)}
+    with open('general/site_info.txt',"r+") as site_pos_file:
+        site_pos_map = dict()
+        for line in site_pos_file:
+            line_strip = line.strip().split("\t")
+            key = line_strip[0]
+            if key in order_site_map.keys() and key != "None":
+                value = int(line_strip[2]) + int(line_strip[3]) - 1
+                site_pos_map[key] = value
+    # Get the path to the read file and to that of where the site labels will
+    # be written.
+    if experiment in ["equil_mmseed_nb", "equil_seed_nb"]:
+        read_length = 38
+    else:
+        read_length = 37    
+    extension_sites = "_%s_%s" %(n_constant, sitelist)
+    extension_struc = "_%s" %("Full")
+    reads_path = get_analysis_path(mirna, experiment, condition,
+                                   "full_reads")
+    sites_path = get_analysis_path(mirna, experiment, condition,
+                                   "sites", ext=extension_sites)
+    win_start = int(win_start)
+    win_stop = int(win_stop)
+    with open(reads_path, "rb") as file_in_reads:
+        with open(sites_path, "rb") as file_in_sites:
+            cwd = os.getcwd()
+            folder_name = randomword(20)
+            os.makedirs("/lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/RNAplfold_temp/%s" %(folder_name))
+            os.chdir("/lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/RNAplfold_temp/%s" %(folder_name))
+
+            results = multiprocess_test([file_in_reads, file_in_sites],
+                                        readline_two,
+                                        100000,
+                                        get_read_structural_data,
+                                        2000,
+                                        order_site_map,
+                                        site_pos_map,
+                                        int(n_constant),
+                                        read_length,
+                                        mirna,
+                                        experiment,
+                                        win_start,
+                                        win_stop)
+            os.chdir(cwd)
+            os.rmdir("/lab/bartel1_ata/mcgeary/computation/AgoRBNS/AnalyzeStructure/RNAplfold_temp/%s" %(folder_name))
+    flanks = get_kmer_list(4)
+    output = {site: {flank: [j for i in results for j in i[site][flank]] for flank in flanks} for site in ["8mer"] if site != "None"}
+
+  
+    # summary = {site: {flank: "0" for flank in flanks} for site in order_site_map.keys() if site != "None"}
+    file_ext = "_%s_%s-%s" %(n_constant,win_start,win_stop)
+    for site in ["8mer"]:
+        site_flank_path = get_analysis_path(mirna,experiment,condition,"structural_analysis_PAPER_realfinal/%s" %(site),ext=file_ext)
+        print(site_flank_path)
+        # with open(site_flank_path, "wb") as file_flank:
+        #     file_flank.write("\t".join(["Flank", "plfold", "accessibility", "AU_cs", "AU_win", "AU_read", "AU_win_wo", "AU_read_wo"])+"\n")
+        # with open(site_flank_path, "ab") as file_flank:
+        #     output_rows = "\n".join([
+        #         "\n".join([
+        #             "\t".join([flank]+[str(j) for j in i]) for i
+        #              in output[site][flank]
+        #          ]) for flank in flanks if len(output[site][flank]) > 0])
+        #     file_flank.write(output_rows)
+        # print(site_flank_path)
+
+
+    #         # out = pd.DataFrame(output_structures[site][flank],columns=["sa", "H"])
+    #         # n = out.size
+    #         # if n > 0:
+    #         #     summary[site][flank] = ",".join([str(i) for i in [n, float(out.mean()), float(out.var())]])
+    #         # out.to_csv(site_flank_path,sep="\t",index = False, header = False)
+
+    #         # site_flank_AU_win_path = get_analysis_path(mirna,experiment,condition,"AU_content_PAPER/%s/%s" %(site,flank),ext=file_ext)
+    #         # out = pd.DataFrame(output_AU_win[site][flank])
+    #         # out.to_csv(site_flank_AU_win_path,sep="\t",index = False, header = False)
+
+    #         # site_flank_AU_read_path = get_analysis_path(mirna,experiment,condition,"AU_contentinread_PAPER/%s/%s" %(site,flank),ext=file_ext)
+    #         # out = pd.DataFrame(output_AU_read[site][flank])
+    #         # out.to_csv(site_flank_AU_read_path,sep="\t",index = False, header = False)
+
+    #         # site_flank_AU_context_path = get_analysis_path(mirna,experiment,condition,"AU_contextscore_PAPER/%s/%s" %(site,flank),ext=file_ext)
+    #         # out = pd.DataFrame(output_AU_cs[site][flank])
+    #         # out.to_csv(site_flank_AU_read_path,sep="\t",index = False, header = False)
+
+
+
+    # # Print the amount of time the script took to complete.
+    # print_time_elapsed(time_start)
+
+################################################################################
+
+if __name__ == "__main__":
+    main()
+
