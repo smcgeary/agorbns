@@ -1,0 +1,15 @@
+8mer
+7mer-m8
+7mer-A1
+6mer
+6mer-A1
+6mer-m8
+5mer-m2.6
+GCACTTTA
+8mer-w5
+8mer-w4
+8mer-mmG5
+8mer-bA5
+5mer-A1
+7mer-m8w4
+7mer-m8w5

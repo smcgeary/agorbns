@@ -1,0 +1,16 @@
+
+
+HELA_TPM_KL_DIR = /lab/solexa_bartel/klin/miRNA_models_data/transfections/hela/\
+	processed/log_tpm_normed.txt
+HELA_TPM_SM_DIR = /lab/solexa_bartel/mcgeary/transfections/HeLa/count_tables/\
+	logtpm_batchnormalized.txt
+
+HELA_FEATURES_MEASURED_DIR = /lab/solexa_bartel/klin/miRNA_models_data_old/\
+	model_inputs/biochem/predicted_kds/feat1_allgenes_lr003_nodropout_batch50_\
+	rebalancekds2k_noaugment_repweight095_mask_w3_netpred/hela/MIR.txt
+HELA_FEATURES_PREDICTED_DIR = /lab/solexa_bartel/klin/miRNA_models_data_old/\
+	model_inputs/biochem/predicted_kds/MIR.txt
+
+
+TestPaths :
+	ls $(HELA_TPM_KL_DIR)

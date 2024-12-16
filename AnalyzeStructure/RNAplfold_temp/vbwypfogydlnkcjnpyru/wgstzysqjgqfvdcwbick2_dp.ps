@@ -1,0 +1,316 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%Creator: ViennaRNA-2.4.13
+%%CreationDate: Mon Aug 26 17:29:55 2019
+%%Title: RNA Dot Plot
+%%BoundingBox: 66 530 520 650
+%%DocumentFonts: Helvetica
+%%Pages: 1
+%%EndComments
+
+% Program options: 
+
+% This file contains the square roots of probabilities in the form
+% i  j  sqrt(p(i,j)) ubox
+
+/DPdict 100 dict def
+
+DPdict begin
+
+%%BeginProlog
+
+/logscale false def
+/lpmin 1e-05 log def
+/DataVisible  [ true true true true] def
+/DataTitles   [ false false false false ] def
+/min { 2 copy gt { exch } if pop } bind def
+/max { 2 copy lt { exch } if pop } bind def
+/box { %size x y box - draws box centered on x,y
+   2 index 0.5 mul sub            % x -= 0.5
+   exch 2 index 0.5 mul sub exch  % y -= 0.5
+   3 -1 roll dup rectfill
+} bind def
+/ubox {
+   logscale {
+      log dup add lpmin div 1 exch sub dup 0 lt { pop 0 } if
+   } if
+   3 1 roll
+   exch len exch sub 1 add box
+} bind def
+/lbox {
+   3 1 roll
+   len exch sub 1 add box
+} bind def
+/drawseq { % print sequence along all 4 sides
+[ [0.7 -0.3 0 ]
+  [0.7 0.7 len add 0]
+  [-0.3 len sub -0.4 -90]
+  [-0.3 len sub 0.7 len add -90]
+] {
+   gsave
+    aload pop rotate translate
+    0 1 len 1 sub {
+     dup 0 moveto
+     sequence exch 1 getinterval
+     show
+    } for
+   grestore
+  } forall
+} bind def
+/drawgrid{
+  gsave
+  0.5 dup translate
+  0.01 setlinewidth
+  len log 0.9 sub cvi 10 exch exp  % grid spacing
+  dup 1 gt {
+     dup dup 20 div dup 2 array astore exch 40 div setdash
+  } { [0.3 0.7] 0.1 setdash } ifelse
+  0 exch len {
+     dup dup
+     0 moveto
+     len lineto
+     dup
+     len exch sub 0 exch moveto
+     len exch len exch sub lineto
+     stroke
+  } for
+  [] 0 setdash
+  0.04 setlinewidth
+  currentdict /cutpoint known {
+    cutpoint 1 sub
+    dup dup -1 moveto len 1 add lineto
+    len exch sub dup
+    -1 exch moveto len 1 add exch lineto
+    stroke
+  } if
+  % draw diagonal
+  0 len moveto len 0 lineto stroke
+  grestore
+} bind def
+/drawTitle {
+  currentdict /DPtitle known {
+    % center title text
+    /Helvetica findfont 10 scalefont setfont
+    360 705 moveto DPtitle dup stringwidth pop 2 div neg 0 rmoveto show
+  } if
+} bind def
+/prepareCoords {
+  0 1 3 {
+    % check whether we want to display current data
+    dup DataVisible exch get
+    {
+      % check whether we've actually got some data
+      DataSource exch get dup currentdict exch known {
+        % data source s_j is present, so find length of array
+        currentdict exch get length 
+      } { pop 0 } ifelse
+    } if
+  } for
+  exch dup 5 -1 roll add 4 -1 roll dup 5 1 roll 4 -1 roll add max
+  len add 3 add 700 exch div dup scale
+  exch 1 add exch 1 add translate
+} bind def
+
+%%EndProlog
+
+/DPtitle {
+  (wgstzysqjgqfvdcwbick2)
+} def
+
+/sequence { (\
+GGGCAGAGUUCUACAGUCCGACGAUCAUCAGGAAAACAUUCCAGGGGACAGCAAACUUGCCGCUCGUAUGCCGUCUUCUGCUUG\
+) } def
+/len { sequence length } bind def
+
+/winSize 84 def
+292 416 translate
+72 6 mul len 1 add winSize add 2 sqrt mul div dup scale
+/Helvetica findfont 0.95 scalefont setfont
+
+/drawseq_turn {
+% print sequence at bottom
+   gsave
+   len 2 sqrt div dup neg 0.28 add exch 0.78 sub translate
+    0 1 len 1 sub {
+     dup dup 2 sqrt mul 0 moveto
+     sequence exch 1 getinterval
+     show
+    } for
+   grestore
+} bind def
+/drawgrid_turn{
+  0.01 setlinewidth
+  len log 0.9 sub cvi 10 exch exp  % grid spacing
+  dup 1 gt {
+     dup dup 20 div dup 2 array astore exch 40 div setdash
+  } { [0.3 0.7] 0.1 setdash } ifelse
+  0 exch len {    %for (0, gridspacing, len) 
+     dup dup      %duplicate what - gridspacing??
+     dup len exch sub moveto     %moveto diagonal?
+     dup winSize gt
+     {dup dup len exch sub winSize add lineto}
+     {dup len lineto}ifelse
+     dup len exch sub moveto  %moveto diagonal?
+     dup len winSize sub le
+     {dup dup len exch sub dup winSize exch sub len add exch lineto}
+     {dup dup len exch sub len exch lineto}ifelse
+     stroke pop pop
+  } for
+  len log 0.9 sub cvi 10 exch exp  % grid spacing
+      dup 1 gt {
+          dup dup 20 div dup 2 array astore exch 40 div setdash
+      } { [0.3 0.7] 0.1 setdash } ifelse
+      0 exch len {    %for (0, gridspacing, len) 
+     dup dup      %duplicate what - gridspacing??
+     dup len exch sub moveto     %moveto diagonal?
+     len exch sub 0.7 sub exch 0.7 sub exch lineto
+     stroke
+   }for
+ winSize len moveto  len winSize  lineto stroke
+  [] 0 setdash
+  0.04 setlinewidth 
+  currentdict /cutpoint known {
+    cutpoint 1 sub
+    dup dup -1 moveto len 1 add lineto
+    len exch sub dup
+    -1 exch moveto len 1 add exch lineto
+   stroke
+  } if
+  0.5 neg dup translate
+} bind def
+0.5 dup translate
+drawseq_turn
+45 rotate
+
+
+%draw the grid
+drawgrid_turn
+
+%start of base pair probability data
+1 19 0.5542 ubox
+1 83 0.6684 ubox
+2 18 0.5546 ubox
+2 82 0.8025 ubox
+3 17 0.5543 ubox
+3 81 0.8182 ubox
+4 16 0.5542 ubox
+4 80 0.8184 ubox
+5 12 0.2429 ubox
+5 79 0.8084 ubox
+6 11 0.2457 ubox
+6 14 0.2296 ubox
+6 78 0.8033 ubox
+7 77 0.7716 ubox
+8 14 0.2729 ubox
+8 22 0.1664 ubox
+8 75 0.1275 ubox
+8 76 0.6086 ubox
+9 13 0.2464 ubox
+9 21 0.1473 ubox
+10 20 0.1198 ubox
+10 21 0.1519 ubox
+10 24 0.1122 ubox
+11 20 0.1781 ubox
+11 23 0.1168 ubox
+11 73 0.2486 ubox
+13 74 0.1622 ubox
+14 70 0.1893 ubox
+14 73 0.1666 ubox
+15 69 0.1834 ubox
+16 25 0.2865 ubox
+16 49 0.3198 ubox
+16 71 0.1539 ubox
+17 24 0.3073 ubox
+17 33 0.1655 ubox
+17 48 0.3202 ubox
+17 68 0.1028 ubox
+17 70 0.1396 ubox
+18 23 0.3088 ubox
+18 32 0.1761 ubox
+18 47 0.3201 ubox
+19 31 0.1761 ubox
+19 46 0.3195 ubox
+19 66 0.1842 ubox
+20 26 0.1935 ubox
+20 29 0.2824 ubox
+20 65 0.1890 ubox
+20 75 0.4890 ubox
+21 25 0.1686 ubox
+21 28 0.2619 ubox
+21 64 0.1717 ubox
+21 67 0.1636 ubox
+21 74 0.4896 ubox
+22 62 0.1502 ubox
+22 66 0.1669 ubox
+22 73 0.4897 ubox
+23 29 0.1994 ubox
+23 61 0.1464 ubox
+23 65 0.1656 ubox
+23 72 0.4837 ubox
+24 28 0.1739 ubox
+24 64 0.1298 ubox
+25 48 0.1825 ubox
+26 47 0.1990 ubox
+26 70 0.2733 ubox
+27 69 0.2700 ubox
+28 45 0.2863 ubox
+28 46 0.1054 ubox
+28 68 0.2540 ubox
+29 44 0.3656 ubox
+29 45 0.1847 ubox
+29 66 0.1769 ubox
+29 84 0.1422 ubox
+30 83 0.1455 ubox
+31 42 0.9005 ubox
+31 82 0.1455 ubox
+32 41 0.9125 ubox
+32 81 0.1453 ubox
+33 40 0.8998 ubox
+34 39 0.7488 ubox
+37 70 0.1177 ubox
+37 84 0.1207 ubox
+38 69 0.1181 ubox
+38 83 0.1191 ubox
+39 68 0.1090 ubox
+42 80 0.3840 ubox
+43 64 0.3088 ubox
+43 67 0.2176 ubox
+43 79 0.5607 ubox
+44 61 0.1165 ubox
+44 63 0.3463 ubox
+44 78 0.5831 ubox
+45 60 0.1167 ubox
+45 65 0.3380 ubox
+45 77 0.5987 ubox
+46 61 0.3786 ubox
+46 64 0.3394 ubox
+46 76 0.6954 ubox
+47 58 0.1130 ubox
+47 60 0.3782 ubox
+47 63 0.3403 ubox
+47 75 0.7270 ubox
+48 57 0.1101 ubox
+48 74 0.7274 ubox
+49 59 0.3336 ubox
+49 62 0.3424 ubox
+49 73 0.7261 ubox
+50 57 0.2069 ubox
+50 58 0.3172 ubox
+51 56 0.2280 ubox
+51 57 0.2593 ubox
+51 60 0.5223 ubox
+51 71 0.7293 ubox
+52 59 0.5241 ubox
+52 70 0.7297 ubox
+53 58 0.4720 ubox
+53 69 0.7221 ubox
+55 67 0.6530 ubox
+56 66 0.6613 ubox
+58 68 0.2615 ubox
+59 63 0.2887 ubox
+59 67 0.2658 ubox
+60 66 0.2652 ubox
+62 71 0.3887 ubox
+63 70 0.3955 ubox
+showpage
+end
+%%EOF

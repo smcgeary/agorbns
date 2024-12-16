@@ -1,0 +1,10 @@
+8mer
+7mer-m8
+7mer-A1
+6mer
+6mer-A1
+6mer-m8
+8mer-d(2.3)
+8mer-d(4.5)
+8mer-d6
+8mer-d7

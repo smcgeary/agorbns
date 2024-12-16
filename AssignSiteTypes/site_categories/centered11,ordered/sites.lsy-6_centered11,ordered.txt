@@ -1,0 +1,16 @@
+8mer
+7mer-m8
+11mer-m9.19
+11mer-m8.18
+11mer-m10.20
+11mer-m11.21
+7mer-A1
+11mer-m7.17
+11mer-m6.16
+11mer-m12.22
+6mer-A1
+6mer
+11mer-m5.15
+11mer-m4.14
+11mer-m3.13
+6mer-m8

@@ -1,0 +1,6 @@
+	equilibrium	equilibrium_nb	equil_seed_nb	equil_mmseed_nb
+let-7a	4.4736840	3.29	3.29	3.29
+miR-1	4.7368420	NA	NA	NA
+miR-155	2.7368420	NA	NA	NA
+miR-124	2.7894740	NA	NA	NA
+lsy-6	2.3421050	NA	NA	NA
