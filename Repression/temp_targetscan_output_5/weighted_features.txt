@@ -1,1 +1,0 @@
-Gene_ID	miRNA_family	upper_bound	Intercept	TA	SPS	SA	siRNA_1A	siRNA_1C	siRNA_1G	siRNA_8A	siRNA_8C	siRNA_8G	site_8A	site_8G	site_8C	Local_AU_score	Threep_score	Min_dist_score	UTR_length_score	ORF_length	ORF_8mers	Off6m_score	PCT	score	bounded_score
