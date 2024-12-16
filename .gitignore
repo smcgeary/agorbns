@@ -1,1 +1,37 @@
-/.DS_Store
+# Output files
+*.pdf
+*.png
+*.jpg
+*.svg
+*.ai
+
+# Data files
+*.fastq
+*.fastq.gz
+*.bam
+*.sam
+*.bed
+*.bigwig
+*.bw
+*.txt
+
+# R specific
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Python specific
+__pycache__/
+*.py[cod]
+*.so
+.ipynb_checkpoints/
+
+# OS specific
+.DS_Store
+.Rhistory
+
+# Large directories
+PDFs/
+figures/
+data/
