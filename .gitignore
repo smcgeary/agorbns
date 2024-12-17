@@ -34,4 +34,4 @@ __pycache__/
 # Large directories
 PDFs/
 figures/
-data/
+data/raw

@@ -1,3 +1,5 @@
+Yes, let me show you the exact text to copy/paste, with no formatting or markdown code blocks - just the raw text you need:
+
 # AgoRBNS Analysis Pipeline
 
 This repository contains analysis code for two publications:
@@ -10,19 +12,60 @@ This repository contains analysis code for two publications:
 
 ## Data Access
 
-Raw sequencing data from 1. is available from GEO under accession number GSE140220.
-Raw sequencing data from 2. is available from GEO under accession number GSE196458.
+Raw sequencing data is available from GEO under the following accession numbers:
+- GSE140220 (Science 2019 paper)
+- GSE196458 (eLife 2022 paper)
 
+## Requirements
 
+- Conda (Miniconda or Anaconda) (tested using Miniconda 23.10)
+- Git
 
-### Downloading the Data
+## Installation and Setup
 
-#### Option 1: Using SRA toolkit
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/smcgeary/AGORBNS_working.git
+   cd AGORBNS_working
+   ```
+
+2. Create the conda environment:
+   ```bash
+   conda env create -f environment.yml
+   ```
+
+3. Activate the conda environment:
+   ```bash
+   conda activate agorbns
+   ```
+
+4. Verify the environment is active:
+   ```bash
+   conda env list
+   ```
+   The active environment (agorbns) should be marked with *
+
+5. When finished working, deactivate the environment:
+   ```bash
+   conda deactivate
+   ```
+
+Note: If the environment.yml file is updated, you can update your environment with:
 ```bash
-# Download individual samples
-fastq-dump --split-files SRR10427205  # Replace with specific SRR number
+conda env update -f environment.yml
+```
 
-# Or download all samples (24 total)
-for i in {205..228}; do
-    fastq-dump --split-files SRR104272$i
-done
+## Repository Structure
+
+[Description of main directories and files]
+
+## Usage
+
+[Basic instructions for running the analysis]
+
+## Citation
+
+If you use this code in your research, please cite:
+
+McGeary SE, et al. "The biochemical basis of microRNA targeting efficacy." Science. 2019.
+McGeary SE, et al. "MicroRNA 3'-compensatory pairing occurs through two binding modes, with affinity shaped by nucleotide identity and position." eLife. 2022.
