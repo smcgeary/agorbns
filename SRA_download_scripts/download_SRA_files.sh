@@ -11,7 +11,7 @@
 
 # Testing to make sure that the access of metadata is working properly.
 
-file=/n/groups/klein/mcgeary/gradschool/SRA_download_scripts/SRA_and_metadata.txt
+file=SRA_download_scripts/SRA_and_metadata.txt
 
 echo $file
 

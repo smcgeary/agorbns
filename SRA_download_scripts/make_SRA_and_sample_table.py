@@ -58,7 +58,7 @@ def construct_directory(string):
     Makes the directory to be used in testing the GitHub scripts and
     re-downloading the data from McGeary et al., 2019 and 2022. This file does
     not deal with the ambiguities associated with input read files that are
-    applicable to multiple miRNAs, such as those of let-7a, 
+    applicable to multiple miRNAs, such as those of let-7a.
 
     Args:
         string: The input string from which the directory information must be
