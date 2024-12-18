@@ -38,3 +38,4 @@ data/raw
 
 # Un-ignore the SRA_download_scripts:
 !SRA_download_scripts/**
+jobs/**
