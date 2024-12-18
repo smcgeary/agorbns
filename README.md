@@ -52,7 +52,20 @@ Raw sequencing data is available from GEO under the following accession numbers:
 
 Note: If the environment.yml file is updated, you can update your environment with:
 ```bash
-conda env update -f environment.yml
+   conda env update -f environment.yml
+```
+
+## Data acquisition
+
+To download all data associated with both papers:
+1. First assemble the metadata-table required for parsing the data:
+```bash
+   python SRA_download_scripts/make_SRA_and_sample_table.py 
+```
+
+2. Next download each dataset:
+```bash
+   bash SRA_download_scripts/download_SRA_files.sh 
 ```
 
 ## Repository Structure
