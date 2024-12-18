@@ -17,7 +17,6 @@ echo $file
 
 lines=$(cut -f 1 $file)
 # Step 1. Load the sratoolkit.
-module load sratoolkit/2.10.7
 
 # Step 2. Iterate over the SRR lines and prefetch and then download the
 # associated files.
@@ -25,27 +24,27 @@ for LINE in $lines
 do
     echo "'$LINE'"
     time_0=$(date +%s)
-    if [ ! -f "downloads/NCBI_SRA/sra/$LINE.sra" ]
+    if [ ! -f "data/raw/sra/$LINE.sra" ]
     then
         echo "Prefetching data."
-        prefetch $LINE
+        prefetch $LINE -O data/raw/sra/$LINE
     else
         echo "Already prefetched."
     fi
     time_1=$(date +%s)
     elapsed=$(( time_1 - time_0 ))
     echo "Prefetch time: $elapsed s."
-    if [ ! -f "downloads/NCBI_SRA/fastq/$LINE.fq.gz" ]
+    if [ ! -f "data/raw/fastq/$LINE.fq.gz" ]
     then
         echo "Performing fasterq-dump."
         # The "-f" option enables the faster-q dump to overwrite any temporary
         # files that might have been made in a previous call to the script.
-        fasterq-dump -f -O /n/groups/klein/mcgeary/downloads/NCBI_SRA/fastq/ $LINE
+        fasterq-dump -f -O data/raw/fastq/ data/raw/sra/$LINE
         time_2=$(date +%s)
         elapsed=$(( time_2 - time_1 ))
         echo "Fasterq-dump time: $elapsed s."
-        mv downloads/NCBI_SRA/fastq/$LINE.fastq downloads/NCBI_SRA/fastq/$LINE.fq
-        gzip downloads/NCBI_SRA/fastq/$LINE.fq
+        mv data/raw/fastq/$LINE.fastq data/raw/fastq/$LINE.fq
+        gzip data/raw/fastq/$LINE.fq
         time_3=$(date +%s)
         elapsed=$(( time_3 - time_2 ))
         echo "Rename and gzip time: $elapsed s."
