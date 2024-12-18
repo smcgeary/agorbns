@@ -64,7 +64,7 @@ SRP_from_GSE_map = dict(zip(GSE_IDs, SRP_IDs))
 ## Functions required for the parsing the data.
 
 
-def construct_directory(string):
+def construct_directory(string, GSE_ID):
     """Makes the directory associated with a SRA sample name.
 
     Makes the directory to be used in testing the GitHub scripts and
@@ -75,12 +75,15 @@ def construct_directory(string):
     Args:
         string: The input string from which the directory information must be
         generated.
+        GSE_ID: The ID with the sample, which indicates if it is from the 2019
+        (agorbns) or 2022 (agorbns_3p) study.
 
     Returns:
         A new string resembling the final directory structure of the final read
         file.
 
     """
+    print(string)
     if "smallRNA-seq_purifiedAGO2" in string:
         mir = string.split("smallRNA-seq_purifiedAGO2-")[1]
         exp = "smallRNA_seq"
@@ -104,7 +107,10 @@ def construct_directory(string):
         if len(str_split) == 4:
             cond += "_%s" % str_split[3]
         cond = "%s_%s" % (pur, cond)
-        exp = "agorbns"
+        if GSE_ID == "GSE174715":
+            exp = "agorbns_3p"
+        else:
+            exp = "agorbns"
     dir_string = "%s/%s/reads/%s.txt" % (mir, exp, cond)
 
     return dir_string
@@ -158,7 +164,7 @@ def main():
         # corresponding file.
         for GSM_i in name_from_GSM_map.keys():
             SRR_use = SRR_from_GSM_map[GSM_i]
-            dir_string = construct_directory(name_from_GSM_map[GSM_i])
+            dir_string = construct_directory(name_from_GSM_map[GSM_i], GSE_use)
             output_list += ["%s\t%s" % (SRR_use, dir_string)]
 
     # WRITE OUTPUT _____________________________________________________________
