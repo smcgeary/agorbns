@@ -35,3 +35,6 @@ __pycache__/
 PDFs/
 figures/
 data/raw
+
+# Un-ignore the SRA_download_scripts:
+!SRA_download_scripts/**

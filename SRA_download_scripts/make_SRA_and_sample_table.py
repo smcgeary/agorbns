@@ -1,31 +1,43 @@
 import gzip
 import csv
+import sys
 
 # This script is for downloading the fastq files associated my graduate work.
 # The script should go through the entire list of files and their associated
 # metadata.
 
-# Prior steps. I found the "SRP" files associated with each of the five GEO
-# SubSeries associated with the SuperSeries GSE140220 (The biochemical basis of
-# microRNA targeting efficacy): GSE140214, GSE140215, GSE140216, GSE140217,
-# and GSE140218. These are SRP229580, SRP233292, SRP235216, SRP234771, and
-# SRP235217. Searching each of these five accessions at
-# 'https://www.ncbi.nlm.nih.gov/sra/' enables the download of a meta-data table
-# by clicking "Send to:", "File", and "Summary." I named each file
-# `$SRP_sra_result.csv`, where `$SRP` refers to the SRP accession. I also
-# downloaded the accession list itself, using "Send to:", "File", and
-# "Accession", naming each file "$SRP_SraAccList.txt". Finally, I downloaded
-# each of the series matrix files from the GEO, using thie following command:
+# Prior steps. I found the "SRP" files associated with, first, each of the five
+# GEO SubSeries associated with the SuperSeries GSE140220 (The biochemical basis
+# of microRNA targeting efficacy): GSE140214, GSE140215, GSE140216, GSE140217,
+# and GSE140218, which are SRP229580, SRP233292, SRP235216, SRP234771, and
+# SRP235217, and second, each of the two GEO SubSeries associated with
+# SuperSeries GSE196458 (MicroRNA 3'-compensatory pairing occurs through two
+# binding modes, with affinity shaped by nucleotide identity and position):
+# GSE174715 and GSE196457, which are SRP320549 and SRP359105, respectively.
+# Searching each of these seven accessions at
+# 'https://www.ncbi.nlm.nih.gov/sra/' enables the download of the accession list
+# using "Send to:", "File", and "Accession", naming each file
+# "downloaded_files/$SRP_SraAccList.txt".
+
+# Finally, I downloaded each of the series matrix files from the GEO,
+# using thie following command:
 #
-# `wget --recursive --no-parent -nd
-# ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE140nnn/GSE140214/matrix/
-# -P SRA_download_scripts'
-#
+# `wget --recursive --no-parent -nd ftp://ftp.ncbi.nlm.nih.gov/geo/series/$1/$2/matrix/ -P SRA_download_scripts/downloads'
+# using the following mapping:
+# $1            $2
+# GSE140nnn     GSE140214
+# GSE140nnn     GSE140215
+# GSE140nnn     GSE140216
+# GSE140nnn     GSE140217
+# GSE140nnn     GSE140218
+# GSE174nnn     GSE174715
+# GSE196nnn     GSE196457
+
 # so that I would have the original file name associated with each file, which
 # is important for identifying what the miRNA, experiment, and otherwise
 # condition of each file is.
 
-script_dir = "/n/groups/klein/mcgeary/gradschool/SRA_download_scripts"
+script_dir = "SRA_download_scripts"
 
 # These two lists require manual curation currently in order for the script to
 # work.
@@ -45,7 +57,7 @@ SRP_IDs = [
     "SRP234771",
     "SRP235217",
     "SRP320549",
-    "SRP359105",
+    "SRP359105", # This ID specifically does not include any mapping whatsoever to its appropriate GSE number.
 ]
 SRP_from_GSE_map = dict(zip(GSE_IDs, SRP_IDs))
 
@@ -102,16 +114,16 @@ def main():
     # Pre-allocate the list of strings to be used for the output file.
     output_list = []
     # GENERATE OUTPUT.__________________________________________________________
-    # Iterate over the GSE IDs (each of the five accessions related to the five
-    # data types in the 2019 paper).
+    # Iterate over the GSE IDs (each of the five and two accessions related to
+    # the five and two data types in the 2019 and 2022 papers, respectively).
     for GSE_use in GSE_IDs:
+        print(f"_________{GSE_use}___________________")
         # Define file name for the GEO matrix file used to get the GSM
         # accessions of each SRA file, and the name of sample (which enables
         # parsing what the sample actually corresponds to).
         SRP_use = SRP_from_GSE_map[GSE_use]
-        GSE_file = "%s/%s_series_matrix.txt.gz" % (script_dir, GSE_use)
-        SRP_summary_file = "%s/%s_sra_result.csv" % (script_dir, SRP_use)
-        SRP_acc_file = "%s/%s_SraAccList.txt" % (script_dir, SRP_use)
+        GSE_file = "%s/downloaded_files/%s_series_matrix.txt.gz" % (script_dir, GSE_use)
+        SRP_acc_file = "%s/downloaded_files/%s_SraAccList.txt" % (script_dir, SRP_use)
         # Pre-allocate the list of names and GSM IDs, which have positional
         # correspondence.
         names = []
@@ -125,22 +137,14 @@ def main():
                     names = [i.strip('"') for i in line_split[1:]]
                 elif line_split[0] == '"ID_REF"':
                     GSM_IDs = [i.strip('"') for i in line_split[1:]]
+                elif line_split[0] == "!Series_relation":
+                    val = line_split[1].split(" ")
+                    if val[0] == '"SRA:':
+                        SRP_use_alt = val[1].split("=")[1].strip('"')
         # Construct dictionary for retrival of the names using the GSM IDs.
         name_from_GSM_map = dict(zip(GSM_IDs, names))
-
-        # Pre-allocate the GSM accession string. This step is necessary to map
-        # the GSM accessions from the GEO metadata file to the SRR accessions in
-        # the summary list. In principle, one might expect that the rows of the
-        # two different files are the same, but I am not making that assumption.
-        GSM_acc = []
-        with open(SRP_summary_file) as csv_file:
-            csv_scan = csv.DictReader(csv_file)
-            for row in csv_scan:
-                GSM_acc += [row["Experiment Title"].split(":")[0]]
-        # Through manual inspection, identified that the GSM file is in opposite
-        # order compared to accession list. I am therefore reversing the order
-        # of this list.
-        GSM_acc = GSM_acc[::-1]
+        print(SRP_use)
+        print(SRP_use_alt)
         # Now opening the actual Accession List, which includes a list of SRP
         # accessions that can actually be used to download the files using the
         # prefetch and fastq-dump programs.
@@ -148,7 +152,7 @@ def main():
             SRR_acc = [i.strip() for i in acc_file.readlines() if len(i.strip()) != 0]
         # Construct a dictionary mapping the GSM accessions to the SRR
         # accessions.
-        SRR_from_GSM_map = dict(zip(GSM_acc, SRR_acc))
+        SRR_from_GSM_map = dict(zip(GSM_IDs, SRR_acc))
         # Iterate over each GSM accession and get the corresponding SRR
         # accession and also determine the directory placement of the
         # corresponding file.
