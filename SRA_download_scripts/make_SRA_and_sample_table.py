@@ -98,6 +98,10 @@ def construct_directory(string, GSE_ID):
         exp = "%s_%s" % (exp, cell_line)
         cond = "%s_%s" % (rep, batch)
     else:
+        # This is required because some of the names on GEO have an erroneous
+        # underscore: purification_1 vs purification1. This is not present in
+        # the GEO submission spreadsheet.
+        string = string.replace("purification_", "purification")
         str_split = string.split("_")
         mir, pur, cond = str_split[:3]
         pur = pur.replace("purification", "pur")
@@ -163,15 +167,30 @@ def main():
         # accession and also determine the directory placement of the
         # corresponding file.
         for GSM_i in name_from_GSM_map.keys():
+            print(GSM_i)
             SRR_use = SRR_from_GSM_map[GSM_i]
             dir_string = construct_directory(name_from_GSM_map[GSM_i], GSE_use)
+            print(dir_string)
             output_list += ["%s\t%s" % (SRR_use, dir_string)]
 
     # WRITE OUTPUT _____________________________________________________________
     # Assign the name of output file, and write the concatenated file
     output_dir = "%s/SRA_and_metadata.txt" % script_dir
+    libraries_dir = "Libraries.csv"
+    if GSE_use in ["GSE140214", "GSE140215", "GSE140216",
+                   "GSE140217", "GSE140218"]:
+        study = "agorbns_2019"
+    else:
+        study = "agorbns_2022"
     with open(output_dir, "w+") as file_out:
         file_out.write("\n".join(output_list) + "\n")
+    with open(libraries_dir, "w+") as file_out:
+        for line in output_list:
+            sra, path_use = line.split("\t")
+            mirna, exp, _, suffix = path_use.split("/")
+            
+        # file_out.write("\n".join(output_list) + "\n")
+
 
 
 ################################################################################

@@ -2,18 +2,10 @@
 #MakeReadFile.py
 ################################################################################
 import imp # Used to import general.py
-imp.load_source("general",
-                ("/lab/bartel1_ata/mcgeary/computation/"
-                 "AgoRBNS/general/general.py"
-                )
-               )
-imp.load_source("RBNS_methods",
-                ("/lab/bartel1_ata/mcgeary/computation/"
-                 "AgoRBNS/general/RBNS_methods.py"
-                )
-               )
+imp.load_source("general", "general/general.py")
+# imp.load_source("RBNS_methods", "general/RBNS_methods.py")
 from general import *
-from RBNS_methods import *
+# from RBNS_methods import *
 
 # This script reads one library and outputs a .txt file to be used in all
 # downstream applications. Inputs are:
@@ -26,8 +18,7 @@ from RBNS_methods import *
 
 
 # Constants
-k_phi_x = "".join(open(("/lab/bartel1_ata/mcgeary/computation/"
-                        "AgoRBNS/general/phi_x.txt")).read().split("\n"))
+k_phi_x = "".join(open(("general/phi_x.txt")).read().split("\n"))
 
 def check_read(reads, spikes, barcode, tag, experiment, byte_convert,
                k_phi_x = k_phi_x):
@@ -72,10 +63,6 @@ def check_read(reads, spikes, barcode, tag, experiment, byte_convert,
             sys.stdout.flush()
         seq = full_seq[:read_len]
         seq_tag = full_seq[read_len:40]
-        # Assign the multiplexing barcode sequence
-        read_barcode = header.split("#")[1].split("/")[0]
-        # List of conditionals to except the read:
-        # 1. That the first line doesn't end with 1;0
         # q0  = header[-1] == 0
         # qN  = "N" in seq
         # qB  = "B" in score
@@ -86,17 +73,30 @@ def check_read(reads, spikes, barcode, tag, experiment, byte_convert,
         # print([int(i) for i in [q0, qN, qB, qM, qX, qS, qT]])
         # print(seq_tag)
         # print(tag.split(","))
-        if header[-1] == 0:
-            counts_readtypes_map["0"] += 1
+        ## NOTE: The data re-downloaded from the SRA does not contain
+        ## the original information from the reads from the Whitehead Genome
+        ## Technology Core (WIGTC), which consists of two important differences:
+        ## The Illumina "chastity filter" is missing, as well as the
+        ## demultiplexing barcode information. For this reason, the associated
+        ## lines of code are commented out, with the "#*#"" on the
+        ## right-hand-side of the line, but are presevered in the case that
+        ## the original data files are being used.
+        # Assign the multiplexing barcode sequence
+
+        # List of conditionals to except the read:
+        # 1. That the first line doesn't end with 1;0
+        # read_barcode = header.split("#")[1].split("/")[0]                 #**#
+        # if header[-1] == 0:                                               #**#
+        #     counts_readtypes_map["0"] += 1                                #**#
         # 2. That "N" is not in the read sequence.
-        elif "N" in seq:
+        if "N" in seq:
             counts_readtypes_map["N"] += 1
         # 3. That "B" is not in the quality score.
         elif "B" in score:
             counts_readtypes_map["B"] += 1
         # 4. That the read has the correct multiplexing bardcode.
-        elif read_barcode != barcode:
-            counts_readtypes_map["M"] += 1
+        # elif read_barcode != barcode:                                     #**#
+            # counts_readtypes_map["M"] += 1                                #**#
         # 5. That the sequence is not within a 1 nt mismatch to
         #   the phi-x genome, or its reverse complement.
         elif (seq in k_phi_x or seq in k_phi_x_rc):

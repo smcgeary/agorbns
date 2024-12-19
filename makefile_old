@@ -1,4 +1,5 @@
 # SHELL := /bin/bash
+HOME = /lab/bartel1_ata/mcgeary/computation/AgoRBNS/
 
 MIRNAe = let-7a miR-1 miR-155 miR-124 lsy-6 miR-7-23nt
 MIRNAk = let-7a miR-1 miR-124 lsy-6
@@ -16,7 +17,7 @@ DIR_pp = PreProcessReads/
 DIR_plfold = AnalyzeStructure/
 SCR_mp = MakeMiRNAReadFile.py
 SCR_pp = MakeReadFile.py
-# SCR_pp_burge = MakeReadFileBurge.py
+SCR_pp_burge = MakeReadFileBurge.py
 
 DIR_as = AssignSiteTypes/
 SCR_as = AssignSites.py # Used for AGO-RBNS paper
@@ -35,7 +36,7 @@ SCR_ack = AssignCompetitorKmers.py
 SCR_apk = AssignPositionalKmers.py
 SCR_akpl = AssignKmersProgrammedLib.py # Used for ThrP paper
 SCR_af = AssignFlanks.py # Used for AGO-RBNS paper
-# SCR_as_burge = AssignSitesBurge.py
+SCR_as_burge = AssignSitesBurge.py
 
 DIR_kd = SolveForKds/
 SCR_sc = MakeSiteCountTable.py
@@ -52,10 +53,10 @@ DIR_plfold = AnalyzeStructure/
 SCR_plfold = MakeSitePlfoldFiles_PAPER.py
 
 COND_mirna = I 40 12.6 4 1.26 0.4 0
-# COND_MBLN1 = I 10000 1000 500 250 130 64 16 4 0
-# COND_RBFOX2 = I 9800 3300 1100 365 120 40 14 4.5 1.5 0
+COND_MBLN1 = I 10000 1000 500 250 130 64 16 4 0
+COND_RBFOX2 = I 9800 3300 1100 365 120 40 14 4.5 1.5 0
 
-# TIME_mirna = I 2 5 8 15 30 90 300 900 2700 7200 0 0- Equil Equil-
+TIME_mirna = I 2 5 8 15 30 90 300 900 2700 7200 0 0- Equil Equil-
 
 
 #### NEW DIRECTORIES RELATED TO FITTING BIOCHEM MODEL FOR THREEPRIME SCORE
@@ -69,9 +70,9 @@ HELA_TPM_SM_DIR = /lab/solexa_bartel/mcgeary/transfections/HeLa/count_tables/$\
 TPM_KL_DIR = /lab/solexa_bartel/klin/miRNA_models_data/transfections/
 TPM_SM_DIR = /lab/solexa_bartel/mcgeary/transfections/
 
-# DIR_rep = Repression/# Used for in vivo part of Threep paper.
-# SCR_dts = DevelopThreePScore.py# Use for in vivo part of Threep paper.
-# SCR_fts = kathy_scripts/target_scan/FitTargetScan.py# Use for in vivo part of Threep paper.
+DIR_rep = Repression/# Used for in vivo part of Threep paper.
+SCR_dts = DevelopThreePScore.py# Use for in vivo part of Threep paper.
+SCR_fts = kathy_scripts/target_scan/FitTargetScan.py# Use for in vivo part of Threep paper.
 
 
 KL_FEAT_MEASURED_DIR = /lab/solexa_bartel/klin/miRNA_models_data_old/$\
@@ -222,13 +223,907 @@ LEN_MIN = 4
 
 
 
+### flags for this reciple:
+# v_tpm: "kl" or "sm", indicates who generated the tpm_files.
+# FitTensorFlowModel :
+# 	@(if [ "$(v_tpm)" = "kl" ]; then \
+# 		TPM_BASE_DIR=$(TPM_KL_DIR); \
+# 		if [ "$(cell_line)" = "HeLa" ]; then \
+# 			CELL_LINE="hela"; \
+# 		else \
+# 			CELL_LINE="hek293ft"; \
+# 		fi; \
+# 		TPM_FILE=$$TPM_BASE_DIR$$CELL_LINE"/processed/log_tpm_normed.txt"; \
+# 	elif [ "$(v_tpm)" = "sm" ]; then \
+# 		TPM_BASE_DIR=$(TPM_SM_DIR); \
+# 		CELL_LINE=$(cell_line); \
+# 		TPM_FILE=$$TPM_BASE_DIR$$CELL_LINE"/count_tables/logtpm_batchnormalized.txt"; \
+# 	fi; \
+# 	NEW_SCORE_CHECK=$(patsubst newscore%,%,$(filter newscore%,$(MAKEFLAGS))); \
+# 	if [ "$$NEW_SCORE_CHECK" != "" ]; then \
+# 		FEAT_FILE="/lab/solexa_bartel/mcgeary/transfections/"$(cell_line)"/new_feature_files/"$(kds)"_kds/"; \
+# 		FEAT_OUT="_new"; \
+# 	elif [ "$(kds)" = "measured" ]; then \
+# 		FEAT_FILE=$(KL_FEAT_MEASURED_DIR); \
+# 		FEAT_OUT=""; \
+# 	elif [ "$(kds)" = "predicted" ]; then \
+# 		if [ "$(cell_line)" = "HeLa" ]; then \
+# 			FEAT_FILE=$(KL_FEAT_PREDICTED_DIR)"/hela/"; \
+# 		else \
+# 			FEAT_FILE=$(KL_FEAT_PREDICTED_DIR)"/hek293ft/"; \
+# 		fi; \
+# 		FEAT_OUT=""; \
+# 	fi; \
+# 	MIR_FILE="Repression/mirnas_"$(mirnas)".txt"; \
+# 	PASS_CHECK=$(patsubst passenger%,%,$(filter passenger%,$(MAKEFLAGS))); \
+# 	if [ "$$PASS_CHECK" != "" ]; then \
+# 		PASS_FLAG=" --passenger"; \
+# 		PASS_OUT="_passenger"; \
+# 	else \
+# 		PASS_FLAG=""; \
+# 		PASS_OUT=""; \
+# 	fi; \
+# 	if [ "$(model)" = "biochemplus" ]; then \
+# 		EXTRA_FEATS_FLAG=" --extra_feats logSA_diff,Threep_canon,PCT"; \
+# 	elif [ "$(model)" = "biochem" ]; then \
+# 		EXTRA_FEATS_FLAG=""; \
+# 	fi; \
+# 	TRAIN_MIR=$(patsubst train_mir=%,%,$(filter train_mir%,$(MAKEFLAGS))); \
+# 	if [ "$$TRAIN_MIR" != "" ]; then \
+# 		TRAIN_MIR_FLAG=" --train_mir "$$TRAIN_MIR; \
+# 		TRAIN_MIR_OUT="_"$$TRAIN_MIR; \
+# 	else \
+# 		TRAIN_MIR_FLAG=""; \
+# 		TRAIN_MIR_OUT=""; \
+# 	fi; \
+# 	OUT_BASE="/lab/solexa_bartel/mcgeary/transfections/"$(cell_line); \
+# 	OUT_FILE=$(model)"_"$(kds)"_"$(mirnas)"_"$(v_tpm)"tpm"$$PASS_OUT$$FEAT_OUT$$TRAIN_MIR_OUT".txt"; \
+# 	OUT_PREDS_DIR=$$OUT_BASE"/model_predictions_tf/$$OUT_FILE"; \
+# 	OUT_PARAMS_DIR=$$OUT_BASE"/model_parameters_tf/$$OUT_FILE"; \
+# 	job="python Repression/train.py --tpm_file "$$TPM_FILE; \
+# 	job=$$job" --feature_file "$$FEAT_FILE"MIR.txt --mirseqs "$$MIR_FILE; \
+# 	job=$$job" --kd_cutoff 0 --mode all --init_bound"; \
+# 	job=$$job$$PASS_FLAG$$EXTRA_FEATS_FLAG$$TRAIN_MIR_FLAG; \
+# 	job=$$job" --outfile "$$OUT_PREDS_DIR" --outparams "$$OUT_PARAMS_DIR; \
+# 	echo $$job; \
+# 	$$job)
+
+FitTensorFlowModel :
+	@(if [ "$(v_tpm)" = "kl" ]; then \
+		TPM_BASE_DIR=$(TPM_KL_DIR); \
+		if [ "$(cell_line)" = "HeLa" ]; then \
+			CELL_LINE="hela"; \
+		else \
+			CELL_LINE="hek293ft"; \
+		fi; \
+		TPM_FILE=$$TPM_BASE_DIR$$CELL_LINE"/processed/log_tpm_normed.txt"; \
+	elif [ "$(v_tpm)" = "sm" ]; then \
+		TPM_BASE_DIR=$(TPM_SM_DIR); \
+		CELL_LINE=$(cell_line); \
+		TPM_FILE=$$TPM_BASE_DIR$$CELL_LINE"/count_tables/logtpm_batchnormalized.txt"; \
+	fi; \
+	KD_FEAT=$(patsubst kd_feat=%,%,$(filter kd_feat%,$(MAKEFLAGS))); \
+	if [ "$$KD_FEAT" != "" ]; then \
+		FEAT_FILE="/lab/solexa_bartel/mcgeary/transfections/"$(cell_line)"/kd_feature_files/"$(kds)"_kds/"$$KD_FEAT/; \
+	else \
+		FEAT_FILE="/lab/solexa_bartel/mcgeary/transfections/"$(cell_line)"/new_feature_files/"$(kds)"_kds/"; \
+	fi; \
+	MOD_STR=""; \
+	MIN_PAIRING=$(patsubst min_pairing=%,%,$(filter min_pairing%,$(MAKEFLAGS))); \
+	if [ "$$MIN_PAIRING" != "" ]; then \
+		MOD_STR=$$MOD_STR"min_pairing_"$$MIN_PAIRING","; \
+	fi; \
+	SUPP_L=$(patsubst supp_l=%,%,$(filter supp_l%,$(MAKEFLAGS))); \
+	if [ "$$SUPP_L" != "" ]; then \
+		MOD_STR=$$MOD_STR"supp_l_"$$SUPP_L","; \
+	fi; \
+	SUPP_R=$(patsubst supp_r=%,%,$(filter supp_r%,$(MAKEFLAGS))); \
+	if [ "$$SUPP_R" != "" ]; then \
+		MOD_STR=$$MOD_STR"supp_r_"$$SUPP_R","; \
+	fi; \
+	OFFSET_OPT=$(patsubst offset_opt=%,%,$(filter offset_opt%,$(MAKEFLAGS))); \
+	if [ "$$OFFSET_OPT" != "" ]; then \
+		MOD_STR=$$MOD_STR"offset_opt_"$$OFFSET_OPT","; \
+	fi; \
+	OFFSET_TOL=$(patsubst offset_tol=%,%,$(filter offset_tol%,$(MAKEFLAGS))); \
+	if [ "$$OFFSET_TOL" != "" ]; then \
+		MOD_STR=$$MOD_STR"offset_tol_"$$OFFSET_TOL","; \
+	fi; \
+	W_PAIRING=$(patsubst w_pairing=%,%,$(filter w_pairing%,$(MAKEFLAGS))); \
+	if [ "$$W_PAIRING" != "" ]; then \
+		MOD_STR=$$MOD_STR"w_pairing_"$$W_PAIRING","; \
+	fi; \
+	W_SUPP=$(patsubst w_supp=%,%,$(filter w_supp%,$(MAKEFLAGS))); \
+	if [ "$$W_SUPP" != "" ]; then \
+		MOD_STR=$$MOD_STR"w_supp_"$$W_SUPP","; \
+	fi; \
+	W_OFFSET=$(patsubst w_offset=%,%,$(filter w_offset%,$(MAKEFLAGS))); \
+	if [ "$$W_OFFSET" != "" ]; then \
+		MOD_STR=$$MOD_STR"w_offset_"$$W_OFFSET","; \
+	fi; \
+	TWO_BMODES=$(patsubst two_bmodes=%,%,$(filter two_bmodes%,$(MAKEFLAGS))); \
+	echo "TWO_BMODES: "$$TWO_BMODES; \
+	if [ "$$TWO_BMODES" != "" ]; then \
+		MOD_STR=$$MOD_STR"two_bmodes,"; \
+	fi; \
+	echo $$MOD_STR; \
+	MOD_STR=$${MOD_STR%?}; \
+	echo $$MOD_STR; \
+	if [ "$$MOD_STR" != "" ]; then \
+		FEAT_FILE=$$FEAT_FILE$$MOD_STR"/"; \
+		FEAT_OUT="_"$$MOD_STR; \
+	elif [ "$$KD_FEAT" != "" ]; then \
+		FEAT_OUT="_"$$KD_FEAT; \
+	else \
+		FEAT_OUT=""; \
+	fi; \
+	MIR_FILE="Repression/mirna_sets/mirnas_"$(mirnas)".txt"; \
+	PASS_CHECK=$(patsubst passenger=%,%,$(filter passenger%,$(MAKEFLAGS))); \
+	if [ "$$PASS_CHECK" != "" ]; then \
+		PASS_FLAG=" --passenger"; \
+		PASS_OUT="_passenger"; \
+	else \
+		PASS_FLAG=""; \
+		PASS_OUT=""; \
+	fi; \
+	if [ "$(model)" = "biochemplus" ]; then \
+		THREEP_ALL=$(patsubst threep_all=%,%,$(filter threep_all%,$(MAKEFLAGS))); \
+		if [ "$$THREEP_ALL" != "" ]; then \
+			EXTRA_FEATS_FLAG=" --extra_feats logSA_diff,Threep,PCT"; \
+			FEAT_OUT=$$FEAT_OUT"_threepall"; \
+		else \
+			EXTRA_FEATS_FLAG=" --extra_feats logSA_diff,Threep_canon,PCT"; \
+		fi; \
+	elif [ "$(model)" = "biochem" ]; then \
+		EXTRA_FEATS_FLAG=""; \
+	fi; \
+	OUT_BASE="/lab/solexa_bartel/mcgeary/transfections/"$(cell_line); \
+	OUT_FILE=$(model)"_"$(kds)"_"$(mirnas)"_"$(v_tpm)"tpm"$$PASS_OUT$$FEAT_OUT".txt"; \
+	OUT_PREDS_DIR=$$OUT_BASE"/model_predictions_tf/$$OUT_FILE"; \
+	OUT_PARAMS_DIR=$$OUT_BASE"/model_parameters_tf/$$OUT_FILE"; \
+	job="python Repression/kathy_scripts/biochem_model/train.py --tpm_file "$$TPM_FILE; \
+	job=$$job" --feature_file "$$FEAT_FILE"MIR.txt --mirseqs "$$MIR_FILE; \
+	job=$$job" --kd_cutoff 0 --mode all --init_bound"; \
+	job=$$job$$PASS_FLAG$$EXTRA_FEATS_FLAG; \
+	job=$$job" --outfile "$$OUT_PREDS_DIR" --outparams "$$OUT_PARAMS_DIR; \
+	echo $$job; \
+	$$job)
+# 	bsub -o /lab/solexa_bartel/mcgeary/jobs/job%J_index%I.txt $$job)
+
+
+# MANDATORY FLAGS:
+# mirnas, cell_line, kds
+# OPTIONAL FLAGS:
+# min_pairing, supp_l, supp_r, offset_opt, offset_tol, w_pairing, w_supp, w_offset
+GenerateNewFeatureFile :
+	@(if [ "$(mirnas)" = "four" ]; then \
+		MIRNAS="$(MIRNAbc_HeLa_four)"; \
+	elif [ "$(mirnas)" = "five" ]; then \
+		MIRNAS="$(MIRNAbc_HeLa_five)"; \
+	elif [ "$(mirnas)" = "six" ]; then \
+		MIRNAS="$(MIRNAbc_HeLa_six)"; \
+	elif [ "$(mirnas)" = "sixteen" ]; then \
+		MIRNAS="$(MIRNAbc_HeLa_sixteen)"; \
+	elif [ "$(mirnas)" = "seventeen" ]; then \
+		MIRNAS="$(MIRNAbc_HeLa_seventeen)"; \
+	fi; \
+	MOD_STR=""; \
+	MIN_PAIRING=$(patsubst min_pairing=%,%,$(filter min_pairing%,$(MAKEFLAGS))); \
+	if [ "$$MIN_PAIRING" != "" ]; then \
+		MOD_STR=$$MOD_STR" -min_pairing "$$MIN_PAIRING; \
+	fi; \
+	SUPP_L=$(patsubst supp_l=%,%,$(filter supp_l%,$(MAKEFLAGS))); \
+	if [ "$$SUPP_L" != "" ]; then \
+		MOD_STR=$$MOD_STR" -supp_l "$$SUPP_L; \
+	fi; \
+	SUPP_R=$(patsubst supp_r=%,%,$(filter supp_r%,$(MAKEFLAGS))); \
+	if [ "$$SUPP_R" != "" ]; then \
+		MOD_STR=$$MOD_STR" -supp_r "$$SUPP_R; \
+	fi; \
+	OFFSET_OPT=$(patsubst offset_opt=%,%,$(filter offset_opt%,$(MAKEFLAGS))); \
+	if [ "$$OFFSET_OPT" != "" ]; then \
+		MOD_STR=$$MOD_STR" -offset_opt "$$OFFSET_OPT; \
+	fi; \
+	OFFSET_TOL=$(patsubst offset_tol=%,%,$(filter offset_tol%,$(MAKEFLAGS))); \
+	if [ "$$OFFSET_TOL" != "" ]; then \
+		MOD_STR=$$MOD_STR" -offset_tol "$$OFFSET_TOL; \
+	fi; \
+	W_PAIRING=$(patsubst w_pairing=%,%,$(filter w_pairing%,$(MAKEFLAGS))); \
+	if [ "$$W_PAIRING" != "" ]; then \
+		MOD_STR=$$MOD_STR" -w_pairing "$$W_PAIRING; \
+	fi; \
+	W_SUPP=$(patsubst w_supp=%,%,$(filter w_supp%,$(MAKEFLAGS))); \
+	if [ "$$W_SUPP" != "" ]; then \
+		MOD_STR=$$MOD_STR" -w_supp "$$W_SUPP; \
+	fi; \
+	W_OFFSET=$(patsubst w_offset=%,%,$(filter w_offset%,$(MAKEFLAGS))); \
+	if [ "$$W_OFFSET" != "" ]; then \
+		MOD_STR=$$MOD_STR" -w_offset "$$W_OFFSET; \
+	fi; \
+	TWO_BMODES=$(patsubst two_bmodes=%,%,$(filter two_bmodes%,$(MAKEFLAGS))); \
+	if [ "$$TWO_BMODES" != "" ]; then \
+		MOD_STR=$$MOD_STR" -two_bmodes"; \
+	fi; \
+	for MIRNA in $$MIRNAS; do \
+		job=""; \
+		echo $$MIRNA; \
+		job=$$job"python "$(HOME)$(DIR_rep)$(SCR_dts)" "$(cell_line)" "$$MIRNA; \
+		job=$$job" $(kds) "$$MOD_STR; \
+		echo $$job; \
+# 		$$job; \
+		bsub -o /lab/solexa_bartel/mcgeary/jobs/job%J_index%I.txt $$job; \
+	done; \
+	PASS_CHECK=$(patsubst passenger=%,%,$(filter passenger%,$(MAKEFLAGS))); \
+	if [ "$$PASS_CHECK" != "" ]; then \
+		for MIRNA in $$MIRNAS; do \
+			job=""; \
+			echo $$MIRNA; \
+		job=$$job"python "$(HOME)$(DIR_rep)$(SCR_dts)" "$(cell_line)" "$$MIRNA"\*"; \
+			job=$$job" $(kds) $$MOD_STR"; \
+			echo $$job; \
+# 			$$job; \
+			bsub -o /lab/solexa_bartel/mcgeary/jobs/job%J_index%I.txt $$job; \
+		done; \
+	fi; \
+	)
+
+
+# MANDATORY FLAGS:
+# cell_line
+# OPTIONAL FLAGS:
+# min_pairing, supp_l, supp_r, offset_opt, offset_tol, w_pairing, w_supp, w_offset
+GenerateNewTargetScanFeatureFile :
+	@(MIRNAS="$(MIRNAbc_HeLa_sixteen)"; \
+	MOD_STR=""; \
+	MIN_PAIRING=$(patsubst min_pairing=%,%,$(filter min_pairing%,$(MAKEFLAGS))); \
+	if [ "$$MIN_PAIRING" != "" ]; then \
+		MOD_STR=$$MOD_STR" -min_pairing "$$MIN_PAIRING; \
+	fi; \
+	SUPP_L=$(patsubst supp_l=%,%,$(filter supp_l%,$(MAKEFLAGS))); \
+	if [ "$$SUPP_L" != "" ]; then \
+		MOD_STR=$$MOD_STR" -supp_l "$$SUPP_L; \
+	fi; \
+	SUPP_R=$(patsubst supp_r=%,%,$(filter supp_r%,$(MAKEFLAGS))); \
+	if [ "$$SUPP_R" != "" ]; then \
+		MOD_STR=$$MOD_STR" -supp_r "$$SUPP_R; \
+	fi; \
+	OFFSET_OPT=$(patsubst offset_opt=%,%,$(filter offset_opt%,$(MAKEFLAGS))); \
+	if [ "$$OFFSET_OPT" != "" ]; then \
+		MOD_STR=$$MOD_STR" -offset_opt "$$OFFSET_OPT; \
+	fi; \
+	OFFSET_TOL=$(patsubst offset_tol=%,%,$(filter offset_tol%,$(MAKEFLAGS))); \
+	if [ "$$OFFSET_TOL" != "" ]; then \
+		MOD_STR=$$MOD_STR" -offset_tol "$$OFFSET_TOL; \
+	fi; \
+	W_PAIRING=$(patsubst w_pairing=%,%,$(filter w_pairing%,$(MAKEFLAGS))); \
+	if [ "$$W_PAIRING" != "" ]; then \
+		MOD_STR=$$MOD_STR" -w_pairing "$$W_PAIRING; \
+	fi; \
+	W_SUPP=$(patsubst w_supp=%,%,$(filter w_supp%,$(MAKEFLAGS))); \
+	if [ "$$W_SUPP" != "" ]; then \
+		MOD_STR=$$MOD_STR" -w_supp "$$W_SUPP; \
+	fi; \
+	W_OFFSET=$(patsubst w_offset=%,%,$(filter w_offset%,$(MAKEFLAGS))); \
+	if [ "$$W_OFFSET" != "" ]; then \
+		MOD_STR=$$MOD_STR" -w_offset "$$W_OFFSET; \
+	fi; \
+	TWO_BMODES=$(patsubst two_bmodes=%,%,$(filter two_bmodes%,$(MAKEFLAGS))); \
+	if [ "$$TWO_BMODES" != "" ]; then \
+		MOD_STR=$$MOD_STR" -two_bmodes"; \
+	fi; \
+	job=""; \
+	echo $$MIRNA; \
+	echo $(cell_line);\
+	job=$$job"python "$(HOME)$(DIR_rep)$(SCR_dts)" "$(cell_line)" None targetscan"; \
+	job=$$job$$MOD_STR; \
+	echo $$job; \
+	bsub -o /lab/solexa_bartel/mcgeary/jobs/job%J_index%I.txt $$job; \
+# 	$$job; \
+	)
+
+
+
+SpanThreePrimeScoreSpace :
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) GenerateNewFeatureFile
+	## Check for two binding modes.
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) two_bmodes=1 GenerateNewFeatureFile
+	#Span lengths of pairing
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) min_pairing=1 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) min_pairing=2 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) min_pairing=3 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) min_pairing=4 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) min_pairing=5 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) min_pairing=6 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) min_pairing=7 GenerateNewFeatureFile
+	## Span optimal offsets
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_opt=0 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_opt=1 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_opt=2 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_opt=3 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_opt=4 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_opt=5 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_opt=6 GenerateNewFeatureFile
+	## Span left-hand region of 3prime supp region.
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=9 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=10 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=11 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=12 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=13 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=14 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_r=15 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_r=16 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_r=17 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_r=18 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_r=19 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_r=19 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_r=20 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_r=21 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_r=22 GenerateNewFeatureFile
+	# Move the 3prime supplementary register.
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=9 supp_r=12 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=10 supp_r=13 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=11 supp_r=14 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=12 supp_r=15 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=13 supp_r=16 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=14 supp_r=17 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=15 supp_r=18 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=16 supp_r=19 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=17 supp_r=20 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=18 supp_r=21 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) supp_l=19 supp_r=22 GenerateNewFeatureFile
+	# Play with the offset tolerance
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_tol=0 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_tol=1 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_tol=2 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_tol=3 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_tol=4 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_tol=5 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) offset_tol=6 GenerateNewFeatureFile
+	# Play with the offset weights
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0.1 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0.2 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0.3 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0.4 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0.5 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0.6 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0.7 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0.8 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=0.9 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_pairing=1 GenerateNewFeatureFile
+	# Play with the pairing weights
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0.1 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0.2 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0.3 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0.4 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0.5 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0.6 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0.7 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0.8 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=0.9 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_offset=1 GenerateNewFeatureFile
+	# Play with the supp weights
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0.1 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0.2 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0.3 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0.4 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0.5 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0.6 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0.7 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0.8 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=0.9 GenerateNewFeatureFile
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) passenger=$(passenger) w_supp=1 GenerateNewFeatureFile
+
+SpanFullThreePrimeScoreSpace :
+	make mirnas=five kds=measured cell_line=HeLa SpanThreePrimeScoreSpace
+# 	make mirnas=five kds=predicted cell_line=HeLa SpanThreePrimeScoreSpace
+# 	make mirnas=five kds=predicted cell_line=HeLa passenger=1 SpanThreePrimeScoreSpace
+# 	make mirnas=six kds=measured cell_line=HeLa SpanThreePrimeScoreSpace
+# 	make mirnas=six kds=predicted cell_line=HeLa SpanThreePrimeScoreSpace
+# 	make mirnas=six kds=predicted cell_line=HeLa passenger=1 SpanThreePrimeScoreSpace
+# 	make mirnas=sixteen kds=predicted cell_line=HeLa SpanThreePrimeScoreSpace
+# 	make mirnas=sixteen kds=predicted cell_line=HeLa passenger=1 SpanThreePrimeScoreSpace
+# 	make mirnas=seventeen kds=predicted cell_line=HeLa SpanThreePrimeScoreSpace
+# 	make mirnas=seventeen kds=predicted cell_line=HeLa passenger=1 SpanThreePrimeScoreSpace
+
+SpanThreePrimeTargetScanScoreSpace :
+	make cell_line=$(cell_line) GenerateNewTargetScanFeatureFile
+	## Check for two binding modes.
+	make cell_line=$(cell_line) two_bmodes=1 GenerateNewTargetScanFeatureFile
+	#Span lengths of pairing
+	make cell_line=$(cell_line) min_pairing=1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) min_pairing=2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) min_pairing=3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) min_pairing=4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) min_pairing=5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) min_pairing=6 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) min_pairing=7 GenerateNewTargetScanFeatureFile
+	#Span length of pairing with twobmodes
+	make cell_line=$(cell_line) two_bmodes=1 min_pairing=1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 min_pairing=2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 min_pairing=3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 min_pairing=4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 min_pairing=5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 min_pairing=6 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 min_pairing=7 GenerateNewTargetScanFeatureFile
+
+	## Span optimal offsets
+	make cell_line=$(cell_line) offset_opt=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_opt=1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_opt=2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_opt=3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_opt=4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_opt=5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_opt=6 GenerateNewTargetScanFeatureFile
+	## Span optimal offsets and two bmodes
+	make cell_line=$(cell_line) two_bmodes=1 offset_opt=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_opt=1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_opt=2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_opt=3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_opt=4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_opt=5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_opt=6 GenerateNewTargetScanFeatureFile
+
+
+	## Span left-hand region of 3prime supp region.
+	make cell_line=$(cell_line) supp_l=9 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=10 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=11 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=12 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=13 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=14 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_r=15 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_r=16 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_r=17 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_r=18 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_r=19 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_r=19 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_r=20 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_r=21 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_r=22 GenerateNewTargetScanFeatureFile
+
+	## Span left-hand region of 3prime supp region with two bmodes.
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=9 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=10 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=11 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=12 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=13 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=14 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_r=15 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_r=16 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_r=17 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_r=18 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_r=19 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_r=19 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_r=20 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_r=21 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_r=22 GenerateNewTargetScanFeatureFile
+
+	# Move the 3prime supplementary register.
+	make cell_line=$(cell_line) supp_l=9 supp_r=12 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=10 supp_r=13 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=11 supp_r=14 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=12 supp_r=15 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=13 supp_r=16 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=14 supp_r=17 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=15 supp_r=18 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=16 supp_r=19 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=17 supp_r=20 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=18 supp_r=21 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) supp_l=19 supp_r=22 GenerateNewTargetScanFeatureFile
+
+	# Move the 3prime supplementary register with twobmodes
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=9 supp_r=12 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=10 supp_r=13 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=11 supp_r=14 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=12 supp_r=15 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=13 supp_r=16 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=14 supp_r=17 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=15 supp_r=18 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=16 supp_r=19 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=17 supp_r=20 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=18 supp_r=21 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 supp_l=19 supp_r=22 GenerateNewTargetScanFeatureFile
+
+	# Play with the offset tolerance
+	make cell_line=$(cell_line) offset_tol=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_tol=1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_tol=2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_tol=3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_tol=4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_tol=5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) offset_tol=6 GenerateNewTargetScanFeatureFile
+	# Play with the offset tolerance with two bmodes
+	make cell_line=$(cell_line) two_bmodes=1 offset_tol=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_tol=1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_tol=2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_tol=3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_tol=4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_tol=5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 offset_tol=6 GenerateNewTargetScanFeatureFile
+	# Play with the pairing weights
+	make cell_line=$(cell_line) w_pairing=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=0.1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=0.2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=0.3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=0.4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=0.5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=0.6 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=0.7 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=0.8 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=0.9 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_pairing=1 GenerateNewTargetScanFeatureFile
+	# Play with the pairing weights with two bmodes
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0.1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0.2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0.3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0.4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0.5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0.6 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0.7 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0.8 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=0.9 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_pairing=1 GenerateNewTargetScanFeatureFile
+	# Play with the offset weights
+	make cell_line=$(cell_line) w_offset=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=0.1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=0.2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=0.3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=0.4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=0.5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=0.6 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=0.7 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=0.8 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=0.9 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_offset=1 GenerateNewTargetScanFeatureFile
+	# Play with the offset weights with two bmodes
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0.1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0.2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0.3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0.4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0.5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0.6 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0.7 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0.8 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=0.9 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_offset=1 GenerateNewTargetScanFeatureFile
+	# Play with the supp weights
+	make cell_line=$(cell_line) w_supp=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=0.1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=0.2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=0.3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=0.4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=0.5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=0.6 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=0.7 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=0.8 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=0.9 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) w_supp=1 GenerateNewTargetScanFeatureFile
+	# Play with the supp weights with two_bmodes
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0.1 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0.2 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0.3 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0.4 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0.5 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0.6 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0.7 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0.8 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=0.9 GenerateNewTargetScanFeatureFile
+	make cell_line=$(cell_line) two_bmodes=1 w_supp=1 GenerateNewTargetScanFeatureFile
+
+
+
+SpanFullThreePrimeTargetScanScoreSpace :
+	make cell_line=HeLa SpanThreePrimeTargetScanScoreSpace
+
+
+
+## Obligate parameters.
+# mirnas, kds, cell_line, v_tpm
+## Optional parameters.
+# passenger
+TestThreePrimeScoreSpace :
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus FitTensorFlowModel
+	# Check for two binding modes.
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus two_bmodes=1 FitTensorFlowModel
+	# Span lengths of pairing
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus min_pairing=1 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus min_pairing=2 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus min_pairing=3 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus min_pairing=4 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus min_pairing=5 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus min_pairing=6 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus min_pairing=7 FitTensorFlowModel
+	# Span optimal offsets
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_opt=0 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_opt=1 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_opt=2 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_opt=3 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_opt=4 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_opt=5 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_opt=6 FitTensorFlowModel
+	# Span left-hand region of 3prime supp region.
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=9 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=10 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=11 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=12 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=13 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=14 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_r=15 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_r=16 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_r=17 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_r=18 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_r=19 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_r=20 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_r=21 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_r=22 FitTensorFlowModel
+	# Move the 3prime supplementary register.
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=9 supp_r=12 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=10 supp_r=13 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=11 supp_r=14 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=12 supp_r=15 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=14 supp_r=17 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=15 supp_r=18 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=16 supp_r=19 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus supp_l=17 supp_r=20 FitTensorFlowModel
+	# Play with the offset tolerance
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_tol=0 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_tol=1 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_tol=2 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_tol=3 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_tol=4 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_tol=5 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus offset_tol=6 FitTensorFlowModel
+	# Play with the offset weights
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0.1 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0.2 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0.3 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0.4 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0.5 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0.6 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0.7 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0.8 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=0.9 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_pairing=1 FitTensorFlowModel
+	# Play with the pairing weights
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0.1 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0.2 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0.3 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0.4 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0.5 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0.6 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0.7 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0.8 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=0.9 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_offset=1 FitTensorFlowModel
+	# Play with the supp weights
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0.1 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0.2 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0.3 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0.4 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0.5 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0.6 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0.7 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0.8 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=0.9 FitTensorFlowModel
+	make mirnas=$(mirnas) kds=$(kds) cell_line=$(cell_line) v_tpm=$(v_tpm) passenger=$(passenger) model=biochemplus w_supp=1 FitTensorFlowModel
+
+TestFullThreePrimeScoreSpace :
+	# Using Sean TPMs
+	make mirnas=five kds=measured cell_line=HeLa v_tpm=sm TestThreePrimeScoreSpace
+	make mirnas=five kds=predicted cell_line=HeLa v_tpm=sm TestThreePrimeScoreSpace
+	make mirnas=five kds=predicted cell_line=HeLa passenger=1 v_tpm=sm TestThreePrimeScoreSpace
+	make mirnas=six kds=measured cell_line=HeLa v_tpm=sm TestThreePrimeScoreSpace
+	make mirnas=six kds=predicted cell_line=HeLa v_tpm=sm TestThreePrimeScoreSpace
+	make mirnas=six kds=predicted cell_line=HeLa passenger=1 v_tpm=sm TestThreePrimeScoreSpace
+	make mirnas=sixteen kds=predicted cell_line=HeLa v_tpm=sm TestThreePrimeScoreSpace
+	make mirnas=sixteen kds=predicted cell_line=HeLa passenger=1 v_tpm=sm TestThreePrimeScoreSpace
+	make mirnas=seventeen kds=predicted cell_line=HeLa v_tpm=sm TestThreePrimeScoreSpace
+	make mirnas=seventeen kds=predicted cell_line=HeLa passenger=1 v_tpm=sm TestThreePrimeScoreSpace
+	# Using Kathy TPMs
+	make mirnas=five kds=measured cell_line=HeLa v_tpm=kl TestThreePrimeScoreSpace
+	make mirnas=five kds=predicted cell_line=HeLa v_tpm=kl TestThreePrimeScoreSpace
+	make mirnas=five kds=predicted cell_line=HeLa passenger=1 v_tpm=kl TestThreePrimeScoreSpace
+	make mirnas=six kds=measured cell_line=HeLa v_tpm=kl TestThreePrimeScoreSpace
+	make mirnas=six kds=predicted cell_line=HeLa v_tpm=kl TestThreePrimeScoreSpace
+	make mirnas=six kds=predicted cell_line=HeLa passenger=1 v_tpm=kl TestThreePrimeScoreSpace
+	make mirnas=sixteen kds=predicted cell_line=HeLa v_tpm=kl TestThreePrimeScoreSpace
+	make mirnas=sixteen kds=predicted cell_line=HeLa passenger=1 v_tpm=kl TestThreePrimeScoreSpace
+	make mirnas=seventeen kds=predicted cell_line=HeLa v_tpm=kl TestThreePrimeScoreSpace
+	make mirnas=seventeen kds=predicted cell_line=HeLa passenger=1 v_tpm=kl TestThreePrimeScoreSpace
+
+
+
+
+TestNewTargetScanFeatureFile :
+	@(MOD_STR=""; \
+	MIN_PAIRING=$(patsubst min_pairing=%,%,$(filter min_pairing%,$(MAKEFLAGS))); \
+	if [ "$$MIN_PAIRING" != "" ]; then \
+		MOD_STR=$$MOD_STR" -min_pairing "$$MIN_PAIRING; \
+	fi; \
+	SUPP_L=$(patsubst supp_l=%,%,$(filter supp_l%,$(MAKEFLAGS))); \
+	if [ "$$SUPP_L" != "" ]; then \
+		MOD_STR=$$MOD_STR" -supp_l "$$SUPP_L; \
+	fi; \
+	SUPP_R=$(patsubst supp_r=%,%,$(filter supp_r%,$(MAKEFLAGS))); \
+	if [ "$$SUPP_R" != "" ]; then \
+		MOD_STR=$$MOD_STR" -supp_r "$$SUPP_R; \
+	fi; \
+	OFFSET_OPT=$(patsubst offset_opt=%,%,$(filter offset_opt%,$(MAKEFLAGS))); \
+	if [ "$$OFFSET_OPT" != "" ]; then \
+		MOD_STR=$$MOD_STR" -offset_opt "$$OFFSET_OPT; \
+	fi; \
+	OFFSET_TOL=$(patsubst offset_tol=%,%,$(filter offset_tol%,$(MAKEFLAGS))); \
+	if [ "$$OFFSET_TOL" != "" ]; then \
+		MOD_STR=$$MOD_STR" -offset_tol "$$OFFSET_TOL; \
+	fi; \
+	W_PAIRING=$(patsubst w_pairing=%,%,$(filter w_pairing%,$(MAKEFLAGS))); \
+	if [ "$$W_PAIRING" != "" ]; then \
+		MOD_STR=$$MOD_STR" -w_pairing "$$W_PAIRING; \
+	fi; \
+	W_SUPP=$(patsubst w_supp=%,%,$(filter w_supp%,$(MAKEFLAGS))); \
+	if [ "$$W_SUPP" != "" ]; then \
+		MOD_STR=$$MOD_STR" -w_supp "$$W_SUPP; \
+	fi; \
+	W_OFFSET=$(patsubst w_offset=%,%,$(filter w_offset%,$(MAKEFLAGS))); \
+	if [ "$$W_OFFSET" != "" ]; then \
+		MOD_STR=$$MOD_STR" -w_offset "$$W_OFFSET; \
+	fi; \
+	TWO_BMODES=$(patsubst two_bmodes=%,%,$(filter two_bmodes%,$(MAKEFLAGS))); \
+	if [ "$$TWO_BMODES" != "" ]; then \
+		MOD_STR=$$MOD_STR" -two_bmodes"; \
+	fi; \
+	job="python "$(HOME)$(DIR_rep)"$(SCR_fts)"; \
+	job=$$job$$MOD_STR; \
+	echo $$job; \
+	bsub -o /lab/solexa_bartel/mcgeary/jobs/job%J_index%I.txt $$job; \
+	job="python "$(HOME)$(DIR_rep)"$(SCR_fts) -rescaled"; \
+	job=$$job$$MOD_STR; \
+	echo $$job; \
+	bsub -o /lab/solexa_bartel/mcgeary/jobs/job%J_index%I.txt $$job; \
+	job="python "$(HOME)$(DIR_rep)"$(SCR_fts) -bounded"; \
+	job=$$job$$MOD_STR; \
+	echo $$job; \
+	bsub -o /lab/solexa_bartel/mcgeary/jobs/job%J_index%I.txt $$job; \
+	job="python "$(HOME)$(DIR_rep)"$(SCR_fts) -bounded -rescaled"; \
+	job=$$job$$MOD_STR; \
+	echo $$job; \
+	bsub -o /lab/solexa_bartel/mcgeary/jobs/job%J_index%I.txt $$job; \
+	)
+
+SpanTestingThreePrimeTargetScanScoreSpace :
+	make TestNewTargetScanFeatureFile
+	## Check for two binding modes.
+	make two_bmodes=1 TestNewTargetScanFeatureFile
+	#Span lengths of pairing
+	make min_pairing=1 TestNewTargetScanFeatureFile
+	make min_pairing=2 TestNewTargetScanFeatureFile
+	make min_pairing=3 TestNewTargetScanFeatureFile
+	make min_pairing=4 TestNewTargetScanFeatureFile
+	make min_pairing=5 TestNewTargetScanFeatureFile
+	make min_pairing=6 TestNewTargetScanFeatureFile
+	make min_pairing=7 TestNewTargetScanFeatureFile
+	## Span optimal offsets
+	make offset_opt=0 TestNewTargetScanFeatureFile
+	make offset_opt=1 TestNewTargetScanFeatureFile
+	make offset_opt=2 TestNewTargetScanFeatureFile
+	make offset_opt=3 TestNewTargetScanFeatureFile
+	make offset_opt=4 TestNewTargetScanFeatureFile
+	make offset_opt=5 TestNewTargetScanFeatureFile
+	make offset_opt=6 TestNewTargetScanFeatureFile
+	## Span left-hand region of 3prime supp region.
+	make supp_l=9 TestNewTargetScanFeatureFile
+	make supp_l=10 TestNewTargetScanFeatureFile
+	make supp_l=11 TestNewTargetScanFeatureFile
+	make supp_l=12 TestNewTargetScanFeatureFile
+	make supp_l=13 TestNewTargetScanFeatureFile
+	make supp_l=14 TestNewTargetScanFeatureFile
+	make supp_r=15 TestNewTargetScanFeatureFile
+	make supp_r=16 TestNewTargetScanFeatureFile
+	make supp_r=17 TestNewTargetScanFeatureFile
+	make supp_r=18 TestNewTargetScanFeatureFile
+	make supp_r=19 TestNewTargetScanFeatureFile
+	make supp_r=19 TestNewTargetScanFeatureFile
+	make supp_r=20 TestNewTargetScanFeatureFile
+	make supp_r=21 TestNewTargetScanFeatureFile
+	make supp_r=22 TestNewTargetScanFeatureFile
+	# Move the 3prime supplementary register.
+	make supp_l=9 supp_r=12 TestNewTargetScanFeatureFile
+	make supp_l=10 supp_r=13 TestNewTargetScanFeatureFile
+	make supp_l=11 supp_r=14 TestNewTargetScanFeatureFile
+	make supp_l=12 supp_r=15 TestNewTargetScanFeatureFile
+	make supp_l=13 supp_r=16 TestNewTargetScanFeatureFile
+	make supp_l=14 supp_r=17 TestNewTargetScanFeatureFile
+	make supp_l=15 supp_r=18 TestNewTargetScanFeatureFile
+	make supp_l=16 supp_r=19 TestNewTargetScanFeatureFile
+	make supp_l=17 supp_r=20 TestNewTargetScanFeatureFile
+	make supp_l=18 supp_r=21 TestNewTargetScanFeatureFile
+	make supp_l=19 supp_r=22 TestNewTargetScanFeatureFile
+	# Play with the offset tolerance
+	make offset_tol=0 TestNewTargetScanFeatureFile
+	make offset_tol=1 TestNewTargetScanFeatureFile
+	make offset_tol=2 TestNewTargetScanFeatureFile
+	make offset_tol=3 TestNewTargetScanFeatureFile
+	make offset_tol=4 TestNewTargetScanFeatureFile
+	make offset_tol=5 TestNewTargetScanFeatureFile
+	make offset_tol=6 TestNewTargetScanFeatureFile
+	# Play with the offset weights
+	make w_pairing=0 TestNewTargetScanFeatureFile
+	make w_pairing=0.1 TestNewTargetScanFeatureFile
+	make w_pairing=0.2 TestNewTargetScanFeatureFile
+	make w_pairing=0.3 TestNewTargetScanFeatureFile
+	make w_pairing=0.4 TestNewTargetScanFeatureFile
+	make w_pairing=0.5 TestNewTargetScanFeatureFile
+	make w_pairing=0.6 TestNewTargetScanFeatureFile
+	make w_pairing=0.7 TestNewTargetScanFeatureFile
+	make w_pairing=0.8 TestNewTargetScanFeatureFile
+	make w_pairing=0.9 TestNewTargetScanFeatureFile
+	make w_pairing=1 TestNewTargetScanFeatureFile
+	# Play with the pairing weights
+	make w_offset=0 TestNewTargetScanFeatureFile
+	make w_offset=0.1 TestNewTargetScanFeatureFile
+	make w_offset=0.2 TestNewTargetScanFeatureFile
+	make w_offset=0.3 TestNewTargetScanFeatureFile
+	make w_offset=0.4 TestNewTargetScanFeatureFile
+	make w_offset=0.5 TestNewTargetScanFeatureFile
+	make w_offset=0.6 TestNewTargetScanFeatureFile
+	make w_offset=0.7 TestNewTargetScanFeatureFile
+	make w_offset=0.8 TestNewTargetScanFeatureFile
+	make w_offset=0.9 TestNewTargetScanFeatureFile
+	make w_offset=1 TestNewTargetScanFeatureFile
+	# Play with the supp weights
+	make w_supp=0 TestNewTargetScanFeatureFile
+	make w_supp=0.1 TestNewTargetScanFeatureFile
+	make w_supp=0.2 TestNewTargetScanFeatureFile
+	make w_supp=0.3 TestNewTargetScanFeatureFile
+	make w_supp=0.4 TestNewTargetScanFeatureFile
+	make w_supp=0.5 TestNewTargetScanFeatureFile
+	make w_supp=0.6 TestNewTargetScanFeatureFile
+	make w_supp=0.7 TestNewTargetScanFeatureFile
+	make w_supp=0.8 TestNewTargetScanFeatureFile
+	make w_supp=0.9 TestNewTargetScanFeatureFile
+	make w_supp=1 TestNewTargetScanFeatureFile
+
+CountThreePSites :
+	bsub python Repression/EvaluateThreePSites.py HeLa let-7a measured 15
+	bsub python Repression/EvaluateThreePSites.py HeLa miR-1 measured 15
+	bsub python Repression/EvaluateThreePSites.py HeLa miR-155 measured 15
+	bsub python Repression/EvaluateThreePSites.py HeLa miR-124 measured 15
+	bsub python Repression/EvaluateThreePSites.py HeLa lsy-6 measured 15
+	bsub python Repression/EvaluateThreePSites.py HeLa miR-7 measured 15
+
+CalculateKdScores :
+	bsub python Repression/GenerateKdThreePScores.py HeLa let-7a measured let-7a-21nt equil_c2_nb -decomp -fit_max_len 5 -keep_data
+	bsub python Repression/GenerateKdThreePScores.py HeLa miR-1 measured miR-1 equil_c_nb -decomp -fit_max_len 5 -keep_data
+	bsub python Repression/GenerateKdThreePScores.py HeLa miR-155 measured miR-155 equil_sc_nb -decomp -fit_max_len 5 -keep_data
+	bsub python Repression/GenerateKdThreePScores.py HeLa let-7a measured let-7a equilibrium -decomp -fit_max_len 5 -keep_data
+	bsub python Repression/GenerateKdThreePScores.py HeLa miR-1 measured miR-1 equilibrium -decomp -fit_max_len 5 -keep_data
+	bsub python Repression/GenerateKdThreePScores.py HeLa miR-155 measured miR-155 equilibrium -decomp -fit_max_len 5 -keep_data
+	bsub python Repression/GenerateKdThreePScores.py HeLa miR-124 measured miR-124 equilibrium -decomp -fit_max_len 5 -keep_data
+	bsub python Repression/GenerateKdThreePScores.py HeLa lsy-6 measured lsy-6 equilibrium -decomp -fit_max_len 5 -keep_data
+	bsub python Repression/GenerateKdThreePScores.py HeLa miR-7 measured miR-7-23nt equilibrium2_nb -decomp -fit_max_len 5 -keep_data
+
+# Defining the script specifc variables:
+# PreprocessEquilibrium :
+# 	@(for CON in $(COND_mirna); \
+# 		do { echo python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) $(exp) $$CON $(nb) $(test); \
+# 		bsub -n 20 python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) $(exp) $$CON $(nb) $(test);} \
+# 	done)
 
 
 PreprocessAgoPurity :
 	@(job=""; \
 	for MIRNA in miR-1 miR-155; do \
 		for CON in S1005_I S1005_P S1006_I S1006_P S1007_I S1007_P; do \
-			job="bsub -n 20 python $(DIR_pp)$(SCR_mp) $$MIRNA AGO_purity $$CON "; \
+			job="bsub -n 20 python $(HOME)$(DIR_pp)$(SCR_mp) $$MIRNA AGO_purity $$CON "; \
 			job=$$job" -jobs 19"; \
 			echo $$job; \
 			$$job;\
@@ -252,16 +1147,15 @@ PreprocessAgoPurity :
 # 	python $(HOME)general/SubmitJob.py "$$job")
 
 ## takes functions $(mirna), $(exp), and $(test)
-
 PreprocessData :
-	@(job_prefix="python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
-	#job_prefix="python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
+	@(job_prefix="python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
+	#job_prefix="bsub -q 18 -n 20 -R span[hosts=1] python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
 	if [ "$(mirna)" = "miR-7-24nt" ] && [ "$(exp)" = "equilibrium_tp" ]; then \
 		DUP_REPS="1 2 3 4"; \
 		for CON in $(COND_P); do \
 			for REP in 1 2; do \
 				job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
-				echo $$job; \
+				#echo $$job; \
 				$$job; \
 			done ;\
 		done; \
@@ -269,45 +1163,17 @@ PreprocessData :
 		DUP_REPS="1 2"; \
 		for CON in $(COND_P); do \
 			job=$$job_prefix"$$CON$(test) -jobs 19"; \
-			echo $$job; \
+			#echo $$job; \
 			$$job; \
 		done; \
 	fi; \
 	for CON in $(COND_P_DUP); do \
 		for REP in $$DUP_REPS; do \
 			job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
-			echo $$job; \
+			#echo $$job; \
 			$$job; \
 		done; \
 	done)
-
-# PreprocessDataOld :
-# 	@(job_prefix="python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
-# 	#job_prefix="bsub -q 18 -n 20 -R span[hosts=1] python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
-# 	if [ "$(mirna)" = "miR-7-24nt" ] && [ "$(exp)" = "equilibrium_tp" ]; then \
-# 		DUP_REPS="1 2 3 4"; \
-# 		for CON in $(COND_P); do \
-# 			for REP in 1 2; do \
-# 				job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
-# 				#echo $$job; \
-# 				$$job; \
-# 			done ;\
-# 		done; \
-# 	else \
-# 		DUP_REPS="1 2"; \
-# 		for CON in $(COND_P); do \
-# 			job=$$job_prefix"$$CON$(test) -jobs 19"; \
-# 			#echo $$job; \
-# 			$$job; \
-# 		done; \
-# 	fi; \
-# 	for CON in $(COND_P_DUP); do \
-# 		for REP in $$DUP_REPS; do \
-# 			job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
-# 			#echo $$job; \
-# 			$$job; \
-# 		done; \
-# 	done)
 
 
 PreprocessHighThroughputv2 :
@@ -392,7 +1258,7 @@ CountReporterVariantsV2_mm :
 # PreprocessEquilibriumPilot :
 # 	@(job=""; \
 # 	for CON in $(COND); do \
-# 		job=$$job"python $(DIR_pp)$(SCR_pp) $(mirna) equil_pilot $$CON "; \
+# 		job=$$job"python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) equil_pilot $$CON "; \
 # 		job=$$job"$(nb) $(test)\n"; \
 # 	done; \
 # 	echo $$job; \
