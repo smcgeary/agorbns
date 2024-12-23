@@ -25,7 +25,7 @@ Raw sequencing data is available from GEO under the following accession numbers:
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/smcgeary/AGORBNS_working.git
+   git clone https://github.com/smcgeary/agorbns.git
    cd AGORBNS_working
    ```
 
