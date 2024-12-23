@@ -87,7 +87,7 @@ KL_FEAT_PREDICTED_DIR = /lab/solexa_bartel/klin/miRNA_models_data_old/$\
 ifeq ($(exp), $(filter $(exp), equilibrium_tp equilibrium_tp_met))
 	ifeq ($(mirna), miR-124)
 		COND = I I_combined 40 12.6 4,1 4,2 1.26,1 1.26,2 0.4 0.126 0.04 0
-		COND_P = I 40 12.6 0.4 0.126 0.04 0
+		COND_P = I 40 12.6 0.4 0
 		COND_P_DUP = 4 1.26
 	else ifeq ($(mirna), miR-7-24nt)
 		COND = I,1 I,2 40,1 40,2 40,3 40,4 12.6,1 12.6,2 4,1 4,2 4,3 4,4 1.26,1\
@@ -96,15 +96,14 @@ ifeq ($(exp), $(filter $(exp), equilibrium_tp equilibrium_tp_met))
 		COND_P = I 12.6 1.26 0.4 0
 		COND_P_DUP = 40 4
 	else
-		COND = I 40 12.6 4 1.26 0.4 0.126 0
+		COND = I 40 12.6 4 1.26 0.4 0
 		COND_P = $(COND)
 	endif
 else ifeq ($(exp), equilibrium_2_tp)
 	COND = I,1 I,2 40,1 40,2 12.6,1 12.6,2 4,1 4,2 1.26,1 1.26,2 0.4,1 0.4,2\
-		0.126,1 0.126,2 0.04,1 0.04,2 0,1 0,2
-	COND = I I_combined 40 12.6 4 1.26 0.4 0.126 0.04 0
-	COND_P_DUP = I 40 12.6 4 1.26 0.4 0.126 0.04 0
-	COND_P = I 40 12.6 4 1.26 0.4 0.126 0.04 0
+		0,1 0,2
+	COND = I I_combined 40 12.6 4 1.26 0.4 0
+	COND_P =
 else ifeq ($(exp), $(filter $(exp), equil_c2_nb equil_c2_alt_nb))
 	COND = I 40 12.6 12.6_2 4 1.26 0.4 0
 	COND_P = $(COND)
@@ -209,16 +208,23 @@ PreprocessAgoPurity :
 
 # takes functions $(mirna), $(exp), and $(test)
 
+## Logic behind this is that is that some experiments have only reps 1 and 2.
+## One experiment, that of miR-7-24nt/equilibrium_tp, has reps for all samples,
+## and two more reps for samples 40 and 4, which are reps 3 and 4. This deals
+## thta using the COND_P (the non-duplicated samples) and the COND_P_DUP (the 
+## duplicated samples) using a different duplication strategy for that
+## experiment.
 PreprocessData :
 	@(job_prefix="sbatch $(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
-	#job_prefix="sbatch $(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
+	echo $(COND_P) ;\
+	echo $(COND_P_DUP) ;\
 	if [ "$(mirna)" = "miR-7-24nt" ] && [ "$(exp)" = "equilibrium_tp" ]; then \
 		DUP_REPS="1 2 3 4"; \
 		for CON in $(COND_P); do \
 			for REP in 1 2; do \
 				job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
 				echo $$job; \
-				$$job; \
+				# $$job; \
 			done ;\
 		done; \
 	else \
@@ -226,14 +232,14 @@ PreprocessData :
 		for CON in $(COND_P); do \
 			job=$$job_prefix"$$CON$(test) -jobs 19"; \
 			echo $$job; \
-			$$job; \
+			# $$job; \
 		done; \
 	fi; \
 	for CON in $(COND_P_DUP); do \
 		for REP in $$DUP_REPS; do \
 			job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
 			echo $$job; \
-			$$job; \
+			# $$job; \
 		done; \
 	done)
 
@@ -256,6 +262,42 @@ PreprocessAllEquilibrium :
 	job="sbatch $(DIR_pp)$(SCR_pp) miR-7-24nt equilibrium3_nb I -jobs 19"; \
 	echo $$job; \
 	$$job
+
+
+AssignSites :
+	@(for CON in $(COND); do \
+		job="sbatch $(DIR_as)$(SCR_as) $(mirna) $(exp) $$CON "; \
+		job=$$job"$(n_constant) $(sitelist)"; \
+		job=$$job$(BUFFER3P)" -jobs 19"; \
+		echo $$job; \
+		$$job; \
+	done)
+
+AssignSitesJustCombinedInput :
+# 	@(job="python $(HOME)$(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined "; \
+# 	  job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)$(UNIQUE)"\n"; \
+# 	  echo $$job; \
+# 	  bsub -q 18 -n 20 $$job)
+	@(job="sbatch $(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined $(n_constant) "; \
+	  job=$$job"$(sitelist)"$(BUFFER3P)$(UNIQUE)" -jobs 19"; \
+	  echo $$job; \
+	  $$job)
+
+
+AssignSitesAllEquilibrium :
+	make mirna=miR-1 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) buffer=1 AssignSites
+	make mirna=let-7a exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+	make mirna=miR-155 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+	make mirna=miR-124 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+	make mirna=lsy-6 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+	make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+
+AssignSitesEquilibriumAllSiteLists :
+	# make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=canonical buffer=1 AssignSites
+	# make n_constant=5 sitelist=resubmissionfinal AssignSitesAllEquilibrium
+	make n_constant=5 sitelist=centered11 AssignSitesAllEquilibrium
+
+
 
 
 # PreprocessEquilibrium :
@@ -409,56 +451,7 @@ PreprocessAllEquilThrP :
 	make mirna=miR-155_let-7a exp=equil_c_nb PreprocessData
 
 
-# PreprocessAllKinetics :
-# 	echo $(MIRNAk)
-# 	@(for MIRNA in $(MIRNAk); \
-# 		do { make mirna=$$MIRNA PreprocessKinetics;} \
-# 	done)
 
-# AssignSitesEquilibriumMBLN1 :
-# 	@(for CON in $(COND_MBLN1); \
-# 		do { echo python $(HOME)$(DIR_as)$(SCR_as_burge) MBLN1 equilibrium $$CON; \
-# 		bsub -n 20 python $(HOME)$(DIR_as)$(SCR_as_burge) MBLN1 equilibrium $$CON;} \
-# 	done)
-
-# AssignSitesEquilibriumRBFOX2 :
-# 	@(for CON in $(COND_RBFOX2); \
-# 		do { echo python $(HOME)$(DIR_as)$(SCR_as_burge) RBFOX2 equilibrium $$CON; \
-# 		bsub -n 20 python $(HOME)$(DIR_as)$(SCR_as_burge) RBFOX2 equilibrium $$CON;} \
-# 	done)
-
-AssignSites :
-	@(for CON in $(COND); do \
-		job="sbatch $(DIR_as)$(SCR_as) $(mirna) $(exp) $$CON "; \
-		job=$$job"$(n_constant) $(sitelist)"; \
-		job=$$job$(BUFFER3P)" -jobs 19"; \
-		echo $$job; \
-		$$job; \
-	done)
-
-AssignSitesJustCombinedInput :
-# 	@(job="python $(HOME)$(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined "; \
-# 	  job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)$(UNIQUE)"\n"; \
-# 	  echo $$job; \
-# 	  bsub -q 18 -n 20 $$job)
-	@(job="sbatch $(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined $(n_constant) "; \
-	  job=$$job"$(sitelist)"$(BUFFER3P)$(UNIQUE)" -jobs 19"; \
-	  echo $$job; \
-	  $$job)
-
-
-AssignSitesAllEquilibrium :
-	make mirna=miR-1 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) buffer=1 AssignSites
-	make mirna=let-7a exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
-	make mirna=miR-155 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
-	make mirna=miR-124 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
-	make mirna=lsy-6 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
-	make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
-
-AssignSitesEquilibriumAllSiteLists :
-	# make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=canonical buffer=1 AssignSites
-	# make n_constant=5 sitelist=resubmissionfinal AssignSitesAllEquilibrium
-	make n_constant=5 sitelist=centered11 AssignSitesAllEquilibrium
 
 
 

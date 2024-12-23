@@ -2556,7 +2556,7 @@ def main():
     # print(get_miRNA_mfes("miR-1", 1, 7))
     # print(get_miRNA_mfes("miR-1", 2, 7))
     
-    seq_1 = "GGAAUGU"
+    seq_1 = "UGGAAUGU"
 
     seq2 = ["AACATTCCCA", #2
             "AACATTCCGA", #3
@@ -2759,6 +2759,12 @@ def main():
             "TTCATTCCTT",
 
             ]
+
+    seq2 = ["CCAUUCCA", "GCAUUCCA", "UCAUUCCA"]
+
+    seq3 = ["CCAUUCCC", "GCAUUCCC", "UCAUUCCC",
+            "CCAUUCCG", "GCAUUCCG", "UCAUUCCG",
+            "CCAUUCCT", "GCAUUCCT", "UCAUUCCT"]
 
 
     energies_7merm8 = [get_mfe(seq_1, i) for i in seq2]
