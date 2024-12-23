@@ -1187,97 +1187,36 @@ def find_all(seq, key, start=0, iteration=0):
 
 
 def get_mfe(seq1, seq2, wobble=True):
+    '''Returns the ∆G in kcal/mol for the two sequences. This function calls the
+        viennarna library to use RNAduplex fold. Which itself calls the nearest-
+        neighbor model. The default parameters assume that the characters
+        correspond to RNA, irrespective of whether the T or U is used. The
+        default setting of this function is that wobble pairing is considered
+        (rather than considered a mismatch).
+
+    Args:
+        seq1: The first RNA sequence.
+        seq2: The second RNA sequence.
+        wobble: Boolean for whether or not wobbles are considered.
+
+    Returns:
+        The ∆G of pairing, in kcal/mol.
+
+
+    '''
     import RNA
-    # RNA = reload(RNA)
     if wobble:
         RNA.cvar.noGU = 0
-        # RNA.cvar.temperature = 37
-        # RNA.cvar.temperature = 25
+        RNA.cvar.temperature = 37
     else:
         RNA.cvar.noGU = 1
-        # RNA.cvar.temperature = 37
-        # RNA.cvar.temperature = 25
+        RNA.cvar.temperature = 37
     duplex = RNA.duplexfold(seq1,seq2)
     out = duplex.energy
     return(out)
 
 
 
-# # DELETE THIS PLEASE
-# def get_nn_energy(seq1, seq2):
-#     print(seq1)
-#     out = [None]*len(seq1)
-#     seq2r = seq2[::-1]
-#     print(seq2r)
-#     for i in range(len(seq1)):
-#         nuc1 = seq1[i]
-#         nuc2 = seq2r[i]
-#         print(nuc1)
-#         print(nuc2)
-#         if RNA_comp_map[nuc1] == nuc2:
-#             out[i] = nuc1
-#         elif nuc1 == "U" and nuc2 == "G":
-#             out[i] = "V"
-#         elif nuc2 == "G" and nuc1 == "U":
-#             out[i] = "F"
-#         else:
-#             out[i] = "l"
-#     print(out)
-#     mm_5p = 0
-#     mm_3p = 0
-#     mm_internal = 0
-#     left = 0
-#     right = len(out)
-#     # if left hand mismatch exists:
-#     if out[0] == "l":
-#         #get the delta G energy
-#         mm_5p = term_mm_dG[RNA_comp_map[out[1]]][seq2r[0]][seq1[0]]
-#         #update lft hand side
-#         left =1
-#     # same but for right hand side:
-#     if out[len(out)-1] == "l":
-#         print([out[len(out)-2]])
-#         print((term_mm_dG[out[len(out)-2]]))
-#         mm_3p = term_mm_dG[out[len(out)-2]][seq1[len(out)-1]][seq2r[len(out)-1]]
-#         right -= 1
-
-
-#     out = "".join(out[left:right])
-#     # print(out)
-#     seq1 = seq1[left:right]
-#     seq2 = seq2[len(seq2)-right:len(seq2)-left]
-#     seq2r = seq2[::-1]
-#     AU_end = 0
-#     if out[0] in ["A","U", "H", "V"]:
-#         AU_end += 1
-#     if out[-1] in ["A","U", "H", "V"]:
-#         AU_end +=1
-#     # print(seq1[left:right])
-#     # print(seq2[len(seq2)-right:len(seq2)-left])
-#     if seq1 == seq2:
-#         sym = 1
-#     else:
-#         sym = 0
-#     if "l" in out:
-#         mmInd = out.find("l")
-#         # print(mmInd)
-#         m5p = out[mmInd-1]
-#         m3p = out[mmInd+1]
-#         x = seq1[mmInd]
-#         y = seq2r[mmInd]
-#         # print([m5p,m3p,x,y])
-#         mm_internal += intern_mm_dG[m5p][m3p][x][y]
-#         # print(mm_internal)
-#         dinucs = [out[i:i+2] for i in range(mmInd-1)]+[out[i:i+2] for i in range(mmInd+1,len(out)-1)]
-#     else:
-#         dinucs = [out[i:i+2] for i in range(len(out)-1)]
-
-#     dG_init = nn_dG["init"]
-#     dG_ends = nn_dG["AU_end"]*AU_end
-#     dG_sym = nn_dG["sym"]*sym
-#     dG_bp = sum([nn_dG[dinuc] for dinuc in dinucs])
-#     deltaG = sum([dG_init,dG_ends, dG_sym, dG_bp,mm_3p,mm_internal])
-#     return(deltaG)
 
 def get_site_seq(mirna, start, stop, wobble=False,
                            mismatch=False, bulge=False, rna=False):

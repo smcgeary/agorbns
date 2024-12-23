@@ -472,26 +472,26 @@ AddLinearAxis <- function(side, tick.space, label.space, label, line=1.2,
 #   return(c(xpos, ypos))
 # }
 # #23456789!123456789@123456789#123456789$123456789%123456789^123456789&123456789*
-# AddCorrelationToPlot <- function(x, y, xpos, ypos, rsquared=FALSE, adj=0,
-#                                  col="black", round_dec=2, weights=NULL,
-#                                  method="pearson") {
-#   if (length(weights) != 0) {
-#     r <- weightedCorr(x, y, weights=weights, method="pearson")  
-#   } else {
-#     r <- cor(x, y, use="pairwise.complete.obs", method=method)  
-#   }
-#   if (rsquared) {
-#     r <- format(round(r^2, round_dec), nsmall=round_dec)
-#     text(x=xpos, y=ypos, bquote(italic(r)^2 == .(r)), col=col, adj=adj, xpd=NA)
-#   } else {
-#     r <- format(round(r, round_dec), nsmall=round_dec)
-#     if (method == "spearman") {
-#       text(x=xpos, y=ypos, bquote(italic(r)[S] == .(r)), col=col, adj=adj, xpd=NA)      
-#     } else {
-#       text(x=xpos, y=ypos, bquote(italic(r) == .(r)), col=col, adj=adj, xpd=NA)
-#     }
-#   }
-# }
+AddCorrelationToPlot <- function(x, y, xpos, ypos, rsquared=FALSE, adj=0,
+                                 col="black", round_dec=2, weights=NULL,
+                                 method="pearson") {
+  if (length(weights) != 0) {
+    r <- weightedCorr(x, y, weights=weights, method="pearson")  
+  } else {
+    r <- cor(x, y, use="pairwise.complete.obs", method=method)  
+  }
+  if (rsquared) {
+    r <- format(round(r^2, round_dec), nsmall=round_dec)
+    text(x=xpos, y=ypos, bquote(italic(r)^2 == .(r)), col=col, adj=adj, xpd=NA)
+  } else {
+    r <- format(round(r, round_dec), nsmall=round_dec)
+    if (method == "spearman") {
+      text(x=xpos, y=ypos, bquote(italic(r)[S] == .(r)), col=col, adj=adj, xpd=NA)      
+    } else {
+      text(x=xpos, y=ypos, bquote(italic(r) == .(r)), col=col, adj=adj, xpd=NA)
+    }
+  }
+}
 
 # AddPValueToPlot <- function(p, xpos, ypos, adj=0,
 #                                  col="black", round_dec=2, weights=NULL) {

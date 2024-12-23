@@ -7,7 +7,6 @@ source("general/ModelingFunctions.R")
 
 # Initial parameters and constants.
 args       <- commandArgs(trailingOnly=TRUE)
-# args <- c("let-7a", "equilibrium_mmseed_nb", "5", "programmed_collapsed")
 mirna      <- args[1]
 experiment <- args[2]
 n_constant <- args[3]

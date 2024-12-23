@@ -1077,7 +1077,7 @@ PlotPositionalKds <- function(experiment="equilibrium", n_constant=5,
   AddLogAxis(1, label="Relative Kd")
   segments(1, ymin, 1, ymax, xpd=NA)
 
-  kMirnas <- kMirnas
+  # kMirnas <- kMirnas
   tick <- 0
   max_kds <- 0
   none_kd_offset_start <- 0.8
@@ -1157,14 +1157,14 @@ Plot8merVs7merCombined <- function(experiment="equilibrium", n_constant=5,
   print(1157)
   SubfunctionCall(FigureSaveFile)
   xmin <- 0
-  xmax <- length(kMirnas)*4 + 7
+  xmax <- length(kMirnas[1:6])*4 + 7
   ymin <- -2.7
   ymax <- 0
   BlankPlot(inv="y")
   ymin <- -2.5
   mirna_labs <- kMirnas[1:6]
   mirna_labs[length(mirna_labs)] <- "miR-7"
-  AddLinearAxis(1, alt_lab=mirna_labs, alt_lab_pos=(seq(length(kMirnas)) - 1)*4 + 2, label="",
+  AddLinearAxis(1, alt_lab=mirna_labs, alt_lab_pos=(seq(length(kMirnas[1:6])) - 1)*4 + 2, label="",
                 angled=TRUE, noline=TRUE)
 
   AddLinearAxis(2, tick.space=0.5, label.space=1,
@@ -1172,14 +1172,14 @@ Plot8merVs7merCombined <- function(experiment="equilibrium", n_constant=5,
 
   x_start <- 0
   print(1173)
-  segments(x0=xmin, y0=-R*T*log(c(2, 10, 50)), x1=length(kMirnas)*4 + 0.5,
+  segments(x0=xmin, y0=-R*T*log(c(2, 10, 50)), x1=length(kMirnas[1:6])*4 + 0.5,
            lwd=0.25, xpd=NA)
-  text(rep(length(kMirnas)*4 + 0.75, 3), -R*T*log(c(2, 10, 50)),
+  text(rep(length(kMirnas[1:6])*4 + 0.75, 3), -R*T*log(c(2, 10, 50)),
        labels=c("2-fold greater\nbinding affinity",
                 "10-fold greater\nbinding affinity",
                 "50-fold greater\nbinding affinity"),
        cex=0.8, adj=c(0, 0.5), xpd=NA)
-  kds.all <- sapply(kMirnas, function(mirna) {
+  kds.all <- sapply(kMirnas[1:6], function(mirna) {
     if (mirna == "miR-7-23nt") {
       experiment <- "equilibrium2_nb"
       combined <- TRUE
@@ -1227,8 +1227,10 @@ Plot8merVs7merCombined <- function(experiment="equilibrium", n_constant=5,
 PlotSiteKdsVsSPS <- function(experiment="equilibrium", n_constant=5,
                              sitelist="resubmissionfinal", combined=TRUE, buffer=FALSE,
                              dG.table=3, height=8.5, pdf.plot=FALSE) {
-  dG.df <- read.table(file=paste0("canonical_sites_mfe_", dG.table, ".txt"))
+  dG.df <- read.table("general/miRNA_canonical_site_energies.txt")
   colnames(dG.df) <- gsub("(^.*)\\.(.*$)", colnames(dG.df), replace="\\1-\\2")
+  print(dG.df)
+  kMirnas <- kMirnas[1:6]
   R <- 1.987e-3 # in kcal K-1 mol-1
   T <- 310.15 # in K
   SubfunctionCall(FigureSaveFile)
@@ -1247,7 +1249,7 @@ PlotSiteKdsVsSPS <- function(experiment="equilibrium", n_constant=5,
   AddLinearAxis(1, tick.space=1, label.space=2,
                 label=expression("Predicted"~Delta*italic(G)~"(kcal/mol)"))
   AddLogAxis(2, label="Kd (nM)")
-  Kd.matrix <- sapply(kMirnas, function(mirna) {
+  Kd.matrix <- sapply(kMirnas[1:6], function(mirna) {
     if (mirna == "miR-7-23nt") {
       experiment <- "equilibrium2_nb"
     }
@@ -1259,12 +1261,14 @@ PlotSiteKdsVsSPS <- function(experiment="equilibrium", n_constant=5,
     out <- kd[paste0(kSeedSites, "_Kd"), ]$Mean/kd["None_Kd", ]$Mean*10
     out
   })
-  dG.matrix <- sapply(kMirnas, function(mirna) {
+  dG.matrix <- sapply(kMirnas[1:6], function(mirna) {
     if (mirna == "miR-7-23nt") {
       mirna <- "miR-7"
     }
+    print(dG.df[, mirna])
     as.numeric(dG.df[kSeedSites, mirna])
   })
+  print(dG.matrix)
   rownames(dG.matrix) <- kSeedSites
   rownames(Kd.matrix) <- kSeedSites
   cols.mirnas <- ConvertRColortoRGB(kMirnaColors[kMirnas], alpha=1)
@@ -1328,7 +1332,6 @@ PlotSiteKdsVsSPS <- function(experiment="equilibrium", n_constant=5,
 
   kds_global <<- Kd.matrix
   sps_global <<- dG.matrix
-
   kMirnas[length(kMirnas)] <- "miR-7"
   leg.xy1 <- GetPlotFractionalCoords(fx=1, fy=0.125, log='y', inv='xy')
   leg.xy1alt <- GetPlotFractionalCoords(fx=0.8, fy=0.125, log='y', inv='xy')
@@ -1360,7 +1363,7 @@ PlotSiteKdsVsRepression <- function(mirna, experiment="equilibrium",
                                     bg_method=3, exrib=FALSE, combined=TRUE,
                                     buffer=FALSE, compcorrect=FALSE,
                                     n_cutoff=20, kd_cutoff=0.10, bulk=FALSE,
-                                    new=TRUE, old=FALSE, cat_colors=FALSE,
+                                    new=FALSE, old=FALSE, cat_colors=FALSE,
                                     noncanon=FALSE, merge=FALSE, best=TRUE,
                                     threePseq=TRUE, height=5, width=5, xpos=20,
                                     ypos=20,
@@ -1472,6 +1475,81 @@ PlotSiteKdsVsRepression <- function(mirna, experiment="equilibrium",
 }
 
 
+################################################################################
+# FIGURE 4
+################################################################################
+# 4A____________________________________________________________________________
+PlotSiteFlankEnrichments <- function(mirna,  site, experiment="equilibrium",
+                                     n_constant=5, sitelist="resubmissionfinal",
+                                     combined=TRUE, combined_site=TRUE,
+                                     buffer=FALSE, bgoff=FALSE,
+                                     L=FALSE, height=5, width=6,
+                                     pdf.plot=FALSE) {
+  sXc <- SubfunctionCall(SitesAndSingleFlanksXCounts)
+  pars.matrix <- SubfunctionCall(GetFlankKds)
+  pars.matrix <- pars.matrix[grep("mer|None|^AGO|^bg", rownames(pars.matrix)), ]
+  pars <- log10(pars.matrix$Mean)
+  names(pars) <- rownames(pars.matrix)
+  sXc <- sXc[grep("mer|None", rownames(sXc), perl=TRUE), ]
+  names(pars)[nrow(sXc) + 1] <- "bg"
+  names(pars)[nrow(sXc) + 2] <- "AGO"
+  data <- GetDataEquil(sXc)
+  l <- SubfunctionCall(GetInputEquil)
+  if (L) {
+    l <- l/sum(l) * as.numeric(L)
+  }
+  # Ago dilutio in the data:
+  A.dil.data <- sapply(colnames(data), as.numeric)
+  A.stock.measured <- kAgoStock[mirna, "equilibrium"]
+  A.stock.pars <- 10^pars["AGO"]
+  pM_from_dil <- A.stock.measured*1000/100
+  A.pM.data <- A.dil.data*pM_from_dil
+  xmin <- signif(min(A.pM.data)/(10^0.25), 1)
+  xmax <- signif(max(A.pM.data)*(10^0.75), 1)
+  A.dil.model <- exp(seq(log(xmin/pM_from_dil),
+                         log(xmin/pM_from_dil*10^(5/2)),
+                     length=10))
+
+  model <- SubfunctionCall(EquilSingleSiteModelFreq, A.dil=A.dil.model)
+  A.pM.model <-A.dil.model*pM_from_dil
+  data.R <- EquilEnrichments(data, l)
+  data.R <<- data.R
+  model.R <- EquilEnrichments(model, l)
+  # Set up the plotting limits
+  ymin <- 0.2
+  ymax <- 500
+  SubfunctionCall(FigureSaveFile)
+  BlankPlot(log="xy", adjusted=TRUE)
+  # Generate tickmarks for axis.
+  xy <- GetPlotFractionalCoords(fx=0.05, fy=0.95, log='xy')
+  mirna.trim <- paste0(strsplit(mirna, split = "-")[[1]][1:2], collapse="-")
+  text(xy[1], xy[2], labels=mirna.trim, adj=c(0, 1))
+  kds <- pars[paste0(rownames(data), "_Kd")]
+  names(kds) <- rownames(data)
+  colors <- CombinedSiteAndFlankColors(sXc)
+  names(colors) <- names(kds)
+  bg_colors <- which(colors == "gray")
+  kds <- c(kds[bg_colors], kds[-bg_colors])
+  colors_global <<- colors
+  sapply(names(kds), function(site) {
+    Points(A.pM.data, data.R[site, ], col=colors[site])
+    lines(A.pM.model, model.R[site, ], col=colors[site])      
+  })
+  AddLogAxis(1, label=AGO_mir_label, adj=TRUE)
+  AddLogAxis(2, label="Enrichment")
+
+  Dinucs <- c("CCCC", "CCCA", "AACC", "AAAC", "AAAA")
+  Labels <- sapply(seq(0, 4), function(i) {
+    eval(substitute(expression((A/U)[x](G/C)[y]), list(x=i, y=4-i)))})
+  xy <- GetPlotFractionalCoords(0.85, 0.5, log='xy')
+  legend(x=xy[1], y=xy[2], legend=rev(Labels),
+         col=GetColorFunction(rev(Dinucs)), bty="n", pch=15, pt.cex=2, xpd=NA)
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+
 ## FIGURES FOR RBNS EQUILIBRIUM PAPER ##########################################
 MakeFigure1 <- function(uniq=FALSE) {
   ## To make this figure need run these commands in the command line:
@@ -1560,6 +1638,7 @@ MakeFigure3 <- function() {
   ## python SolveForKds/MakeMultiSiteCountTable.py lsy-6 equilibrium 5 centered11
   ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 centered11 -single
 
+  ## make mirna=miR-7-23nt exp=equilibrium n_constant=5 sitelist=resubmissionfinal AssignSites
   ## python SolveForKds/MakeSiteCountTable.py miR-7-23nt equilibrium2_nb 5 centered11
   ## python SolveForKds/MakeMultiSiteCountTable.py miR-7-23nt equilibrium2_nb 5 centered11
   ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 centered11 -single
@@ -1567,15 +1646,30 @@ MakeFigure3 <- function() {
 
 
   PlotPositionalKds(pdf.plot="3.A")
+
+  ## python SolveForKds/MakeSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal
+  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal -single
+
+
   Plot8merVs7merCombined(pdf.plot="3.B")
+
+  ## python SolveForKds/MakeEnergyTable.py
+  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer -nocombI
+  ## Rscript SolveForKds/FitSiteKds.R let-7a equilibrium 5 resubmissionfinal
+  ## Rscript SolveForKds/FitSiteKds.R miR-155 equilibrium 5 resubmissionfinal
+  ## Rscript SolveForKds/FitSiteKds.R miR-124 equilibrium 5 resubmissionfinal
+  ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 resubmissionfinal
+  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal
   PlotSiteKdsVsSPS(pdf.plot="3.C")
-  PlotSiteKdsVsRepression("miR-1", combined=FALSE, buffer=TRUE, pdf.plot="3.D")
-  PlotSiteKdsVsRepression("let-7a", pdf.plot="3.E")
-  PlotSiteKdsVsRepression("miR-155", pdf.plot="3.F")
-  PlotSiteKdsVsRepression("miR-124", pdf.plot="3.G")
-  PlotSiteKdsVsRepression("lsy-6", pdf.plot="3.H")
-  PlotSiteKdsVsRepression("miR-7-23nt", experiment="equilibrium2_nb",
-                          pdf.plot="3.I")
+  # Currently unavailable because repression file not in repo.
+  # PlotSiteKdsVsRepression("miR-1", combined=FALSE, buffer=TRUE, pdf.plot="3.D")
+  # PlotSiteKdsVsRepression("let-7a", pdf.plot="3.E")
+  # PlotSiteKdsVsRepression("miR-155", pdf.plot="3.F")
+  # PlotSiteKdsVsRepression("miR-124", pdf.plot="3.G")
+  # PlotSiteKdsVsRepression("lsy-6", pdf.plot="3.H")
+  # PlotSiteKdsVsRepression("miR-7-23nt", experiment="equilibrium2_nb",
+  #                         pdf.plot="3.I")
   message("Done Fig. 3")
 }
 
@@ -1705,8 +1799,8 @@ MakeRefereeResponseFigure <- function() {
  
 # MakeFigure1()
 # MakeFigure2()
-MakeFigure3()
-# MakeFigure4()
+# MakeFigure3()
+MakeFigure4()
 # MakeSupplementaryFigure1()
 # MakeSupplementaryFigure2()
 # MakeSupplementaryFigure3()

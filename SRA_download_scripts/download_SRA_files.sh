@@ -2,7 +2,7 @@
 #SBATCH -c 1                               # Request one core
 #SBATCH -t 3-00:00                         # Runtime in D-HH:MM format
 #SBATCH -p medium                          # Partition to run in
-#SBATCH --mem=0.5G                           # Memory total in MiB (for all cores)
+#SBATCH --mem=10G                           # Memory total in MiB (for all cores)
 #SBATCH -o jobs/hostname_%j_%t.out            # File to which STDOUT will be written, including job ID (%j)
 #SBATCH -e jobs/hostname_%j_%t.err            # File to which STDERR will be written, including job ID (%j)
 # This script is for downloading the fastq files associated my graduate work.
