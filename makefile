@@ -86,7 +86,7 @@ KL_FEAT_PREDICTED_DIR = /lab/solexa_bartel/klin/miRNA_models_data_old/$\
 # string Y. 
 ifeq ($(exp), $(filter $(exp), equilibrium_tp equilibrium_tp_met))
 	ifeq ($(mirna), miR-124)
-		COND = I 40 12.6 4,1 4,2 1.26,1 1.26,2 0.4 0.126 0.04 0
+		COND = I I_combined 40 12.6 4,1 4,2 1.26,1 1.26,2 0.4 0.126 0.04 0
 		COND_P = I 40 12.6 0.4 0.126 0.04 0
 		COND_P_DUP = 4 1.26
 	else ifeq ($(mirna), miR-7-24nt)
@@ -121,42 +121,19 @@ else ifeq ($(exp), equilibrium3_nb)
 	COND = I 40 12.6 4 1.26 0.4 0
 	COND_P = $(COND)
 else ifeq ($(exp), equilibrium2_nb)
-	ifeq ($(mirna), miR-7-23nt)
-		COND = I 40 12.6 1.26 0.4 0
-		COND_P = $(COND)
-	else
-		COND = I 40 12.6 4 1.26 0.4 0
-		COND_P = $(COND)
-	endif
+		COND = I I_combined 40 12.6 1.26 0.4 0
+		COND_P = I 40 12.6 1.26 0.4 0
 else ifeq ($(exp), equil_pilot)
-	COND = I L100A0 L100A10 L10A0 L10A10
-else ifeq ($(exp), equil_flowthrough)
-	ifeq ($(mirna), let-7a)
-		COND = I 40_2h 0_2h 40_4h 0_4h 40_2h_nc1 0_2h_nc1 40_2h_nc2 0_2h_nc2\
-			40_2h_ft 0_2h_ft
-	else ifeq ($(mirna), miR-124)
-		COND = I 0_2h 0_4h 0_2h_nc1 0_2h_nc2 40_2h_ft 0_2h_ft
-	endif
-	COND_P = $(COND)
-else ifeq ($(exp), kinetics)
-	ifeq ($(mirna), let-7a)
-		COND = I I_combined 2,1 2,2 5,1 5,2 8,1 8,2 15,1\
-				15,2 30 90 300 900 2700 7200,1 7200,2 0 0- Equil Equil-
-		COND_P = I 30 90 300 900 2700 0 0- Equil Equil-
-		COND_P_DUP = 2 5 8 15 7200
-	else
-		COND = I I_combined 2,1 2,2 5,1 5,2 8,1 8,2 15,1\
-			15,2 30,1 30,2 90 300 900 2700 7200 0 0- Equil Equil-
-		COND_P = I 90 300 900 2700 7200 0 0- Equil Equil-
-		COND_P_DUP = 2 5 8 15 30
-	endif
+	COND = I L100A10
 else
-	COND = I 40 12.6 4 1.26 0.4 0
-	COND_P = $(COND)
+	COND = I I_combined 40 12.6 4 1.26 0.4 0
+	COND_P = I 40 12.6 4 1.26 0.4 0
 endif
 
+
+
 ifdef buffer
-	BUFFER3P = ' -buffer'
+	BUFFER3P = ' -buffer3p'
 else
 	BUFFER3P = ''
 endif
@@ -175,13 +152,13 @@ else
 	N_EX_ALL = ''
 endif
 
-ifdef n_lag
-	N_LAG = ' -n_lag '$(n_lag)
-	N_LAG_ALL = ' n_lag='$(n_lag)
-else
-	N_LAG = ''
-	N_LAG_ALL = ''
-endif
+# ifdef n_lag
+# 	N_LAG = ' -n_lag '$(n_lag)
+# 	N_LAG_ALL = ' n_lag='$(n_lag)
+# else
+# 	N_LAG = ''
+# 	N_LAG_ALL = ''
+# endif
 
 ifdef n_s
 	N_S = $(n_s)
@@ -208,12 +185,6 @@ ifdef altmircomp
 	ALTMIRCOMP = ' -alt_mirna_comp '$(altmircomp)
 else
 	ALTMIRCOMP = ''
-endif
-
-ifneq (,$(findstring bartel, $(MAKEFLAGS)))
-	BARTEL = ' -q bartel'
-else
-	BARTEL = ''
 endif
 
 
@@ -266,11 +237,32 @@ PreprocessData :
 		done; \
 	done)
 
-PreprocessEquilibrium :
-	@(for CON in $(COND_mirna); \
-		do { echo python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) $$CON $(nb) $(test); \
-		bsub -n 20 python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) $$CON $(nb) $(test);} \
-	done)
+
+
+PreprocessAllEquilibrium :
+	make mirna=miR-1 exp=equilibrium PreprocessData
+	make mirna=let-7a exp=equilibrium PreprocessData
+	make mirna=miR-155 exp=equilibrium PreprocessData
+	make mirna=miR-124 exp=equilibrium PreprocessData
+	make mirna=lsy-6 exp=equilibrium PreprocessData
+	make mirna=miR-7-23nt exp=equilibrium2_nb PreprocessData
+	make mirna=mir-1 exp=equil_pilot PreprocessData
+	make mirna=miR-1 exp=equilibrium_tp PreprocessData
+	make mirna=miR-124 exp=equilibrium_2_tp PreprocessData
+	make mirna=miR-7-24nt exp=equilibrium_tp PreprocessData	
+	job="sbatch $(DIR_pp)$(SCR_pp) miR-1 kin_pilot I_TGT -jobs 19"; \
+	echo $$job; \
+	$$job; \
+	job="sbatch $(DIR_pp)$(SCR_pp) miR-7-24nt equilibrium3_nb I -jobs 19"; \
+	echo $$job; \
+	$$job
+
+
+# PreprocessEquilibrium :
+# 	@(for CON in $(COND_mirna); \
+# 		do { echo python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) $$CON $(nb) $(test); \
+# 		bsub -n 20 python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) $$CON $(nb) $(test);} \
+# 	done)
 
 # PreprocessDataOld :
 # 	@(job_prefix="python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
@@ -397,53 +389,8 @@ CountReporterVariantsV2_mm :
 # 	done)
 
 
-# PreprocessKinetics :
-# 	echo $(TIME_SINGLE_mirna)
-# 	@(for CON in $(SING); \
-# 		do { echo python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) kinetics $$CON; \
-# 		bsub -n 20 python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) kinetics $$CON;} \
-# 	done)
-# 	echo $(TIME_DUPs_mirna)
-# 	@(for CON in $(TIME_DUPs_mirna); \
-# 		do { echo python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) kinetics $$CON -rep 1; \
-# 		bsub -n 20 python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) kinetics $$CON -rep 1; \
-# 		echo python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) kinetics $$CON -rep 2; \
-# 		bsub -n 20 python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) kinetics $$CON -rep 2;} \
-# 	done)
-
-# PreprocessKinetics :
-# 	job=""; \
-# 	echo $(mirna); \
-# 	echo $(HOME); \
-# 	echo $(TIME_SINGLE_mirna); \
-# 	for CON in $(TIME_SINGLE_mirna); do \
-# 		job=$$job"python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) kinetics $$CON\n"; \
-# 	done; \
-# 	for CON in $(TIME_DUP_mirna); do \
-# 		job=$$job"python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) kinetics $$CON -rep 1\n"; \
-# 		job=$$job"python $(HOME)$(DIR_pp)$(SCR_pp) $(mirna) kinetics $$CON -rep 2\n"; \
-# 	done; \
-# 	echo $$job
-# 	# python $(HOME)general/SubmitJob.py "$$job"
 
 
-
-# PreprocessAllEquilibrium :
-# 	echo $(MIRNAe)
-# 	@(for MIRNA in $(MIRNAe); \
-# 		do { make mirna=$$MIRNA exp=$(exp) PreprocessData;} \
-# 	done)
-
-
-
-
-PreprocessAllEquilibrium :
-	make mirna=miR-1 exp=equilibrium PreprocessData
-	make mirna=let-7a exp=equilibrium PreprocessData
-	make mirna=miR-155 exp=equilibrium PreprocessData
-	make mirna=miR-124 exp=equilibrium PreprocessData
-	make mirna=lsy-6 exp=equilibrium PreprocessData
-	make mirna=miR-7-23nt exp=equilibrium2_nb PreprocessData
 
 PreprocessAllEquilThrP :
 	make mirna=let-7a-21nt exp=equil_c_nb PreprocessData
@@ -462,11 +409,11 @@ PreprocessAllEquilThrP :
 	make mirna=miR-155_let-7a exp=equil_c_nb PreprocessData
 
 
-PreprocessAllKinetics :
-	echo $(MIRNAk)
-	@(for MIRNA in $(MIRNAk); \
-		do { make mirna=$$MIRNA PreprocessKinetics;} \
-	done)
+# PreprocessAllKinetics :
+# 	echo $(MIRNAk)
+# 	@(for MIRNA in $(MIRNAk); \
+# 		do { make mirna=$$MIRNA PreprocessKinetics;} \
+# 	done)
 
 # AssignSitesEquilibriumMBLN1 :
 # 	@(for CON in $(COND_MBLN1); \
@@ -484,10 +431,35 @@ AssignSites :
 	@(for CON in $(COND); do \
 		job="sbatch $(DIR_as)$(SCR_as) $(mirna) $(exp) $$CON "; \
 		job=$$job"$(n_constant) $(sitelist)"; \
-		job=$$job" -jobs 19"; \
+		job=$$job$(BUFFER3P)" -jobs 19"; \
 		echo $$job; \
 		$$job; \
 	done)
+
+AssignSitesJustCombinedInput :
+# 	@(job="python $(HOME)$(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined "; \
+# 	  job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)$(UNIQUE)"\n"; \
+# 	  echo $$job; \
+# 	  bsub -q 18 -n 20 $$job)
+	@(job="sbatch $(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined $(n_constant) "; \
+	  job=$$job"$(sitelist)"$(BUFFER3P)$(UNIQUE)" -jobs 19"; \
+	  echo $$job; \
+	  $$job)
+
+
+AssignSitesAllEquilibrium :
+	make mirna=miR-1 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) buffer=1 AssignSites
+	make mirna=let-7a exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+	make mirna=miR-155 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+	make mirna=miR-124 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+	make mirna=lsy-6 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+	make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+
+AssignSitesEquilibriumAllSiteLists :
+	# make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=canonical buffer=1 AssignSites
+	# make n_constant=5 sitelist=resubmissionfinal AssignSitesAllEquilibrium
+	make n_constant=5 sitelist=centered11 AssignSitesAllEquilibrium
+
 
 
 
@@ -1252,16 +1224,7 @@ MakeMultiSiteCountTables :
 	done)
 
 
-AssignSitesJustCombinedInput :
-# 	@(job="python $(HOME)$(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined "; \
-# 	  job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)$(UNIQUE)"\n"; \
-# 	  echo $$job; \
-# 	  bsub -q 18 -n 20 $$job)
-	@(job="bsub -q 18 -n 20 -R span[hosts=1] python $(HOME)$(DIR_as)"; \
-	  job=$$job"$(SCR_as) $(mirna) $(exp) I_combined $(n_constant) "; \
-	  job=$$job"$(sitelist)"$(BUFFER3P)$(N_LAG)$(UNIQUE)" -jobs 19"; \
-	  echo $$job; \
-	  $$job)
+
 
 AssignBipartiteSitesRandJustCombinedInput :
 	@(job="bsub -q 18 -n 20 -R span[hosts=1] python $(HOME)$(DIR_as)"; \

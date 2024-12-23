@@ -1,14 +1,14 @@
 name: agorbns
 channels:
-  - defaults
   - bioconda
   - conda-forge
+  - defaults
   - r
 dependencies:
-  - python=3.8
+  - python=3.8.5
   - numpy=1.17.4
   - pandas=0.25.3
+  - r-base=3.6.1
+  - r-data.table=1.12.2
   - sra-tools=2.10.7
-  - r-base
-  # Add any specific R packages you use with prefix r-
-  # Add any specific Python packages you use
+  - viennarna>=2.4

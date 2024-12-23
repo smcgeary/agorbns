@@ -1,4 +1,4 @@
-﻿Date,SL,Barcode,PCR cycles,GTC ID,BioA (nM),Exp,Exp_type,Spike,3prime,Lane,miRNA,S100,Pool,Sample type,Rep,Batch,Cell Line,SRR number,Path,,,,
+Date,SL,Barcode,PCR cycles,GTC ID,BioA (nM),Exp,Exp_type,Spike,3prime,Lane,miRNA,S100,Pool,Sample type,Rep,Batch,Cell Line,SRR number,Path,,,,
 ,8,ACTTGA,,L1_1935,1.9151,140603_WIGTC-HISEQA_C4W8TACXX,AGO_purity,,,8,miR-1,7,NA,S1007_P,,,,SRR10432899,miR-1/smallRNA_seq/reads/AGO2_pur.txt,,,,
 ,9,GATCAG,,L1_1936,1.4516,140603_WIGTC-HISEQA_C4W8TACXX,AGO_purity,,,8,miR-155,7,NA,S1007_P,,,,SRR10432900,miR-155/smallRNA_seq/reads/AGO2_pur.txt,,,,
 15.01.10,10,ATCACG,,L1_2406,2.4173,150120_WIGTC-HISEQ2A_C67BAANXX,equil_pilot,s124_8mer,TCG,6,"miR-1,miR-155",NA,3,I,,,,SRR10533738,miR-1/agorbns/reads/pur1_input.txt,,,,
@@ -135,7 +135,7 @@
 ,89,TTAGGC,18,L1_4373,,180202_WIGTC-HISEQ2A_CC25CANXX,equilibrium2_nb,"mir1_libconstruct1,mir1_libconstruct2",TGT,4,miR-7-23nt,NA,9,12.6,,,,SRR10533796,miR-7/agorbns/reads/pur1_12.65%.txt,,,,#REF!
 ,90,ACAGTG,18,L1_4374,,180202_WIGTC-HISEQ2A_CC25CANXX,equilibrium2_nb,"mir1_libconstruct1,mir1_libconstruct2",TGT,4,miR-7-23nt,NA,9,1.26,,,,SRR10533797,miR-7/agorbns/reads/pur1_1.265%.txt,,,,#REF!
 ,91,GCCAAT,18,L1_4375,,180202_WIGTC-HISEQ2A_CC25CANXX,equilibrium2_nb,"mir1_libconstruct1,mir1_libconstruct2",TGT,4,miR-7-23nt,NA,9,0.4,,,,SRR10533798,miR-7/agorbns/reads/pur1_0.4%.txt,,,,#REF!
-,92,CAGATC,18,L1_4376,,180202_WIGTC-HISEQ2A_CC25CANXX,equilibrium2_nb,"mir1_libconstruct1,mir1_libconstruct2",TGT,4,miR-7-24nt,NA,9,40,,,,SRR10533799,miR-7/agorbns/reads/pur1_0%.txt,,,,#REF!
+,102,GATCAG,18,L1_4388,,180202_WIGTC-HISEQ2A_CC25CANXX,equilibrium2_nb,"mir1_libconstruct1,mir1_libconstruct2",TGT,5,"miR-7-23nt,miR-7-24nt,miR-7-25nt",NA,9,0,,,,SRR10533799,miR-7/agorbns/reads/pur1_0%.txt,,,,#REF!
 ,103,ATCACG,16,L1_4391,,180202_WIGTC-HISEQ2A_CC25CANXX,equil_sc_nb,"mir1_libconstruct1,mir1_libconstruct2",TGT,6,miR-155,NA,9,40,,,,SRR14594949,miR-155/agorbns/reads/pur_1_40percent.txt,,,,#REF!
 ,104,CGATGT,18,L1_4392,,180202_WIGTC-HISEQ2A_CC25CANXX,equil_sc_nb,"mir1_libconstruct1,mir1_libconstruct2",TGT,6,miR-155,NA,9,12.6,,,,SRR14594950,miR-155/agorbns/reads/pur_1_12.65percent.txt,,,,#REF!
 ,105,TTAGGC,18,L1_4393,,180202_WIGTC-HISEQ2A_CC25CANXX,equil_sc_nb,"mir1_libconstruct1,mir1_libconstruct2",TGT,6,miR-155,NA,9,4,,,,SRR14594951,miR-155/agorbns/reads/pur_1_4percent.txt,,,,#REF!

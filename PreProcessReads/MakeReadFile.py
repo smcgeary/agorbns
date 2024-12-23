@@ -32,10 +32,9 @@ def check_read(reads, spikes, barcode, tag, experiment, byte_convert,
     Returns:
         A tuple containing the list of reads and a dictionary of read types.
     """
-    sys.stdout.flush()
     k_phi_x_rc = get_rc(k_phi_x)
     counts_readtypes_map = dict()
-    for i in ["0","N", "B", "M", "X", "T", "S","P"]:
+    for i in ["0", "N", "B", "M", "X", "T", "S", "P"]:
         counts_readtypes_map[i] = 0
     output_reads = []
     output_spikes = []
@@ -91,9 +90,9 @@ def check_read(reads, spikes, barcode, tag, experiment, byte_convert,
         # 2. That "N" is not in the read sequence.
         if "N" in seq:
             counts_readtypes_map["N"] += 1
-        # 3. That "B" is not in the quality score.
-        elif "B" in score:
-            counts_readtypes_map["B"] += 1
+        # # 3. That "B" is not in the quality score.
+        # elif "B" in score:
+        #     counts_readtypes_map["B"] += 1
         # 4. That the read has the correct multiplexing bardcode.
         # elif read_barcode != barcode:                                     #**#
             # counts_readtypes_map["M"] += 1                                #**#
@@ -108,6 +107,9 @@ def check_read(reads, spikes, barcode, tag, experiment, byte_convert,
             # print([test_read_match(seq, j, mis = 1, indel = 1) for j in spikes])
             counts_readtypes_map["S"] += 1
         elif seq_tag not in tag_list and "twist_reporter_assay" not in experiment:
+            # print(full_seq)
+            # print(seq)
+            # print(" "*37 + seq_tag)
             counts_readtypes_map["T"] += 1
         else:
             if "twist_reporter_assay_3p" in experiment:
