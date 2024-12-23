@@ -1,5 +1,3 @@
-Yes, let me show you the exact text to copy/paste, with no formatting or markdown code blocks - just the raw text you need:
-
 # AgoRBNS Analysis Pipeline
 
 This repository contains analysis code for two publications:
@@ -70,11 +68,21 @@ To download all data associated with both papers:
 
 ## Repository Structure
 
-[Description of main directories and files]
+Analyses proceed through three primary stages. First, the read data is extracted
+using the functionality in the PreProcessReads directory. Then site types are
+assigned to reads using the AssignSiteTypes directory. Then, biochemical
+modeling that enables Kd estimation is performed using functionality in the
+SolveForKds directory.
+
 
 ## Usage
 
-[Basic instructions for running the analysis]
+The basic commands to perform from the command line are listed in order leading
+up to each Figure sub-panel in the Figures.R script within the `general` directory.
+This file is run by entering R from the terminal and loading it by calling:
+```R
+source("general/general.R")
+```
 
 ## Citation
 
