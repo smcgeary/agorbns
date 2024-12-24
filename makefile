@@ -39,6 +39,8 @@ SCR_ack = AssignCompetitorKmers.py
 SCR_apk = AssignPositionalKmers.py
 SCR_akpl = AssignKmersProgrammedLib.py # Used for ThrP paper
 SCR_af = AssignFlanks.py # Used for AGO-RBNS paper
+SCR_af = AssignFlanks.sh # Used for AGO-RBNS paper
+
 
 DIR_kd = SolveForKds/
 SCR_sc = MakeSiteCountTable.py
@@ -273,6 +275,18 @@ AssignSites :
 		$$job; \
 	done)
 
+AssignFlanks :
+	@(for CON in $(COND); do \
+		job="sbatch $(DIR_as)$(SCR_af) $(mirna) $(exp) $$CON "; \
+		job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)" -jobs 19"; \
+		echo $$job; \
+		$$job; \
+	done)
+
+
+
+
+
 AssignSitesJustCombinedInput :
 # 	@(job="python $(HOME)$(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined "; \
 # 	  job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)$(UNIQUE)"\n"; \
@@ -296,7 +310,6 @@ AssignSitesEquilibriumAllSiteLists :
 	# make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=canonical buffer=1 AssignSites
 	# make n_constant=5 sitelist=resubmissionfinal AssignSitesAllEquilibrium
 	make n_constant=5 sitelist=centered11 AssignSitesAllEquilibrium
-
 
 
 
@@ -1121,15 +1134,6 @@ AssignCompetitorOligoConditionRange :
 	done)
 
 
-AssignFlanks :
-	@(job=""; \
-	for CON in $(COND); do \
-		job="bsub -q 18 -n 20 -R span[hosts=1] python "; \
-		job=$$job"$(HOME)$(DIR_as)$(SCR_af) $(mirna) $(exp) $$CON "; \
-		job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)" -jobs 19"; \
-		echo $$job; \
-		$$job; \
-	done)
 
 MakeSiteCountTables :
 	@(job=""; \
