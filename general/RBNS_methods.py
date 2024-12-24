@@ -2365,14 +2365,14 @@ def add_sites_from_read(_sitelist, _read, buffer_=False):
 
 
 
-# def add_flanks_from_read(_sitelist, _read, buffer_=False):
-#     # Get all sites:
-#     _read.get_all_sites_in_read(_sitelist, buffer_=buffer_)
-#     top = _read.site_name()
-#     seq = _read.topsite
-#     if top != "None":
-#         flank = _read.site_flank()
-#         _sitelist.flank_counts[_read.barcode][top][flank] += 1
+def add_flanks_from_read(_sitelist, _read, buffer_=False):
+    # Get all sites:
+    _read.get_all_sites_in_read(_sitelist, buffer_=buffer_)
+    top = _read.site_name()
+    seq = _read.topsite
+    if top != "None":
+        flank = _read.site_flank()
+        _sitelist.flank_counts[_read.barcode][top][flank] += 1
 
 
 
