@@ -12,17 +12,17 @@ MIRNAbc_HeLa_six = let-7a miR-155 miR-7 miR-1 miR-124 lsy-6
 MIRNAbc_HeLa_five = miR-155 miR-7 miR-1 miR-124 lsy-6
 MIRNAbc_HeLa_four = miR-155 miR-7 miR-1 miR-124
 
-DIR_pp = PreProcessReads/
-DIR_plfold = AnalyzeStructure/
-SCR_mp = MakeMiRNAReadFile.py
-SCR_mp = MakeMiRNAReadFile.sh
-SCR_pp = MakeReadFile.py
-SCR_pp = MakeReadFile.sh
-# SCR_pp_burge = MakeReadFileBurge.py
 
-DIR_as = AssignSiteTypes/
-SCR_as = AssignSites.py # Used for AGO-RBNS paper
-SCR_as = AssignSites.sh # Used for AGO-RBNS paper
+## PREPROCESSING DIRECTORIES AND SCRIPTS #######################################
+DIR_pp = PreProcessReads/ # Used GitHub2019 ************************************
+SCR_mp = MakeMiRNAReadFile.py # Used GitHub2019 ********************************
+SCR_mp = MakeMiRNAReadFile.sh # Used GitHub2019 ********************************
+SCR_pp = MakeReadFile.py # Used GitHub2019 *************************************
+SCR_pp = MakeReadFile.sh # Used GitHub2019 *************************************
+# SCR_pp_burge = MakeReadFileBurge.py !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+DIR_as = AssignSiteTypes/# Used GitHub2019 ************************************
+SCR_as = AssignSites.py # Used GitHub2019 **************************************
+SCR_as = AssignSites.sh # Used GitHub2019 **************************************
 
 SCR_abs = AssignBipartiteSitesProgrammedLib.py # Used for ThrP paper
 SCR_abms = AssignBipartiteMismatchSitesProgrammedLib.py # Used for ThrP paper
@@ -38,15 +38,15 @@ SCR_ak = AssignKmers.py
 SCR_ack = AssignCompetitorKmers.py
 SCR_apk = AssignPositionalKmers.py
 SCR_akpl = AssignKmersProgrammedLib.py # Used for ThrP paper
-SCR_af = AssignFlanks.py # Used for AGO-RBNS paper
-SCR_af = AssignFlanks.sh # Used for AGO-RBNS paper
+SCR_af = AssignFlanks.py # Used GitHub2019 *************************************
+SCR_af = AssignFlanks.sh # Used GitHub2019 *************************************
 
 
-DIR_kd = SolveForKds/
-SCR_sc = MakeSiteCountTable.py
-SCR_msc = MakeMultiSiteCountTable.py
-SCR_fc = MakeFlankCountTable.py
-SCR_skd = FitSiteKds.R
+DIR_kd = SolveForKds/# Used GitHub2019 ****************************************
+SCR_sc = MakeSiteCountTable.py # Used GitHub2019 *******************************
+SCR_msc = MakeMultiSiteCountTable.py # Used GitHub2019 *************************
+SCR_fc = MakeFlankCountTable.py # Used GitHub2019 ******************************
+SCR_skd = FitSiteKds.R # Used GitHub2019 ***************************************
 SCR_ppskd = FitProgrammedPositionKds.R
 SCR_pmmkd = FitProgrammedMismatchKds.R
 SCR_12merkd = Fit12merKds.R
@@ -61,8 +61,6 @@ COND_mirna = I 40 12.6 4 1.26 0.4 0
 
 
 #### NEW DIRECTORIES RELATED TO FITTING BIOCHEM MODEL FOR THREEPRIME SCORE
-
-
 HELA_TPM_KL_DIR = /lab/solexa_bartel/klin/miRNA_models_data/transfections/hela/$\
 	processed/log_tpm_normed.txt
 HELA_TPM_SM_DIR = /lab/solexa_bartel/mcgeary/transfections/HeLa/count_tables/$\
@@ -287,15 +285,6 @@ AssignFlanks :
 
 
 
-AssignSitesJustCombinedInput :
-# 	@(job="python $(HOME)$(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined "; \
-# 	  job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)$(UNIQUE)"\n"; \
-# 	  echo $$job; \
-# 	  bsub -q 18 -n 20 $$job)
-	@(job="sbatch $(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined $(n_constant) "; \
-	  job=$$job"$(sitelist)"$(BUFFER3P)$(UNIQUE)" -jobs 19"; \
-	  echo $$job; \
-	  $$job)
 
 
 AssignSitesAllEquilibrium :
@@ -306,7 +295,7 @@ AssignSitesAllEquilibrium :
 	make mirna=lsy-6 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
 	make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
 
-AssignSitesEquilibriumAllSiteLists :
+AssignAllSitesEquilibriumAllSiteLists :
 	# make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=canonical buffer=1 AssignSites
 	# make n_constant=5 sitelist=resubmissionfinal AssignSitesAllEquilibrium
 	make n_constant=5 sitelist=centered11 AssignSitesAllEquilibrium
@@ -319,33 +308,7 @@ AssignSitesEquilibriumAllSiteLists :
 # 		bsub -n 20 python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) $$CON $(nb) $(test);} \
 # 	done)
 
-# PreprocessDataOld :
-# 	@(job_prefix="python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
-# 	#job_prefix="bsub -q 18 -n 20 -R span[hosts=1] python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) "; \
-# 	if [ "$(mirna)" = "miR-7-24nt" ] && [ "$(exp)" = "equilibrium_tp" ]; then \
-# 		DUP_REPS="1 2 3 4"; \
-# 		for CON in $(COND_P); do \
-# 			for REP in 1 2; do \
-# 				job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
-# 				#echo $$job; \
-# 				$$job; \
-# 			done ;\
-# 		done; \
-# 	else \
-# 		DUP_REPS="1 2"; \
-# 		for CON in $(COND_P); do \
-# 			job=$$job_prefix"$$CON$(test) -jobs 19"; \
-# 			#echo $$job; \
-# 			$$job; \
-# 		done; \
-# 	fi; \
-# 	for CON in $(COND_P_DUP); do \
-# 		for REP in $$DUP_REPS; do \
-# 			job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
-# 			#echo $$job; \
-# 			$$job; \
-# 		done; \
-# 	done)
+
 
 
 PreprocessHighThroughputv2 :
@@ -1240,12 +1203,6 @@ AssignRandomBipartiteMismatchSitesJustCombinedInput :
 
 # 	python $(HOME)general/SubmitJob.py "$$job")
 
-AssignSitesJustCombinedInputKinetics :
-	@(job="python $(HOME)$(DIR_as)$(SCR_as) $(mirna) $(exp) I_combined "; \
-	job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)$(N_EX)$(UNIQUE)"\n"; \
-	echo $$job; \
-	python $(HOME)general/SubmitJob.py "$$job")
-
 
 # Assign12mers :
 # 	for MIRSTART in $$(seq 1 5); do \
@@ -1832,7 +1789,7 @@ AssignPositionalKmersProgrammedLibSeedEx :
 
 
 FitFlankKds :
-	@(job_py="python $(HOME)$(DIR_kd)$(SCR_fc) $(mirna) $(exp) $(n_constant) $(sitelist)"$(BUFFER3P); \
+	@(job_py="conda run -n agorbns python $(DIR_kd)$(SCR_fc) $(mirna) $(exp) $(n_constant) $(sitelist)"$(BUFFER3P); \
 	echo $$job_py; \
 	$$job_py; \
 	if [ "$(mirna)" = "miR-7-23nt" ]; then \
@@ -1841,16 +1798,16 @@ FitFlankKds :
 		MIRSITE="$(mirna)"; \
 	fi; \
 	echo $$MIRSITE; \
-	DIR="$(HOME)$(DIR_as)site_categories/$(sitelist)/sites."$$MIRSITE"_$(sitelist).txt"; \
+	DIR="$(DIR_as)site_categories/$(sitelist)/sites."$$MIRSITE"_$(sitelist).txt"; \
 	echo $$DIR; \
 	for SITE in `cat $$DIR`; do \
 		echo $$SITE; \
-		job1="bsub Rscript $(HOME)$(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE"$(BUFFER3P); \
-		job2="bsub Rscript $(HOME)$(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE -nocombI"$(BUFFER3P); \
+		job1="bsub Rscript $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE"$(BUFFER3P); \
+		job2="bsub Rscript $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE -nocombI"$(BUFFER3P); \
 		echo $$job1; \
 		echo $$job2; \
-		$$job1; \
-		$$job2; \
+		# $$job1; \
+		# $$job2; \
 	done)
 		# job1="Rscript $(HOME)$(DIR_kd)$(SCR_fkd) $(mirna) $(exp)"; \
 		# job1=$$job1" $(n_constant) $(sitelist) '$$SITE'"; \

@@ -528,20 +528,31 @@ ConvertRColortoRGB <- function(color.vector, alpha=1) {
 #   })
 # }
 
-# GetColorFunction <- function(flanks, alpha=1) {
-#   cols.counts <- c(0, 1, 1, 0, 0, 0)
-#   names(cols.counts) <- c("G", "A", "T", "C", ".", "|")
-#   flank.colors <- rev(topo.colors(200, alpha=alpha)[c(1, 20,60,70,120)])
-#   sapply(flanks, function(flank) {
-#     if (flank %in% c(names(kSiteColors), "11mer-m3.13", "12mer-m3.14",
-#                     "11mer-m4.14", "12mer-m4.15")) {
-#       return("gray")
-#     } else {
-#       counts <- 1 + sum(cols.counts[unlist(strsplit(flank, NULL))])
-#       return(flank.colors[counts])
-#     }
-#   })
-# }
+CombinedSiteAndFlankColors <- function(sXc) {
+  colors <- rep("gray", nrow(sXc))
+  flanks.inds <- grep("\\|", rownames(sXc), perl=TRUE)
+  print(rownames(sXc)[flanks.inds])
+  flanks     <- gsub("(^.*)\\|(.*$)", rownames(sXc)[flanks.inds], replace="\\2",
+                     perl=TRUE)
+  colors[flanks.inds] <- GetColorFunction(flanks)
+  colors
+}
+
+
+GetColorFunction <- function(flanks, alpha=1) {
+  cols.counts <- c(0, 1, 1, 0, 0, 0)
+  names(cols.counts) <- c("G", "A", "T", "C", ".", "|")
+  flank.colors <- rev(topo.colors(200, alpha=alpha)[c(1, 20,60,70,120)])
+  sapply(flanks, function(flank) {
+    if (flank %in% c(names(kSiteColors), "11mer-m3.13", "12mer-m3.14",
+                    "11mer-m4.14", "12mer-m4.15")) {
+      return("gray")
+    } else {
+      counts <- 1 + sum(cols.counts[unlist(strsplit(flank, NULL))])
+      return(flank.colors[counts])
+    }
+  })
+}
 
 Points <- function(x, y, x_error=NULL, y_error=NULL, ln.lwd=par()$lwd, pt.lwd=0, cex=pt_cex_final,
                    line=FALSE, ...) {

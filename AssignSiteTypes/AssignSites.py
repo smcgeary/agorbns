@@ -137,12 +137,12 @@ def main():
         threads += multiproc_file(reads_path, int(jobs), assign_site, test,
                                   *args)
     # The summed data from each of the multiprocessing threads:
-    equil_exps = ["equil_pilot", "equilibrium", "equil_flowthrough",
-                  "equilibrium_nb", "equilibrium2_nb", "equilibrium3_nb",
-                  "equil_c_nb", "equil_s_nb", "equil_c2_nb", "equil_c2_alt_nb",
-                  "equil_c_alt_nb", "equil_sc_alt_nb", "equil_sc_nb",
-                  "equilibrium_tp", "equilibrium_met_tp", "equilibrium_2_tp"]
-    kinetics_exps = ["kinetics"]
+    # equil_exps = ["equil_pilot", "equilibrium", "equil_flowthrough",
+    #               "equilibrium_nb", "equilibrium2_nb", "equilibrium3_nb",
+    #               "equil_c_nb", "equil_s_nb", "equil_c2_nb", "equil_c2_alt_nb",
+    #               "equil_c_alt_nb", "equil_sc_alt_nb", "equil_sc_nb",
+    #               "equilibrium_tp", "equilibrium_met_tp", "equilibrium_2_tp"]
+    # kinetics_exps = ["kinetics"]
     # if experiment in equil_exps:
     counts = merge_data_frames([i[0] for i in threads])["TGT"]
     multicounts = merge_data_frames([i[1] for i in threads])["TGT"]
@@ -220,13 +220,7 @@ def main():
 
 
     # if not test:
-    # print(counts)
-    # print(counts.sum(0))
-    # print(multisite_counts_path)
     multicounts = multicounts.astype(int)
-    # print(multicounts)
-    # print(multicounts.sum(0))
-    print(site_counts_path)
     counts.to_csv(site_counts_path, sep="\t", header=False)
     multicounts.to_csv(multisite_counts_path, sep="\t", header=False)
     if sitelist not in ["12mers", "16mers"]:

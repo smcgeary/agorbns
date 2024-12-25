@@ -1,3 +1,4 @@
+rm()
 source("general/general.R")
 source("general/ModelingFunctions.R")
 source("general/PlotFunctions.R")
@@ -1526,6 +1527,7 @@ PlotSiteFlankEnrichments <- function(mirna,  site, experiment="equilibrium",
   text(xy[1], xy[2], labels=mirna.trim, adj=c(0, 1))
   kds <- pars[paste0(rownames(data), "_Kd")]
   names(kds) <- rownames(data)
+  print(CombinedSiteAndFlankColors)
   colors <- CombinedSiteAndFlankColors(sXc)
   names(colors) <- names(kds)
   bg_colors <- which(colors == "gray")
@@ -1549,6 +1551,131 @@ PlotSiteFlankEnrichments <- function(mirna,  site, experiment="equilibrium",
   }
 }
 
+# 4B____________________________________________________________________________
+PlotSiteFlankKds <- function(mirna, experiment="equilibrium", n_constant=5,
+                             sitelist="resubmissionfinal", combined=TRUE,
+                             combined_sites=TRUE, singleonly=TRUE, buffer=FALSE,
+                             xmin=log10(1e-7),
+                             adjusted_height=FALSE, plot.nconstant=FALSE,
+                             height=5, width=8, xpos=20, ypos=20, pdf.plot=FALSE) {
+
+  pars.matrix <- SubfunctionCall(EquilPars, combined=combined_sites)
+  site.kds <- pars.matrix[1:(nrow(pars.matrix) - 3), ]
+  sites <- gsub("^(.*)_Kd", rownames(site.kds), replace="\\1")
+  sXc <- SubfunctionCall(SitesXCounts)
+  rownames(site.kds) <- sites
+  removed_sites <- GetRemovedSites(sXc)
+  print(removed_sites)
+  sites_AA <- grep("^AA-", rownames(sXc), perl=TRUE, value=TRUE)
+  # if (length(sites_AA) != 0) {
+  #   inds_AA <- grep("^AA-", rownames(sXc), perl=TRUE)
+  #   sites_AA_base <- gsub("^(AA-)(.*)$", sites_AA, replace="\\2", perl=TRUE)
+  #   sites_AA_keep <- sites_AA[sites_AA_base %in% rownames(sXc)]
+  #   sites_AA_remove <- setdiff(sites_AA, sites_AA_keep)
+  #   removed_sites <- c(sites_AA_remove, removed_sites)
+  # }
+  sites <- setdiff(sites, removed_sites)
+  site.kds <- site.kds[sites, ]
+  sites <- sites[order(site.kds$Mean)]
+  site.kds <- site.kds[order(site.kds$Mean), ]
+  # print(order(site.kds$Mean))
+  # print(site.kds)
+  # print(sites[order(site.kds$Mean)])
+  # break
+  # Get kds for all site-types of the mirna.
+  # # Use the 8mer flanks to just get the flank strings.
+  # Pre-allocate the matrix with the flanking kds.
+  tick <<- 1
+  flank.kds <- sapply(sites, GetFullMirnaSiteFlankKds, mirna=mirna,
+                      experiment=experiment, n_constant=n_constant,
+                      sitelist=sitelist, combined=combined, buffer=buffer)
+  flank.kds_CI <- sapply(sites, GetFullMirnaSiteFlankKds_CI, mirna=mirna,
+                      experiment=experiment, n_constant=n_constant,
+                      sitelist=sitelist, combined=combined, buffer=buffer)
+  flank.kds_uCI <- flank.kds_CI[1:nrow(flank.kds), ]
+  flank.kds_lCI <- flank.kds_CI[(nrow(flank.kds) + 1):(2*nrow(flank.kds)), ]
+  rownames(flank.kds_uCI) <- rownames(flank.kds)
+  rownames(flank.kds_lCI) <- rownames(flank.kds)
+  flank.kds_CI_range <- flank.kds_uCI/flank.kds_lCI
+  flank.kds_median_range <- apply(log10(flank.kds_CI_range), 2, median, na.rm=TRUE)
+  # Removes site types for which there are literally zero flank Kds.
+
+
+  print(site.kds)
+  site.kds <- site.kds[which(colSums(is.na(flank.kds)) != 256),]
+  flank.kds <- flank.kds[, rownames(site.kds)]
+  # flank.kds <- flank.kds[, order(site.kds$Mean)]
+  data.sites <- rep(colnames(flank.kds), each=nrow(flank.kds))
+  data.ranks <- rep(ncol(flank.kds) - seq(ncol(flank.kds)) + 1, each=nrow(flank.kds))
+  data.colors <- rep(GetColorFunction(kFlanks, alpha=1), ncol(flank.kds))
+  flanks.df <- data.frame(kds=log10(c(flank.kds)),
+                          rank=as.numeric(data.ranks),
+                          sites=data.sites,
+                          cols=data.colors,
+                          stringsAsFactors=FALSE)
+  if (pdf.plot == "4.B") {
+    xmin <- log10(1e-5)
+  }
+  xmax <- log10(7)
+  ymin <- 0
+  ymax <- length(sites) + 0.5
+  if (adjusted_height) {
+    height <- (ymax*0.8 + 5)/4
+  } else {
+    height <- 5
+  }
+  SubfunctionCall(FigureSaveFile)
+  xpd=NA
+  ranks <- unique(flanks.df$rank)
+  names(ranks) <- unique(flanks.df$site)
+  boxplot(kds ~ rank,
+          data       = flanks.df,
+          axes       = FALSE,
+          xaxt       = "n",
+          horizontal = TRUE,
+          outline    = FALSE,
+          xlim       = c(ymin, ymax),
+          ylim       = rev(c(xmin, xmax)),
+          ann        = FALSE)
+  y <- nrow(site.kds) - seq(nrow(site.kds)) + 1
+  segments(0, ymin, 0, max(data.ranks) - 0.5, xpd=NA)
+  # xmin <- log10(1e-5)
+  AddLogAxis(1, label="Relative Kd", boxplot=TRUE)
+  mirna.split <- paste0(strsplit(mirna, split="-")[[1]][1:2], collapse="-")
+  xy <- GetPlotFractionalCoords(0.025, 0.95, inv='x')
+  text(xy[1], max(data.ranks), labels=mirna.split, adj=c(0, 0), xpd=NA)  
+  par(xpd=NA)
+  beeswarm(kds ~ rank,
+           data        = flanks.df,
+           add         = TRUE,
+           method      = "swarm",
+           corral      = "random",
+           corralWidth = 0.5,
+           pch         = 1,
+           lwd         =1.2,
+           cex         = 0.8,
+           horizontal  = TRUE,  
+           pwcol       = cols,
+           axes        = FALSE,
+           xpd=NA)
+  ymin=0.0001
+  flank_mins <- apply(flank.kds, 2 ,function(col) {min(col[!is.na(col)])})
+  text(x=log10(flank_mins) - 0.1,
+       y=unique(flanks.df$rank),
+       labels=ConvertTtoUandMmtoX(unique(flanks.df$sites)),
+       adj=0, col= "black", xpd=NA)
+  if (pdf.plot == "4.B") {
+    bar_pos <- -4.5
+  } else {
+    bar_pos <- -6.5
+  }
+  arrows(bar_pos - flank.kds_median_range[names(ranks)]/2, ranks,
+         bar_pos + flank.kds_median_range[names(ranks)]/2, ranks,
+         length=0.02, angle=90, code=3, xpd=NA)
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
 
 ## FIGURES FOR RBNS EQUILIBRIUM PAPER ##########################################
 MakeFigure1 <- function(uniq=FALSE) {
@@ -1675,10 +1802,16 @@ MakeFigure3 <- function() {
 
 MakeFigure4 <- function() {
   message("Making Fig. 4")
+  ## make AssignFlanks mirna=miR-1 exp=equilibrium n_constant=5 buffer=1 sitelist=resubmissionfinal
+  ## python SolveForKds/MakeFlankCountTable.py miR-1 equilibrium 5 resubmissionfinal -buffer
+  #### Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer
+  ## Rscript SolveForKds/FitFlankKds.R miR-1 equilibrium 5 resubmissionfinal -buffer
+
   PlotSiteFlankEnrichments("miR-1", "8mer", combined=TRUE, combined_site=FALSE,
                            buffer=TRUE, pdf.plot="4.A")
   PlotSiteFlankKds("miR-1", combined=TRUE, combined_site=FALSE, buffer=TRUE,
                    pdf.plot="4.B")
+  break
   PlotFlankLinModel(pdf.plot="4.C_left")
   PlotFlankLinModelCoefficients(pdf.plot="4.C_right")
   PlotStructureVsFlankingKds("miR-1", "8mer", combined=TRUE, buffer=TRUE,
