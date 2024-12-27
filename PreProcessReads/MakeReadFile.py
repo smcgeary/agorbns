@@ -72,30 +72,55 @@ def check_read(reads, spikes, barcode, tag, experiment, byte_convert,
         # print([int(i) for i in [q0, qN, qB, qM, qX, qS, qT]])
         # print(seq_tag)
         # print(tag.split(","))
-        ## NOTE: The data re-downloaded from the SRA does not contain
-        ## the original information from the reads from the Whitehead Genome
-        ## Technology Core (WIGTC), which consists of two important differences:
-        ## The Illumina "chastity filter" is missing, as well as the
-        ## demultiplexing barcode information. For this reason, the associated
-        ## lines of code are commented out, with the "#*#"" on the
-        ## right-hand-side of the line, but are presevered in the case that
-        ## the original data files are being used.
+        #
+        # NOTE: The data as hosted by the SRA does not contain the original
+        # information from the reads from the Whitehead Genome. The original
+        # reads had the following structure:
+        #
+        # @WIGTC-HISEQ:4:1107:1514:1981#ACAGTG/1;0
+        # NGCAGNNTTAGCATTCACAGACAACACCGCACACGAGGGC
+        # +WIGTC-HISEQ:4:1107:1514:1981#ACAGTG/1;0
+        # BOZ\_BBQY]^_]_^^_^_^^[^^_]^^^^[^[^^^^^^^
+        #
+        # where the "ACAGTG" in lines 1 and 3 refers to the sample index
+        # barcode, and the "0" at the end of lines 1 and 3 refers to whether
+        # the read passed the Illumina 1.5 pipeline QC filter, with 0 indicating
+        # the read failed and 1 indicating it passed. Furthermore, the reads
+        # used the Illumina 1.5-era Phred+64 quality scores, in which an
+        # upper-case "B" indicates either a stretch of low-quality bases at the
+        # 3′ end of the read, or low-quality base of unknown quality within the
+        # middle. The SRA-downloaded reads contain neither the sample index
+        # barcode nor the binary filtering information, and they use the
+        # Phred+33 quality scores, in which B no longer indicates an anomalously
+        # poor-quality read. For this reason, the associated lines of code
+        # relating to these three filtering criteria are commented out in the
+        # Preprocessing scripts, with "#*#"" on the right-hand-side of each
+        # relevant line. The code is preserved in case original data files are
+        # being used. Finally, in the directories with figures corresponding to
+        # each of the two manuscripts (McGearyLinEtAl2019 and
+        # McGearyBisariaEtAl2022), those figures with the suffix "_old"
+        # correspond to the original figures, with data processed as originally
+        # described, and those without the "_old" suffix correspond to figures
+        # regenerated using the SRA-hosted files for which the filtering steps
+        # were omitted.
+
+        #  
         # Assign the multiplexing barcode sequence
 
         # List of conditionals to except the read:
-        # 1. That the first line doesn't end with 1;0
+        # # 1. That the first line doesn't end with 1;0                     #**#
         # read_barcode = header.split("#")[1].split("/")[0]                 #**#
         # if header[-1] == 0:                                               #**#
         #     counts_readtypes_map["0"] += 1                                #**#
         # 2. That "N" is not in the read sequence.
         if "N" in seq:
             counts_readtypes_map["N"] += 1
-        # # 3. That "B" is not in the quality score.
-        # elif "B" in score:
-        #     counts_readtypes_map["B"] += 1
-        # 4. That the read has the correct multiplexing bardcode.
+        # # 3. That "B" is not in the quality score.                        #**#
+        # elif "B" in score:                                                #**#
+        #     counts_readtypes_map["B"] += 1                                #**#
+        # # 4. That the read has the correct multiplexing bardcode.         #**#
         # elif read_barcode != barcode:                                     #**#
-            # counts_readtypes_map["M"] += 1                                #**#
+        #     counts_readtypes_map["M"] += 1                                #**#
         # 5. That the sequence is not within a 1 nt mismatch to
         #   the phi-x genome, or its reverse complement.
         elif (seq in k_phi_x or seq in k_phi_x_rc):
@@ -104,12 +129,8 @@ def check_read(reads, spikes, barcode, tag, experiment, byte_convert,
         elif True in [test_read_match(seq, j, mis = 1, indel = 1)
                       for j in spikes]:
             output_spikes.append(full_seq[:40])
-            # print([test_read_match(seq, j, mis = 1, indel = 1) for j in spikes])
             counts_readtypes_map["S"] += 1
         elif seq_tag not in tag_list and "twist_reporter_assay" not in experiment:
-            # print(full_seq)
-            # print(seq)
-            # print(" "*37 + seq_tag)
             counts_readtypes_map["T"] += 1
         else:
             if "twist_reporter_assay_3p" in experiment:

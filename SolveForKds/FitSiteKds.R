@@ -65,7 +65,7 @@ if ("-uniq" %in% args) {
 }
 # This is important for the fitting of the miR-1 equilibrium library that has
 # an incorrect 3' tag.
-if ("-buffer" %in% args) {
+if ("-buffer3p" %in% args) {
   buffer <- TRUE
   str.buffer <- "_buffer3p"
 } else {

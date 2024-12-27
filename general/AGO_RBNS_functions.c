@@ -246,21 +246,21 @@ double *xbs;
 }
 
 
-void
-FreeAgoAlt(pars, l, L, n_i, a_f)
+// void
+// FreeAgoAlt(pars, l, L, n_i, a_f)
 
-double *pars;
-double *l;
-double *L;
-int *n_i;
-double *a_f;
+// double *pars;
+// double *l;
+// double *L;
+// int *n_i;
+// double *a_f;
 
-{
-	double A_j;
-	A_j = exp(pars[(*n_i) + 1]);
-	*a_f = FreeAgo(A_j, l, pars, *n_i);
+// {
+// 	double A_j;
+// 	A_j = exp(pars[(*n_i) + 1]);
+// 	*a_f = FreeAgo(A_j, l, pars, *n_i);
 
-}
+// }
 
 
 void

@@ -50,7 +50,7 @@ SCR_skd = FitSiteKds.R # Used GitHub2019 ***************************************
 SCR_ppskd = FitProgrammedPositionKds.R
 SCR_pmmkd = FitProgrammedMismatchKds.R
 SCR_12merkd = Fit12merKds.R
-SCR_fkd = FitFlankKds.R
+SCR_fkd = FitFlankKds.sh
 SCR_kdrepfile = MakeKdStringFile.py
 
 DIR_plfold = AnalyzeStructure/
@@ -1802,11 +1802,11 @@ FitFlankKds :
 	echo $$DIR; \
 	for SITE in `cat $$DIR`; do \
 		echo $$SITE; \
-		job1="bsub Rscript $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE"$(BUFFER3P); \
-		job2="bsub Rscript $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE -nocombI"$(BUFFER3P); \
+		job1="sbatch $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE"$(BUFFER3P); \
+		# job2="bsub Rscript $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE -nocombI"$(BUFFER3P); \
 		echo $$job1; \
-		echo $$job2; \
-		# $$job1; \
+		# echo $$job2; \
+		$$job1; \
 		# $$job2; \
 	done)
 		# job1="Rscript $(HOME)$(DIR_kd)$(SCR_fkd) $(mirna) $(exp)"; \

@@ -1677,6 +1677,315 @@ PlotSiteFlankKds <- function(mirna, experiment="equilibrium", n_constant=5,
   }
 }
 
+# 4C-left_______________________________________________________________________
+PlotFlankLinModel <- function (experiment="equilibrium", n_constant=5,
+                               sitelist="resubmissionfinal", leaveoneout=TRUE,
+                               new_way=TRUE, height=5,
+                               width=5, pdf.plot=FALSE) {
+  # Extract the flanking dinucleotides:
+  flank.lm <- SubfunctionCall(GetFlankLinearModel)
+  flank.lm <<- flank.lm
+  # Data analysis for the 1st plot:
+  # First linear model; splitting up all flanks by 5p and 3p sequence.
+  SubfunctionCall(FigureSaveFile)
+  # 1st Plot:
+  if (new_way) {
+    xmin <- 4e-2
+    xmax <- 70    
+  } else {
+    xmin <- 1e-5
+    xmax <- 10        
+  }
+  ymin <- xmin
+  ymax <- xmax
+  site_mod <- lm(logkd ~ site*mirna, data=flank.lm$model)
+  data_temp <- flank.lm$model
+  data <- exp(flank.lm$model$logkd)
+  data_new <- data/exp(predict(site_mod, data_temp))
+  data_out <<- data
+  list_out <<- list()
+  if (leaveoneout) {
+    model <- exp(unlist(sapply(kMirnas, function(mirna) {
+      out <- SubfunctionCall(LeaveOneOutFlankModel)
+      list_out[[mirna]] <<- out
+      out
+    })))
+  } else {
+    model <- exp(flank.lm$fitted.values)  
+  }
+
+  flank.lm$model$logkd_mod <- log(model)
+  flank.lm_corective <- lm(logkd_mod ~ mirna*site, data=flank.lm$model)
+
+  model_new <- model/exp(flank.lm_corective$fitted.values)
+  flanks <- paste(as.character(flank.lm$model$f5p1),
+                  as.character(flank.lm$model$f5p2),
+                  as.character(flank.lm$model$f3p1),
+                  as.character(flank.lm$model$f3p2), sep = "")
+  BlankPlot(log='xy', inv='xy')
+  AddLogAxis(1, label="Predicted relative Kd")
+  AddLogAxis(2, label="Observed relative Kd")
+  # inds <- grep("miR-23nt", names(model), invert=TRUE)
+  xy <- GetPlotFractionalCoords(fx=0.95, fy=0.05, log='xy')
+  abline(0, 1, lty=2)
+
+
+
+  if (new_way) {
+    model_new <<- model_new
+    data_new <<- data_new
+    points(x=model_new, y=data_new, col=GetColorFunction(flanks, alpha=0.4))  
+    AddCorrelationToPlot(x=log(model_new), y=log(data_new), xpos=xy[1],
+                         ypos=xy[2], rsquared=TRUE)
+  } else {
+    model <<- model
+    data <<- data
+    points(x=model, y=data, col=GetColorFunction(flanks, alpha=0.2))  
+    AddCorrelationToPlot(x=log(model), y=log(data), xpos=xy[1],
+                           ypos=xy[2], rsquared=TRUE)
+  }
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+
+# 4C-right______________________________________________________________________
+PlotFlankLinModelCoefficients <- function(experiment="equilibrium",
+                                          n_constant=5,
+                                          sitelist="resubmissionfinal", width=4,
+                                          height=5, xpos=20, ypos=20,
+                                          pdf.plot=FALSE) {
+  coefs <- SubfunctionCall(GetFlankLMCoefs)
+  coefs <<- coefs
+  ymin <- -0.5
+  ymax <- 0.5
+  xmin <- 0
+  xmax <- 24
+  R <- 1.987e-3 # in kcal K-1 mol-1
+  T <- 310.15 # in K
+
+  SubfunctionCall(FigureSaveFile)
+  BlankPlot(inv='y')
+  axis(1, at=c(4, 8, 12, 16)-2, labels=c("5p1", "5p2", "3p1", "3p2"),
+      pos = ymax, lwd=0)
+
+  # Add y-axis:
+  AddLinearAxis(2, tick.space=0.1, label.space= 0.1,
+                label=expression(Delta*Delta*italic(G)*" (kcal/mol)"))
+
+  x <- seq(16) - 0.5
+  lins <- coefs$lin
+  lins_error_upper <- coefs$lin_error_upper
+  lins_error_lower <- coefs$lin_error_lower
+  int5p <- cbind(c(0, 0, 0, 0), rbind(c(0, 0, 0), coefs$int.5p))
+  int3p <- cbind(c(0, 0, 0, 0), rbind(c(0, 0, 0), coefs$int.3p))
+  nucs <- c("A", "C", "G", "T")
+  rownames(int5p) <- nucs
+  colnames(int5p) <- nucs
+  rownames(int3p) <- nucs
+  colnames(int3p) <- nucs
+  nt <- names(kNucleotideColors)
+  y_out1  <<- c(t(t(lins) - colMeans(lins))[nt, ], int5p[nt, nt] - mean(int5p),
+         int3p[nt, nt] - mean(int3p))*R*T
+
+  y_out2  <<- c(t(t(lins) - colMeans(lins))[nt, ], int5p[nt, nt],
+         int3p[nt, nt])*R*T
+  lins_global <<- lins*R*T
+  y <- R*T*t(t(lins) - colMeans(lins))[nt, ]
+  lins_post_global <<- y
+
+  int5p <- R*T*int5p
+  int3p <- R*T*int3p
+
+  # int5p <<- int5p
+  # int3p <<- int3p
+
+  int5p_norm <<- int5p - mean(int5p)
+  int3p_norm <<- int3p - mean(int3p)
+  y_error_upper <- R*T*t(t(lins_error_upper) - colMeans(lins))[nt, ]
+  y_error_lower <- R*T*t(t(lins_error_lower) - colMeans(lins))[nt, ]
+  # Define boundaries for plotting:
+  y.b <- sapply(y, max, i=0)
+  y.t <- sapply(y, min, i=0)
+  segments(x0=xmin,y0=R*T*log(c(1/2, 1, 2)), x1=16, lwd=0.25)
+  text(x=c(16.5, 16.5), y=R*T*log(c(1/2, 2)), cex=1,
+       labels=c("2-fold greater\nbinding affinity",
+                "2-fold weaker\nbinding affinity"), adj=c(0, 0.5), xpd=NA)
+
+  abline(v=seq(3)*4, lty=2, lwd=0.5)
+  arrows(x0=x[-c(1, 5, 9, 13)], y0=y_error_upper[-1, ], x1=x[-c(1, 5, 9, 13)],
+         y1=y_error_lower[-1, ], length=0.05*par()$cex, angle=90, code=3, xpd=NA)
+  rect(xleft=x - 0.5, ybottom=y.b, xright=x + 0.5, ytop=y.t,
+       col=kNucleotideColors, border=NA)
+
+  xy <- GetPlotFractionalCoords(fx=0.7, fy=0.8, inv="y")
+  legend(x=xy[1], y=xy[2], legend=ConvertTtoU(nt), col=kNucleotideColors,
+         pt.cex=2, pch=15, bty="n", xpd=NA)
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+
+# 4D____________________________________________________________________________
+PlotStructureVsFlankingKds <- function(mirna, site, condition="I_combined",
+                                       combined=TRUE, buffer=FALSE,
+                                       experiment="equilibrium", n_constant=5,
+                                       sitelist="resubmissionfinal", mir.start=1, mir.stop=14,
+                                       absolute=TRUE, noconstant=FALSE,
+                                       height=5, width=5, xpos=20, ypos=20,
+                                       pdf.plot=FALSE) {
+  # Window size for normalizing the pl_fold with the accessibility:
+  win <- 1/(mir.stop - mir.start + 1)
+  # Get the flanking kds:
+  flank.pars <- SubfunctionCall(GetFlankKds)
+  flank.pars <- flank.pars[grep(sprintf("^%s\\|", site), rownames(flank.pars)), ]
+  kds <- flank.pars$Mean
+
+  # Remove the "." in the flank names:
+  names(kds) <- gsub(sprintf("^%s\\|(.*)\\.(.*)_Kd$", site), rownames(flank.pars), replace="\\1\\2")
+  kds_4D <<- kds
+  # Get the flank structural dataframe:
+  if (condition == "I_combined") {
+    data_1 <- SubfunctionCall(GetPairingFlankData, condition="I", alt_mir_exp_cond="let-7a_equilibrium_I")
+    data_2 <- SubfunctionCall(GetPairingFlankData, condition="I", alt_mir_exp_cond="miR-124_equilibrium_I")
+    data_3 <- SubfunctionCall(GetPairingFlankData, condition="I", alt_mir_exp_cond="miR-1_kin_pilot_I_TGT")
+    data_4 <- SubfunctionCall(GetPairingFlankData, condition="I")
+    data <- rbind(data_1, data_2, data_3, data_4)
+  } else {
+    data <- SubfunctionCall(GetPairingFlankData)  
+  }
+  data <<- data
+  p_access <- c(by(data, data$flank, function(x) exp(mean(log(x[["plfold"]]))*15)))
+  # p_access <<- p_access
+  xmin <- 1e-6
+  xmax <- 1e-1
+  ymin <- 0.0003
+  ymax <- 0.2
+  SubfunctionCall(FigureSaveFile)
+  BlankPlot(log='xy', inv='y')
+  # Plot the line showing the linear fit of the relationshp:
+  x <- p_access
+  y <- kds
+  fit <- lm(log10(y) ~ log10(x))
+  m <- fit$coefficients[2]
+  b <- fit$coefficients[1]
+  x_line <- 10^seq(log10(xmin), log10(xmax), length=20)
+  y_line <- 10^(m*log10(x_line) + b)
+  lines(x_line, y_line, lty = 2,lwd = 0.5)
+  # Plot the points:
+  points(x=x, y=y[names(x)],
+         col=GetColorFunction(names(x)))
+  AddLogAxis(1, label="Mean accessibility score")
+  AddLogAxis(2, label="Relative Kd", adj=TRUE)
+  print("FLANKING DINUCLEOTIDE KD P VALUE")
+  print(sprintf("r^2: %.4f", cor.test(log(x), log(y))$estimate^2))
+  print(sprintf("p_value: %.6f", cor.test(log(x), log(y))$p.value))
+  xy <- GetPlotFractionalCoords(fx=0.05, fy=0.95, log='xy', inv='y')
+  AddCorrelationToPlot(x=log(y[names(y)]), y=-log(x), xpos=xy[1],
+                       ypos=xy[2], rsquared=TRUE)
+  if (condition == "I_combined") {
+    condition <- "I"
+  }
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+# 4E____________________________________________________________________________
+PlotAllSamplePlFlanks <- function(mirna, site, condition, mir.start=1,
+                                  mir.stop=14, experiment="equilibrium",
+                                  n_constant=5, sitelist="resubmissionfinal",
+                                  combined=TRUE, buffer=TRUE, noconstant=FALSE,
+                                  absolute=TRUE, depth=5000, p_score="plfold",
+                                  pdf.plot=FALSE) {
+  height <- 5
+  width <- 5
+  # Window size for normalizing the pl_fold with the accessibility:
+  if (combined) {
+    data_1 <- SubfunctionCall(GetPairingFlankData, condition="I", alt_mir_exp_cond="let-7a_equilibrium_I")
+    data_2 <- SubfunctionCall(GetPairingFlankData, condition="I", alt_mir_exp_cond="miR-124_equilibrium_I")
+    data_3 <- SubfunctionCall(GetPairingFlankData, condition="I", alt_mir_exp_cond="miR-1_kin_pilot_I_TGT")
+    data_4 <- SubfunctionCall(GetPairingFlankData, condition="I")
+    data.I <- rbind(data_1, data_2, data_3, data_4)
+  } else {
+    data.I <- SubfunctionCall(GetPairingFlankData)  
+  }
+  data.A <- SubfunctionCall(GetPairingFlankData)
+  inds_AU <- c(sapply(seq(50), function(i) {
+    SampleByDinucleotideEnrichment(data.I, data.A, nrow(data.A))
+  }))
+  GetPercentTAEffect <- function(condition) {
+    data.A <- SubfunctionCall(GetPairingFlankData)
+    mean.I <- mean(log(data.I[[p_score]]))
+    mean.A <- mean(log(data.A[[p_score]]))
+    inds <- c(sapply(seq(50), function(i) {
+      SampleByDinucleotideEnrichment(data.I, data.A, nrow(data.A))
+    }))
+    mean.I.sample <- mean(log(data.I[[p_score]][inds]))
+    # test_inside <<- c(mean.I, mean.A, mean.I.sample)
+    out <- (mean.I.sample - mean.I)/(mean.A - mean.I)
+    message("GetPercentTAEFfect:")
+    print(out)
+    return(out)
+  }
+  #Plot the probabilities:
+  xmin <- 1e-8
+  xmax <- 1
+  ymin <- 0
+  ymax <- 1
+  # if (class(pdf.plot) == "character") pdf.plot <- paste0(pdf.plot, "_left")
+  SubfunctionCall(FigureSaveFile)
+  BlankPlot(log='x')
+  # Make the ECDF for the input, 0.4 Ago, and the resampled:
+  x_ecdf <- 10^seq(-8, 0, by=0.01)
+
+  ecdf.I <- ecdf(data.I[[p_score]]^(mir.stop - mir.start + 1))
+  ecdf.A <- ecdf(data.A[[p_score]]^(mir.stop - mir.start + 1))
+  ecdf.I.sample <- ecdf(data.I[[p_score]][inds_AU]^(mir.stop - mir.start + 1))
+  lines(x_ecdf, ecdf.I(x_ecdf), lwd=1)
+  lines(x_ecdf, ecdf.A(x_ecdf),
+        col=kEquilCondColors[as.character(condition)])
+  lines(x_ecdf, ecdf.I.sample(x_ecdf),
+        col=kEquilCondColors[as.character(condition)], lty="23")
+  # Add the points (3 in total) showing the mean value:
+  x_GeoMeans <- exp(c(
+    mean(log(data.I[[p_score]])),
+    mean(log(data.A[[p_score]])),
+    mean(log(data.I[[p_score]][inds_AU]))
+   ))
+  test <- log(x_GeoMeans)
+  test_out <<- test
+  alt_check <- (test[3] - test[1])/(test[2] - test[1])
+
+  y_GeoMeans <- c(ecdf.I(x_GeoMeans[1]^(mir.stop - mir.start + 1)),
+                  ecdf.A(x_GeoMeans[2]^(mir.stop - mir.start + 1)),
+                  ecdf.I.sample(x_GeoMeans[3]^(mir.stop - mir.start + 1)))
+  points(x=x_GeoMeans^(mir.stop - mir.start + 1), y=y_GeoMeans, col=c("black", "red", "red"),
+         pch=c(19, 19, 20))
+  AddLogAxis(1, label="Accessibility score", maglabel=2)
+  AddLinearAxis(2, tick.space=0.2, label.space=0.2, label="Cumulative fraction")
+  xy <- GetPlotFractionalCoords(fx=0.95, fy=0.05, log='x')
+  text(xy[1], xy[2],
+       label=paste0("Effect: ",round(GetPercentTAEffect(condition)*100,1),"%"),
+       adj=1)
+  # Add a legend to the plot:
+  xy <- GetPlotFractionalCoords(fx=0, fy=1, log='x')
+  legend(x=xy[1], y=xy[2],
+         legend=c("Input library", AGO_mir1_label_no_conc,
+                  "Input matched for flanking\ndinucleotide composition"),
+         col=c("black", kEquilCondColors[as.character(condition)],
+                 kEquilCondColors[as.character(condition)]),
+         lty=c(1, 1, 2), bty="n")
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+
+
+
 ## FIGURES FOR RBNS EQUILIBRIUM PAPER ##########################################
 MakeFigure1 <- function(uniq=FALSE) {
   ## To make this figure need run these commands in the command line:
@@ -1687,8 +1996,8 @@ MakeFigure1 <- function(uniq=FALSE) {
   PlotEquilSiteWithInput("miR-1", 7, sitelist="canonical", combined=FALSE,
                          buffer=TRUE, pdf.plot="1.C")
   message("Done 1.C")
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-1 equilibrium 5 canonical -buffer
-  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 canonical -buffer -nocombI -single
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-1 equilibrium 5 canonical -buffer3p
+  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 canonical -buffer3p -nocombI -single
   PlotSiteEnrichments("miR-1", sitelist="canonical", combined=FALSE,
                       buffer=TRUE, write_kds=TRUE, pdf.plot="1.D")
   message("Done 1.D")
@@ -1805,13 +2114,19 @@ MakeFigure4 <- function() {
   ## make AssignFlanks mirna=miR-1 exp=equilibrium n_constant=5 buffer=1 sitelist=resubmissionfinal
   ## python SolveForKds/MakeFlankCountTable.py miR-1 equilibrium 5 resubmissionfinal -buffer
   #### Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer
-  ## Rscript SolveForKds/FitFlankKds.R miR-1 equilibrium 5 resubmissionfinal -buffer
-
+  ## Rscript SolveForKds/FitFlankKds.R miR-1 equilibrium 5 resubmissionfinal 8mer -buffer
   PlotSiteFlankEnrichments("miR-1", "8mer", combined=TRUE, combined_site=FALSE,
                            buffer=TRUE, pdf.plot="4.A")
+
+  ## make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=resubmissionfinal buffer=1 FitFlankKds
   PlotSiteFlankKds("miR-1", combined=TRUE, combined_site=FALSE, buffer=TRUE,
                    pdf.plot="4.B")
-  break
+  ## make AssignFlanks mirna=let-7a exp=equilibrium n_constant=5 sitelist=resubmissionfinal
+  ## make AssignFlanks mirna=miR-155 exp=equilibrium n_constant=5 sitelist=resubmissionfinal
+  ## make AssignFlanks mirna=miR-124 exp=equilibrium n_constant=5 sitelist=resubmissionfinal
+  ## make AssignFlanks mirna=lsy-6 exp=equilibrium n_constant=5 sitelist=resubmissionfinal
+  ## make AssignFlanks mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal
+
   PlotFlankLinModel(pdf.plot="4.C_left")
   PlotFlankLinModelCoefficients(pdf.plot="4.C_right")
   PlotStructureVsFlankingKds("miR-1", "8mer", combined=TRUE, buffer=TRUE,
