@@ -1,7 +1,17 @@
 #23456789!123456789@123456789#123456789$123456789%123456789^123456789&123456789*
-system("R CMD SHLIB general/AGO_RBNS_functions.c")
-# system("gcc -std=gnu99 -I/usr/share/R/include -DNDEBUG -fpic -O3 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -c general/AGO_RBNS_functions.c -o general/AGO_RBNS_functions.o")
-# system("gcc -std=gnu99 -shared -L/usr/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o general/AGO_RBNS_functions.so general/AGO_RBNS_functions.o -L/usr/lib/R/lib -lR")
+# NOTE, I used to use this function originally, but I cannot get it to work
+# within a conda environment.
+# system("R CMD SHLIB general/AGO_RBNS_functions_test.c")
+
+# This alternative approach works. #############################################
+# Get the R library path from the environment variable
+# conda_path <- system("echo $CONDA_PREFIX", intern=TRUE)
+# Compile the C file
+# system(paste0("gcc -std=gnu99 -I", conda_path, "/lib/R/include -DNDEBUG -fpic -O3 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -c general/AGO_RBNS_functions.c -o general/AGO_RBNS_functions.o"))
+# Create the shared library
+# system(paste0("gcc -std=gnu99 -shared -L", conda_path, "/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o general/AGO_RBNS_functions.so general/AGO_RBNS_functions.o -L", conda_path, "/lib/R/lib -lR"))
+
+
 dyn.load("general/AGO_RBNS_functions.so")
 options(width=100)
 # 1.CORE BIOCHEMICAL FUNCTIONS FOR EQUILIBRIUM:_________________________________

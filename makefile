@@ -19,10 +19,20 @@ SCR_mp = MakeMiRNAReadFile.py # Used GitHub2019 ********************************
 SCR_mp = MakeMiRNAReadFile.sh # Used GitHub2019 ********************************
 SCR_pp = MakeReadFile.py # Used GitHub2019 *************************************
 SCR_pp = MakeReadFile.sh # Used GitHub2019 *************************************
-# SCR_pp_burge = MakeReadFileBurge.py !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 DIR_as = AssignSiteTypes/# Used GitHub2019 ************************************
 SCR_as = AssignSites.py # Used GitHub2019 **************************************
 SCR_as = AssignSites.sh # Used GitHub2019 **************************************
+SCR_af = AssignFlanks.py # Used GitHub2019 *************************************
+SCR_af = AssignFlanks.sh # Used GitHub2019 *************************************
+DIR_kd = SolveForKds/# Used GitHub2019 *****************************************
+SCR_sc = MakeSiteCountTable.py # Used GitHub2019 *******************************
+SCR_msc = MakeMultiSiteCountTable.py # Used GitHub2019 *************************
+SCR_fc = MakeFlankCountTable.py # Used GitHub2019 ******************************
+SCR_skd = FitSiteKds.R# Used GitHub2019 ****************************************
+SCR_fkd = FitFlankKds.sh# Used GitHub2019 **************************************
+DIR_plfold = AnalyzeStructure/# Used GitHub2019 ********************************
+SCR_plfold = MakeSiteStructureAnalysisFiles.sh # Used GitHub2019 ***************
+
 
 SCR_abs = AssignBipartiteSitesProgrammedLib.py # Used for ThrP paper
 SCR_abms = AssignBipartiteMismatchSitesProgrammedLib.py # Used for ThrP paper
@@ -38,23 +48,13 @@ SCR_ak = AssignKmers.py
 SCR_ack = AssignCompetitorKmers.py
 SCR_apk = AssignPositionalKmers.py
 SCR_akpl = AssignKmersProgrammedLib.py # Used for ThrP paper
-SCR_af = AssignFlanks.py # Used GitHub2019 *************************************
-SCR_af = AssignFlanks.sh # Used GitHub2019 *************************************
 
 
-DIR_kd = SolveForKds/# Used GitHub2019 ****************************************
-SCR_sc = MakeSiteCountTable.py # Used GitHub2019 *******************************
-SCR_msc = MakeMultiSiteCountTable.py # Used GitHub2019 *************************
-SCR_fc = MakeFlankCountTable.py # Used GitHub2019 ******************************
-SCR_skd = FitSiteKds.R # Used GitHub2019 ***************************************
 SCR_ppskd = FitProgrammedPositionKds.R
 SCR_pmmkd = FitProgrammedMismatchKds.R
 SCR_12merkd = Fit12merKds.R
-SCR_fkd = FitFlankKds.sh
 SCR_kdrepfile = MakeKdStringFile.py
 
-DIR_plfold = AnalyzeStructure/
-SCR_plfold = MakeSitePlfoldFiles_PAPER.py
 
 COND_mirna = I 40 12.6 4 1.26 0.4 0
 
@@ -1628,14 +1628,13 @@ CountThreePrimeHighThroughputLibraryVariants2 :
 # 			bsub $$line; \
 # 		done; \
 # 	fi; \
-
-	# @(job=""; \
-	# for CON in $(COND); do \
-	# 	job=$$job"python $(HOME)$(DIR_as)$(SCR_ak) $(mirna) $(exp) $$CON "; \
-	# 	job=$$job"$(n_constant) $(len_k)"$(N_EX)$(BUFFER3P)"\n"; \
-	# done; \
-	# echo $$job; \
-	# python $(HOME)general/SubmitJob.py "$$job")
+	@(job=""; \
+	for CON in $(COND); do \
+		job=$$job"python $(HOME)$(DIR_as)$(SCR_ak) $(mirna) $(exp) $$CON "; \
+		job=$$job"$(n_constant) $(len_k)"$(N_EX)$(BUFFER3P)"\n"; \
+	done; \
+	echo $$job; \
+	python $(HOME)general/SubmitJob.py "$$job")
 
 
 # AssignKmersFinal :
@@ -1748,15 +1747,15 @@ CountThreePrimeHighThroughputLibraryVariants2 :
 # echo $$job; \
 # python $(HOME)general/SubmitJob.py "$$job"
 
-AssignKmersKinetics :
-	@(job=""; \
-	for CON in $(COND); do \
-		job=$$job"python $(HOME)$(DIR_as)$(SCR_ak) $(mirna) kinetics"; \
-		job=$$job" $$CON $(n_constant)\n"; \
-	done; \
-	echo $$job; \
-	python $(HOME)general/SubmitJob.py "$$job"; \
-	)
+# AssignKmersKinetics :
+# 	@(job=""; \
+# 	for CON in $(COND); do \
+# 		job=$$job"python $(HOME)$(DIR_as)$(SCR_ak) $(mirna) kinetics"; \
+# 		job=$$job" $$CON $(n_constant)\n"; \
+# 	done; \
+# 	echo $$job; \
+# 	python $(HOME)general/SubmitJob.py "$$job"; \
+# 	)
 
 AssignPositionalKmers :
 	@(job=""; \
@@ -1787,7 +1786,8 @@ AssignPositionalKmersProgrammedLibSeedEx :
 	done)
 
 
-
+# Use:
+#
 FitFlankKds :
 	@(job_py="conda run -n agorbns python $(DIR_kd)$(SCR_fc) $(mirna) $(exp) $(n_constant) $(sitelist)"$(BUFFER3P); \
 	echo $$job_py; \
@@ -1877,27 +1877,27 @@ CalculatePlfold_miRNA:
 			$(n_constant) $(sitelist) $$SITE;} \
 	done)
 
-AssignSitesAllKinetics :
-	echo $(MIRNAk)
-	@(for MIRNA in $(MIRNAk); \
-		do { make mirna=$$MIRNA exp=kinetics n_constant=$(n_constant)\
-			sitelist=$(sitelist) AssignSites;} \
-	done)
+# AssignSitesAllKinetics :
+# 	echo $(MIRNAk)
+# 	@(for MIRNA in $(MIRNAk); \
+# 		do { make mirna=$$MIRNA exp=kinetics n_constant=$(n_constant)\
+# 			sitelist=$(sitelist) AssignSites;} \
+# 	done)
 
-AssignFlanksKinetics :
-	@(DIR="/lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/"; \
-	SCR="MakeFlankingNucleotideReadFiles_PAPER.py"; \
-	for CON in I I_TGT_combined I_ACA_combined 2,1 2,2 5,1 5,2 8,1 8,2 15,1 \
-		15,2 30 30,1 30,2 90 300 900 2700 7200 7200,1 7200,2 0 0- Equil Equil-; \
-		do { bsub -n 21 python $$DIR$$SCR $(mirna) kinetics $$CON\
-			$(n_constant) $(sitelist);} \
-	done)
+# AssignFlanksKinetics :
+# 	@(DIR="/lab/bartel1_ata/mcgeary/computation/AgoRBNS/AssignSiteTypes/"; \
+# 	SCR="MakeFlankingNucleotideReadFiles_PAPER.py"; \
+# 	for CON in I I_TGT_combined I_ACA_combined 2,1 2,2 5,1 5,2 8,1 8,2 15,1 \
+# 		15,2 30 30,1 30,2 90 300 900 2700 7200 7200,1 7200,2 0 0- Equil Equil-; \
+# 		do { bsub -n 21 python $$DIR$$SCR $(mirna) kinetics $$CON\
+# 			$(n_constant) $(sitelist);} \
+# 	done)
 
-AssignFlanksKineticsAll :
-	for MIRNA in miR-1 let-7a miR-124 lsy-6; \
-		do { make mirna=$$MIRNA n_constant=$(n_constant) sitelist=$(sitelist)\
-			AssignFlanksKinetics;} \
-	done
+# AssignFlanksKineticsAll :
+# 	for MIRNA in miR-1 let-7a miR-124 lsy-6; \
+# 		do { make mirna=$$MIRNA n_constant=$(n_constant) sitelist=$(sitelist)\
+# 			AssignFlanksKinetics;} \
+# 	done
 
 FitSiteKds :
 	python $(HOME)$(DIR_kd)$(SCR_sc) $(mirna) $(exp) $(n_constant)\

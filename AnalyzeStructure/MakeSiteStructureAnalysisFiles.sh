@@ -17,4 +17,4 @@ module load miniconda3/23.1.0
 source activate /home/sem689/.conda/envs/agorbns
 ################################################################################
 
-python AssignSiteTypes/AssignFlanks.py $@
+python AnalyzeStructure/MakeSiteStructureAnalysisFiles.py $@

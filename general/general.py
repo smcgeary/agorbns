@@ -8,7 +8,9 @@ import itertools as it
 import multiprocessing
 import os
 import pandas as pd
+import random
 import re
+import string
 import sys
 import tarfile
 import time
@@ -496,7 +498,12 @@ def multiproc_file(path, n_jobs, func, test, *args, **kwargs):
             wc_proc = Popen("zcat %s | wc -l" %(path), shell=True, stdout=PIPE)
         else:
             mult = 1
+            print("here")
+            print("path exists using python command:")
+            print(os.path.exists(path))
             wc_proc = Popen("wc -l %s" %(path), shell=True, stdout=PIPE)
+            # print(wc_proc.communicate()[0])
+        print("path:")
         print(path)
         if test:
             process_size = 300000
@@ -894,8 +901,8 @@ DNTS = ["A", "C", "G", "T"]
 #     return(df)
 
 
-# def randomword(length):
-#     return ''.join(random.choice(string.ascii_lowercase) for i in range(length))
+def randomword(length):
+    return ''.join(random.choice(string.ascii_lowercase) for i in range(length))
 
 # def randomseq(length, rna=False):
 #     if not rna:

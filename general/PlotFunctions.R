@@ -20,8 +20,8 @@ kMirnaColors <- c("deepskyblue2", "black", "red", "forestgreen",
 
 names(kMirnaColors) <- kMirnas
 
-# kNucleotideColors <- c("blue", "green", "purple", "red")
-# names(kNucleotideColors) <- c("A", "T", "C", "G")
+kNucleotideColors <- c("blue", "green", "purple", "red")
+names(kNucleotideColors) <- c("A", "T", "C", "G")
 # kRNucleotideColors <- kNucleotideColors
 # names(kRNucleotideColors) <- c("A", "U", "C", "G")
 
