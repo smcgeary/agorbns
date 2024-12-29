@@ -984,299 +984,298 @@ class SiteList:
 #               for i, nt in enumerate(kmer)]))
     
 
-# class KmerList:
-#     BCS = ["TGT", "ACA"]
-#     def __init__(self, kmer_len, n_constant, rand_length, fast=False,
-#                  buffer_=False):
-#         self.len = int(kmer_len)
-#         self.n_constant = n_constant
-#         self.rand_length= rand_length
-#         if buffer_:
-#             self.positions = n_constant + rand_length - 1 - kmer_len + 1
-#         else:
-#             self.positions = rand_length + 2*n_constant - kmer_len + 1
-#         num_kmers = 4**self.len
-#         self.kmers = {bc : [0]*num_kmers for bc in self.BCS}
-#         self.pos_mean = {bc : [0]*num_kmers for bc in self.BCS}
-#         self.pos_sd = {bc : [0]*num_kmers for bc in self.BCS}
-#         self.pos_mean_dif = {bc : [0]*num_kmers for bc in self.BCS}
-#         self.pos_sd_dif = {bc : [0]*num_kmers for bc in self.BCS}
-#         self.sum = {bc : 0 for bc in self.BCS}
+class KmerList:
+    BCS = ["TGT", "ACA"]
+    def __init__(self, kmer_len, n_constant, rand_length, fast=False,
+                 buffer_=False):
+        self.len = int(kmer_len)
+        self.n_constant = n_constant
+        self.rand_length= rand_length
+        if buffer_:
+            self.positions = n_constant + rand_length - 1 - kmer_len + 1
+        else:
+            self.positions = rand_length + 2*n_constant - kmer_len + 1
+        num_kmers = 4**self.len
+        self.kmers = {bc : [0]*num_kmers for bc in self.BCS}
+        self.pos_mean = {bc : [0]*num_kmers for bc in self.BCS}
+        self.pos_sd = {bc : [0]*num_kmers for bc in self.BCS}
+        self.pos_mean_dif = {bc : [0]*num_kmers for bc in self.BCS}
+        self.pos_sd_dif = {bc : [0]*num_kmers for bc in self.BCS}
+        self.sum = {bc : 0 for bc in self.BCS}
 
-#     def __getitem__(self, bc):
-#         return self.kmers[bc]
+    # def __getitem__(self, bc):
+    #     return self.kmers[bc]
 
-#     def __setitem__(self, bc, val):
-#         self.kmers[bc] = val
-#         return self
+    # def __setitem__(self, bc, val):
+    #     self.kmers[bc] = val
+    #     return self
 
-#     def __len__(self):
-#         return self.len
+    # def __len__(self):
+    #     return self.len
 
-#     def __add__(self, other):
-#         if other.__class__.__name__ == "KmerList":
-#             _new = KmerList(len(self), self.n_constant, self.rand_length)
-#             for bc in self.BCS:
-#                 _new.kmers[bc] = [sum(i) for i in zip(self.kmers[bc], other.kmers[bc])]
-#                 for i, tup in enumerate(zip(self.kmers[bc], self.pos_mean[bc],
-#                                             self.pos_sd[bc], other.kmers[bc],
-#                                             other.pos_mean[bc], other.pos_sd[bc])):
-#                     n_1, mean_1, sd_1, n_2, mean_2, sd_2 = tup
-#                     if n_1 > 0 or n_2 > 0:
-#                         mean_x2_1   = sd_1**2 + mean_1**2 
-#                         mean_x2_2   = sd_2**2 + mean_2**2 
-#                         mean_x2_new = (mean_x2_1*n_1 + mean_x2_2*n_2)/float(n_1 + n_2)
-#                         mean_new    = (mean_1*n_1 + mean_2*n_2)/float(n_1 + n_2)
-#                         sd_new      = (mean_x2_new - mean_new**2)**0.5
-#                         _new.pos_mean[bc][i] = mean_new
-#                         _new.pos_sd[bc][i] = sd_new
-#             _new.sum = {bc : sum(_new.kmers[bc]) for bc in self.BCS}
-#             return(_new)
+    # def __add__(self, other):
+    #     if other.__class__.__name__ == "KmerList":
+    #         _new = KmerList(len(self), self.n_constant, self.rand_length)
+    #         for bc in self.BCS:
+    #             _new.kmers[bc] = [sum(i) for i in zip(self.kmers[bc], other.kmers[bc])]
+    #             for i, tup in enumerate(zip(self.kmers[bc], self.pos_mean[bc],
+    #                                         self.pos_sd[bc], other.kmers[bc],
+    #                                         other.pos_mean[bc], other.pos_sd[bc])):
+    #                 n_1, mean_1, sd_1, n_2, mean_2, sd_2 = tup
+    #                 if n_1 > 0 or n_2 > 0:
+    #                     mean_x2_1   = sd_1**2 + mean_1**2 
+    #                     mean_x2_2   = sd_2**2 + mean_2**2 
+    #                     mean_x2_new = (mean_x2_1*n_1 + mean_x2_2*n_2)/float(n_1 + n_2)
+    #                     mean_new    = (mean_1*n_1 + mean_2*n_2)/float(n_1 + n_2)
+    #                     sd_new      = (mean_x2_new - mean_new**2)**0.5
+    #                     _new.pos_mean[bc][i] = mean_new
+    #                     _new.pos_sd[bc][i] = sd_new
+    #         _new.sum = {bc : sum(_new.kmers[bc]) for bc in self.BCS}
+    #         return(_new)
 
-#     def __radd__(self, other):
-#         if other == 0:
-#             return(self)
-#         elif other.__class__.__name__ == "KmerList":
-#             return(self.__add__(other))
+    # def __radd__(self, other):
+    #     if other == 0:
+    #         return(self)
+    #     elif other.__class__.__name__ == "KmerList":
+    #         return(self.__add__(other))
 
-#     def __iadd__(self, other):
-#         time_start = time.time()
-#         if other.__class__.__name__ == "KmerList":
-#             for bc in self.BCS:
-#                 for i, tup in enumerate(zip(self.kmers[bc], self.pos_mean[bc], self.pos_sd[bc],
-#                                             other.kmers[bc], other.pos_mean[bc],
-#                                             other.pos_sd[bc])):
-#                     n_1, mean_1, sd_1, n_2, mean_2, sd_2 = tup
-#                     if n_1 > 0 or n_2 > 0:
-#                         mean_x2_1   = sd_1**2 + mean_1**2 
-#                         mean_x2_2   = sd_2**2 + mean_2**2 
-#                         mean_x2_new = (mean_x2_1*n_1 + mean_x2_2*n_2)/float(n_1 + n_2)
-#                         mean_new    = (mean_1*n_1 + mean_2*n_2)/float(n_1 + n_2)
-#                         sd_new      = (mean_x2_new - mean_new**2)**0.5
-#                         self.pos_mean[i] = mean_new
-#                         self.pos_sd[i] = sd_new
-#             for bc in self.BCS:
-#                 self.kmers[bc] = [sum(i) for i in zip(self.kmers[bc], other.kmers[bc])]
-#             self.sum = (sum(_new.kmers[bc] for bc in self.BCS))
-#             return(self)
-#         elif other.__class__.__name__ == "Read":
-#             seq = other.seq
-#             bc = other.barcode
-#             for pos in range(self.positions):
-#                 # print(pos)
-#                 # time_1 = time.time()
+    # def __iadd__(self, other):
+    #     time_start = time.time()
+    #     if other.__class__.__name__ == "KmerList":
+    #         for bc in self.BCS:
+    #             for i, tup in enumerate(zip(self.kmers[bc], self.pos_mean[bc], self.pos_sd[bc],
+    #                                         other.kmers[bc], other.pos_mean[bc],
+    #                                         other.pos_sd[bc])):
+    #                 n_1, mean_1, sd_1, n_2, mean_2, sd_2 = tup
+    #                 if n_1 > 0 or n_2 > 0:
+    #                     mean_x2_1   = sd_1**2 + mean_1**2 
+    #                     mean_x2_2   = sd_2**2 + mean_2**2 
+    #                     mean_x2_new = (mean_x2_1*n_1 + mean_x2_2*n_2)/float(n_1 + n_2)
+    #                     mean_new    = (mean_1*n_1 + mean_2*n_2)/float(n_1 + n_2)
+    #                     sd_new      = (mean_x2_new - mean_new**2)**0.5
+    #                     self.pos_mean[i] = mean_new
+    #                     self.pos_sd[i] = sd_new
+    #         for bc in self.BCS:
+    #             self.kmers[bc] = [sum(i) for i in zip(self.kmers[bc], other.kmers[bc])]
+    #         self.sum = (sum(_new.kmers[bc] for bc in self.BCS))
+    #         return(self)
+    #     elif other.__class__.__name__ == "Read":
+    #         seq = other.seq
+    #         bc = other.barcode
+    #         for pos in range(self.positions):
+    #             # print(pos)
+    #             # time_1 = time.time()
 
-#                 kmer = seq[pos:pos + len(self)]
-#                 ind = get_kmer_index(kmer)
-#                 n = self[bc][ind]
-#                 # time_2 = time.time()
-#                 # print("Got the new kmers: %f" %(time_2 - time_1))
-#                 mean_old = self.pos_mean[bc][ind]
-#                 sd_old = self.pos_sd[bc][ind]
-#                 mean_x2_old = sd_old**2 + mean_old**2
-#                 mean_x2_new = mean_x2_old*float(n)/(float(n + 1)) + float(pos**2)/(n + 1)
-#                 mean_new = mean_old*float(n)/float(n + 1) + float(pos)/(n + 1)
-#                 sd_new = (mean_x2_new - mean_new**2)**0.5
-#                 # time_3 = time.time()
-#                 # print("Calculated the new summary statistics: %f" %(time_3 - time_2))
-#                 self.pos_mean[bc][ind] = mean_new
-#                 self.pos_sd[bc][ind] = sd_new
-#                 self[bc][ind] += 1
-#                 self.sum[bc] += 1
-#                 # time_4 = time.time()
-#                 # print("Updated the kmer object: %f" %(time_4 - time_3))
-#             # time_end = time.time()
-#             # print("About to exit __iadd__: %f" %(time_end - time_start))
-#             return(self)
+    #             kmer = seq[pos:pos + len(self)]
+    #             ind = get_kmer_index(kmer)
+    #             n = self[bc][ind]
+    #             # time_2 = time.time()
+    #             # print("Got the new kmers: %f" %(time_2 - time_1))
+    #             mean_old = self.pos_mean[bc][ind]
+    #             sd_old = self.pos_sd[bc][ind]
+    #             mean_x2_old = sd_old**2 + mean_old**2
+    #             mean_x2_new = mean_x2_old*float(n)/(float(n + 1)) + float(pos**2)/(n + 1)
+    #             mean_new = mean_old*float(n)/float(n + 1) + float(pos)/(n + 1)
+    #             sd_new = (mean_x2_new - mean_new**2)**0.5
+    #             # time_3 = time.time()
+    #             # print("Calculated the new summary statistics: %f" %(time_3 - time_2))
+    #             self.pos_mean[bc][ind] = mean_new
+    #             self.pos_sd[bc][ind] = sd_new
+    #             self[bc][ind] += 1
+    #             self.sum[bc] += 1
+    #             # time_4 = time.time()
+    #             # print("Updated the kmer object: %f" %(time_4 - time_3))
+    #         # time_end = time.time()
+    #         # print("About to exit __iadd__: %f" %(time_end - time_start))
+    #         return(self)
 
-#     def __truediv__(self, other):
-#         if other.__class__.__name__ != "KmerList":
-#             return("ERROR, both objects must be KmerLists")
-#         else:
-#             # if self.fast and other.fast:
-#             _kmerlist_div = KmerList(self.len, self.n_constant,
-#                                      self.rand_length, fast=True)
-#             sum_1 = {bc: float(self.sum[bc])
-#                      for bc in ["TGT", "ACA"]}
-#             sum_2 = {bc: float(other.sum[bc]) + 4**other.len
-#                      for bc in ["TGT", "ACA"]}
-#             kmers = get_kmer_list(self.len)
-#             for bc in ["TGT", "ACA"]:
-#                 for i, tup in enumerate(zip(self.kmers[bc], self.pos_mean[bc],
-#                                             self.pos_sd[bc], other.kmers[bc],
-#                                             other.pos_mean[bc],
-#                                             other.pos_sd[bc])):
-#                     n_1, mean_1, sd_1, n_2, mean_2, sd_2 = tup
-#                     mean_dif = mean_2 - mean_1
-#                     _kmerlist_div.pos_mean_dif[bc][i] = mean_dif
-#                     if n_1 > 0 and n_2 > 0:
-#                         sd_dif = (sd_1**2/float(n_1) + sd_2**2/float(n_2))**0.5
-#                     else:
-#                         sd_dif = 0
-#                     if sum_1[bc] != 0:
-#                         _kmerlist_div.kmers[bc][i] = (float(n_1)/sum_1[bc])/((float(n_2 + 1)/sum_2[bc]))
-#                     else:
-#                         _kmerlist_div.kmers[bc][i] = 0
-#                 _kmerlist_div.pos_mean[bc] = self.pos_mean[bc]
-#                 _kmerlist_div.pos_sd[bc] = self.pos_sd[bc]
-#             return(_kmerlist_div)
+    # def __truediv__(self, other):
+    #     if other.__class__.__name__ != "KmerList":
+    #         return("ERROR, both objects must be KmerLists")
+    #     else:
+    #         # if self.fast and other.fast:
+    #         _kmerlist_div = KmerList(self.len, self.n_constant,
+    #                                  self.rand_length, fast=True)
+    #         sum_1 = {bc: float(self.sum[bc])
+    #                  for bc in ["TGT", "ACA"]}
+    #         sum_2 = {bc: float(other.sum[bc]) + 4**other.len
+    #                  for bc in ["TGT", "ACA"]}
+    #         kmers = get_kmer_list(self.len)
+    #         for bc in ["TGT", "ACA"]:
+    #             for i, tup in enumerate(zip(self.kmers[bc], self.pos_mean[bc],
+    #                                         self.pos_sd[bc], other.kmers[bc],
+    #                                         other.pos_mean[bc],
+    #                                         other.pos_sd[bc])):
+    #                 n_1, mean_1, sd_1, n_2, mean_2, sd_2 = tup
+    #                 mean_dif = mean_2 - mean_1
+    #                 _kmerlist_div.pos_mean_dif[bc][i] = mean_dif
+    #                 if n_1 > 0 and n_2 > 0:
+    #                     sd_dif = (sd_1**2/float(n_1) + sd_2**2/float(n_2))**0.5
+    #                 else:
+    #                     sd_dif = 0
+    #                 if sum_1[bc] != 0:
+    #                     _kmerlist_div.kmers[bc][i] = (float(n_1)/sum_1[bc])/((float(n_2 + 1)/sum_2[bc]))
+    #                 else:
+    #                     _kmerlist_div.kmers[bc][i] = 0
+    #             _kmerlist_div.pos_mean[bc] = self.pos_mean[bc]
+    #             _kmerlist_div.pos_sd[bc] = self.pos_sd[bc]
+    #         return(_kmerlist_div)
 
-#     def write(self, path, bc="TGT"):
-#         with open(path, "w+") as file_out:
-#             file_out.write("\t".join(["kmer", "counts_p", "meanpos_p",
-#                                       "sdpos_p", "counts_c", "meanpos_c",
-#                                       "sdpos_c"]) + "\n")
-#             file_out.write("\n".join(
-#                 ["%s\t%s\t%s\t%s\t%s\t%s\t%s" %(kmer, count_p, m_p, sd_p,
-#                                                 count_c, m_c, sd_c)
-#                  for (kmer, count_p, m_p, sd_p, count_c, m_c, sd_c)
-#                  in zip(get_kmer_list(self.len), self.kmers["TGT"],
-#                         self.pos_mean["TGT"], self.pos_sd["TGT"],
-#                         self.kmers["ACA"], self.pos_mean["ACA"],
-#                         self.pos_sd["ACA"])]))
+    # def write(self, path, bc="TGT"):
+    #     with open(path, "w+") as file_out:
+    #         file_out.write("\t".join(["kmer", "counts_p", "meanpos_p",
+    #                                   "sdpos_p", "counts_c", "meanpos_c",
+    #                                   "sdpos_c"]) + "\n")
+    #         file_out.write("\n".join(
+    #             ["%s\t%s\t%s\t%s\t%s\t%s\t%s" %(kmer, count_p, m_p, sd_p,
+    #                                             count_c, m_c, sd_c)
+    #              for (kmer, count_p, m_p, sd_p, count_c, m_c, sd_c)
+    #              in zip(get_kmer_list(self.len), self.kmers["TGT"],
+    #                     self.pos_mean["TGT"], self.pos_sd["TGT"],
+    #                     self.kmers["ACA"], self.pos_mean["ACA"],
+    #                     self.pos_sd["ACA"])]))
 
-#     def read(self, mirna, experiment, condition, n_constant, n_ex, uniq=False,
-#              buffer=False, final=False, cutoffdil=False, temp_path=False,
-#              resub=False):
-#         if temp_path:
-#             kmers_path = "I_combined_temp/%s" %temp_path
-#         else:
-#             extension = "_%s_k%s" %(n_constant, self.len)
-#             if uniq:
-#                 extension = "%s_uniq" %extension
-#             if buffer:
-#                 extension = "%s_buffer3p" %extension
-#             if int(n_ex) != 0:
-#                 extension = "%s_ex%s" %(extension, n_ex)
-#             if final:
-#                 extension = "%s_final" %extension
-#             if cutoffdil:
-#                 extension = "%s_dil" %extension
-#             if resub:
-#                 analysis_type = "kmers_cutoff_resub"
-#             else:
-#                 analysis_type = "kmers_cutoff_final"
-#             kmers_path = get_analysis_path(mirna.name, experiment, condition,
-#                                            analysis_type, ext=extension)
-#         # print((os.system("ls -l %s" %(kmers_path))))
-#         if not os.path.isfile(kmers_path):
-#             raise ValueError("%s file not found" %kmers_path)
-#         with open(kmers_path, "r+") as file_in:
-#             lines = list(file_in)
-#             if lines[0].split("\t")[0] == "kmer":
-#                 lines = lines[1:]
-#             else:
-#                 raise ValueError("Incorrect header on file.")
-#             line_sum = sum([int(line.split("\t")[1]) for line in lines])
-#             self.kmers["TGT"] = [int(line.split("\t")[1]) for line in lines]
-#             self.pos_mean["TGT"] = [float(line.split("\t")[2]) for line in lines]
-#             self.pos_sd["TGT"] = [float(line.split("\t")[3]) for line in lines]
-#             self.kmers["ACA"] = [int(line.split("\t")[4]) for line in lines]
-#             self.pos_mean["ACA"] = [float(line.split("\t")[5]) for line in lines]
-#             self.pos_sd["ACA"] = [float(line.split("\t")[6]) for line in lines]
-#             self.sum["TGT"]   = sum(self.kmers["TGT"])
-#             self.sum["ACA"]   = sum(self.kmers["ACA"])
-#             return(self)
+    # def read(self, mirna, experiment, condition, n_constant, n_ex, uniq=False,
+    #          buffer=False, final=False, cutoffdil=False, temp_path=False,
+    #          resub=False):
+    #     if temp_path:
+    #         kmers_path = "I_combined_temp/%s" %temp_path
+    #     else:
+    #         extension = "_%s_k%s" %(n_constant, self.len)
+    #         if uniq:
+    #             extension = "%s_uniq" %extension
+    #         if buffer:
+    #             extension = "%s_buffer3p" %extension
+    #         if int(n_ex) != 0:
+    #             extension = "%s_ex%s" %(extension, n_ex)
+    #         if final:
+    #             extension = "%s_final" %extension
+    #         if cutoffdil:
+    #             extension = "%s_dil" %extension
+    #         if resub:
+    #             analysis_type = "kmers_cutoff_resub"
+    #         else:
+    #             analysis_type = "kmers_cutoff_final"
+    #         kmers_path = get_analysis_path(mirna.name, experiment, condition,
+    #                                        analysis_type, ext=extension)
+    #     # print((os.system("ls -l %s" %(kmers_path))))
+    #     if not os.path.isfile(kmers_path):
+    #         raise ValueError("%s file not found" %kmers_path)
+    #     with open(kmers_path, "r+") as file_in:
+    #         lines = list(file_in)
+    #         if lines[0].split("\t")[0] == "kmer":
+    #             lines = lines[1:]
+    #         else:
+    #             raise ValueError("Incorrect header on file.")
+    #         line_sum = sum([int(line.split("\t")[1]) for line in lines])
+    #         self.kmers["TGT"] = [int(line.split("\t")[1]) for line in lines]
+    #         self.pos_mean["TGT"] = [float(line.split("\t")[2]) for line in lines]
+    #         self.pos_sd["TGT"] = [float(line.split("\t")[3]) for line in lines]
+    #         self.kmers["ACA"] = [int(line.split("\t")[4]) for line in lines]
+    #         self.pos_mean["ACA"] = [float(line.split("\t")[5]) for line in lines]
+    #         self.pos_sd["ACA"] = [float(line.split("\t")[6]) for line in lines]
+    #         self.sum["TGT"]   = sum(self.kmers["TGT"])
+    #         self.sum["ACA"]   = sum(self.kmers["ACA"])
+    #         return(self)
 
-#     def top_and_adjacent(self, bc="TGT"):
-#         nucs = ["A", "C", "G", "T"]
-#         kmer_tup = list(zip(get_kmer_list(self.len), self.kmers[bc], self.pos_mean[bc],
-#                        self.pos_sd[bc], self.pos_mean_dif[bc], self.pos_sd_dif[bc]))
-#         k_sorted = sorted(kmer_tup, key=lambda kmer: kmer[1], reverse=True)[:10]
-#         top_kmer = k_sorted[0][0]
-#         adjacent_kmers = ([top_kmer] +
-#                           ["%s%s" %(i, top_kmer[:-1]) for i in nucs] +
-#                           ["%s%s" %(top_kmer[1:], i) for i in nucs])
-#         inds = [get_kmer_index(i) for i in adjacent_kmers]
-#         Rs = [kmer_tup[i][1] for i in inds]
-#         Rs_init = Rs[0]
-#         Rs = [i/Rs_init for i in Rs]
-#         spaces = [1, 0, 0, 0, 0, 2, 2, 2, 2]
-#         adjacent_tups = list(zip(adjacent_kmers, Rs, spaces))
-#         for tup in adjacent_tups:
-#             print((" "*tup[2] + "%s\t%6.2f" %(tup[0], tup[1])))
-#         return
+    # def top_and_adjacent(self, bc="TGT"):
+    #     nucs = ["A", "C", "G", "T"]
+    #     kmer_tup = list(zip(get_kmer_list(self.len), self.kmers[bc], self.pos_mean[bc],
+    #                    self.pos_sd[bc], self.pos_mean_dif[bc], self.pos_sd_dif[bc]))
+    #     k_sorted = sorted(kmer_tup, key=lambda kmer: kmer[1], reverse=True)[:10]
+    #     top_kmer = k_sorted[0][0]
+    #     adjacent_kmers = ([top_kmer] +
+    #                       ["%s%s" %(i, top_kmer[:-1]) for i in nucs] +
+    #                       ["%s%s" %(top_kmer[1:], i) for i in nucs])
+    #     inds = [get_kmer_index(i) for i in adjacent_kmers]
+    #     Rs = [kmer_tup[i][1] for i in inds]
+    #     Rs_init = Rs[0]
+    #     Rs = [i/Rs_init for i in Rs]
+    #     spaces = [1, 0, 0, 0, 0, 2, 2, 2, 2]
+    #     adjacent_tups = list(zip(adjacent_kmers, Rs, spaces))
+    #     for tup in adjacent_tups:
+    #         print((" "*tup[2] + "%s\t%6.2f" %(tup[0], tup[1])))
+    #     return
 
-#     def top_substitute(self, bc="TGT"):
-#         nucs = ["A", "C", "G", "T"]
-#         kmer_tup = list(zip(get_kmer_list(self.len), self.kmers[bc], self.pos_mean[bc],
-#                        self.pos_sd[bc], self.pos_mean_dif[bc], self.pos_sd_dif[bc]))
-#         k_sorted = sorted(kmer_tup, key=lambda kmer: kmer[1], reverse=True)[:10]
-#         top_kmer = k_sorted[0][0]
-#         adjacent_kmers = ([top_kmer] +
-#                           ["%s%s" %(i, top_kmer[1:]) for i in nucs] +
-#                           ["%s%s" %(top_kmer[:-1], i) for i in nucs])
-#         inds = [get_kmer_index(i) for i in adjacent_kmers]
-#         Rs = [kmer_tup[i][1] for i in inds]
-#         Rs_init = Rs[0]
-#         adjacent_kmers = adjacent_kmers[1:]
-#         Rs = Rs[1:]
-#         Rs = [i/Rs_init for i in Rs]
-#         first_letter = [i[0] for i in adjacent_kmers]
-#         last_letter = [i[-1] for i in adjacent_kmers]
-#         for i in range(len(Rs)):
-#             if first_letter[i] != top_kmer[0]:
-#                 first_letter[i] = first_letter[i].lower()
-#             if last_letter[i] != top_kmer[-1]:
-#                 last_letter[i] = last_letter[i].lower()
-#         adjacent_kmer_strings = [first_letter[i] + top_kmer[1:-1] + last_letter[i] for i in range(len(Rs))]
-#         adjacent_tups = list(zip(adjacent_kmer_strings, Rs))
-#         for tup in adjacent_tups:
-#             print(("%s\t%6.2f" %(tup[0], tup[1])))
-#         return
-
-
-
-#     def head_with_mirna_sites(self, _mirna, bc="TGT", n=10, sub=False,
-#                               trim=False, start=False):
-#         if trim:
-#             n = 1
-#         kmer_tup = list(zip(get_kmer_list(self.len), self.kmers[bc], self.pos_mean[bc],
-#                        self.pos_sd[bc], self.pos_mean_dif[bc], self.pos_sd_dif[bc]))
-#         k_sorted = sorted(kmer_tup, key=lambda kmer: kmer[1], reverse=True)[:n]
-#         if not trim or start:
-#             print((" "*(10 + len(_mirna)-8)+"87654321" + " "*52 + "_"*10 +
-#                   "POSITION" + "_"* 10))
-#             print((" "*10 + _mirna.rev() + " "*8 + "site" + " "*16 + "score" +
-#                   " "*(self.len + 3) + "R" + " "*7 + "p_mean" + " "*2 + "p_sd" +
-#                   " "*4 + "d_mean" + " "*2 + "d_sd"))
-#         top = []
-#         for k_sort in k_sorted:    
-#             out = _mirna.get_best_name(k_sort, suboptimal=sub)
-#             top.append(out[0])
-#         counts = [top.count(i) for i in top]
-#         # print(counts)
-#         # print((set(counts)))
-#         if list(set(counts)) == [1]:
-#             most_common_site = "NA"
-#         else: 
-#             most_common_site = max(set(top), key=top.count)
-#         top_site = top[0]
-#         if not trim:
-#             print(("top site:\t%s" %(top_site)))
-#             print(("common site:\t%s" %(most_common_site)))
-
-#     def output_for_table(self, _mirna, num, bc="TGT", n=1, sub=False, start=False):
-#         kmer_tup = list(zip(get_kmer_list(self.len), self.kmers[bc], self.pos_mean[bc],
-#                        self.pos_sd[bc], self.pos_mean_dif[bc], self.pos_sd_dif[bc]))
-#         k_sorted = sorted(kmer_tup, key=lambda kmer: kmer[1], reverse=True)[:n]
-#         if start:
-#             # print((" "*(10 + len(_mirna)-8)+"87654321" + " "*52 + "_"*10 +
-#             #       "POSITION" + "_"* 10))
-#             print(("No." + " "*7 + "kmer" + " "*7 + "R" + " "*2 + "p_mean" + " "*4 +
-#                    "p_sd" + " "*16 + "site"))
-
-#         out = _mirna.get_best_name(k_sorted[0], suboptimal=sub,
-#                                    print_sites=False, output_for_table=True)
-#         # print("\t".join([str(i) for i in k_sorted[0]] + out))
-#         kmer, R, pos_mean, pos_sd = k_sorted[0][:4]
-#         print("%3.0f" %num + " %s" %kmer + "%8.2f" %R + "%8.1f" %pos_mean +
-#               "%8.1f" %pos_sd + " "*(20 - len(out[0])) + "%s" %out[0])
+    # def top_substitute(self, bc="TGT"):
+    #     nucs = ["A", "C", "G", "T"]
+    #     kmer_tup = list(zip(get_kmer_list(self.len), self.kmers[bc], self.pos_mean[bc],
+    #                    self.pos_sd[bc], self.pos_mean_dif[bc], self.pos_sd_dif[bc]))
+    #     k_sorted = sorted(kmer_tup, key=lambda kmer: kmer[1], reverse=True)[:10]
+    #     top_kmer = k_sorted[0][0]
+    #     adjacent_kmers = ([top_kmer] +
+    #                       ["%s%s" %(i, top_kmer[1:]) for i in nucs] +
+    #                       ["%s%s" %(top_kmer[:-1], i) for i in nucs])
+    #     inds = [get_kmer_index(i) for i in adjacent_kmers]
+    #     Rs = [kmer_tup[i][1] for i in inds]
+    #     Rs_init = Rs[0]
+    #     adjacent_kmers = adjacent_kmers[1:]
+    #     Rs = Rs[1:]
+    #     Rs = [i/Rs_init for i in Rs]
+    #     first_letter = [i[0] for i in adjacent_kmers]
+    #     last_letter = [i[-1] for i in adjacent_kmers]
+    #     for i in range(len(Rs)):
+    #         if first_letter[i] != top_kmer[0]:
+    #             first_letter[i] = first_letter[i].lower()
+    #         if last_letter[i] != top_kmer[-1]:
+    #             last_letter[i] = last_letter[i].lower()
+    #     adjacent_kmer_strings = [first_letter[i] + top_kmer[1:-1] + last_letter[i] for i in range(len(Rs))]
+    #     adjacent_tups = list(zip(adjacent_kmer_strings, Rs))
+    #     for tup in adjacent_tups:
+    #         print(("%s\t%6.2f" %(tup[0], tup[1])))
+    #     return
 
 
 
-#     def df(self):
-#         return(pd_dict(self.kmers).transpose()[["TGT", "ACA"]])
+    # def head_with_mirna_sites(self, _mirna, bc="TGT", n=10, sub=False,
+    #                           trim=False, start=False):
+    #     if trim:
+    #         n = 1
+    #     kmer_tup = list(zip(get_kmer_list(self.len), self.kmers[bc], self.pos_mean[bc],
+    #                    self.pos_sd[bc], self.pos_mean_dif[bc], self.pos_sd_dif[bc]))
+    #     k_sorted = sorted(kmer_tup, key=lambda kmer: kmer[1], reverse=True)[:n]
+    #     if not trim or start:
+    #         print((" "*(10 + len(_mirna)-8)+"87654321" + " "*52 + "_"*10 +
+    #               "POSITION" + "_"* 10))
+    #         print((" "*10 + _mirna.rev() + " "*8 + "site" + " "*16 + "score" +
+    #               " "*(self.len + 3) + "R" + " "*7 + "p_mean" + " "*2 + "p_sd" +
+    #               " "*4 + "d_mean" + " "*2 + "d_sd"))
+    #     top = []
+    #     for k_sort in k_sorted:    
+    #         out = _mirna.get_best_name(k_sort, suboptimal=sub)
+    #         top.append(out[0])
+    #     counts = [top.count(i) for i in top]
+    #     # print(counts)
+    #     # print((set(counts)))
+    #     if list(set(counts)) == [1]:
+    #         most_common_site = "NA"
+    #     else: 
+    #         most_common_site = max(set(top), key=top.count)
+    #     top_site = top[0]
+    #     if not trim:
+    #         print(("top site:\t%s" %(top_site)))
+    #         print(("common site:\t%s" %(most_common_site)))
+
+    # def output_for_table(self, _mirna, num, bc="TGT", n=1, sub=False, start=False):
+    #     kmer_tup = list(zip(get_kmer_list(self.len), self.kmers[bc], self.pos_mean[bc],
+    #                    self.pos_sd[bc], self.pos_mean_dif[bc], self.pos_sd_dif[bc]))
+    #     k_sorted = sorted(kmer_tup, key=lambda kmer: kmer[1], reverse=True)[:n]
+    #     if start:
+    #         # print((" "*(10 + len(_mirna)-8)+"87654321" + " "*52 + "_"*10 +
+    #         #       "POSITION" + "_"* 10))
+    #         print(("No." + " "*7 + "kmer" + " "*7 + "R" + " "*2 + "p_mean" + " "*4 +
+    #                "p_sd" + " "*16 + "site"))
+
+    #     out = _mirna.get_best_name(k_sorted[0], suboptimal=sub,
+    #                                print_sites=False, output_for_table=True)
+    #     # print("\t".join([str(i) for i in k_sorted[0]] + out))
+    #     kmer, R, pos_mean, pos_sd = k_sorted[0][:4]
+    #     print("%3.0f" %num + " %s" %kmer + "%8.2f" %R + "%8.1f" %pos_mean +
+    #           "%8.1f" %pos_sd + " "*(20 - len(out[0])) + "%s" %out[0])
+
+
+    # def df(self):
+    #     return(pd_dict(self.kmers).transpose()[["TGT", "ACA"]])
 
 
 # class KmerListTest:

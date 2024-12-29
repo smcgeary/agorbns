@@ -1989,8 +1989,13 @@ PlotAgoPrepPurity <- function(experiment="AGO_purity", unique=FALSE,
     out <- do.call("cbind", lapply(seq(5, 7), function(i_s) {
       out <- do.call("cbind", lapply(c("I", "P"), function(cond) {
         condition <- paste0("S100", i_s, "_", cond, str_geotest)
-        counts <- GetMirnaCountData(mirna, condition, unique=unique,
+
+        # counts <- GetMirnaCountData(mirna, condition, unique=unique,
+        #                             no_marker=no_marker, no_adapter=no_adapter)
+        counts <- GetMirnaCountData(mirna, "S1007_P", unique=unique,
                                     no_marker=no_marker, no_adapter=no_adapter)
+
+
         count_total <- rowSums(counts)
         names(count_total) <- rownames(counts)
         count_total
@@ -2090,6 +2095,87 @@ PlotAgoPrepPurity <- function(experiment="AGO_purity", unique=FALSE,
   }
 }
 
+
+# S1B___________________________________________________________________________
+PlotMiR1_KmersCorrelation <- function(n_constant=5, kmer_len=9, buffer=TRUE,
+                                      pdf.plot=FALSE, height=4.5, width=4.5) {
+  mirna <- "miR-1"
+  exps <- c("equil_pilot", "equil_pilot", "equilibrium", "equilibrium")
+  conditions <- c("I", "L100A10", "I", "40") # I know this is the best cor.
+  if (buffer) {
+    str.buffer <- "_buffer3p"
+  } else {
+    str.buffer <- ""
+  }
+  counts <- apply(cbind(exps, conditions), 1, function(row) {
+    path <- GetAnalysisPath(mirna, row[1], row[2], analysis_type="kmers_cutoff_resub",
+                                 ext=sprintf("_%s_k%s%s", n_constant, kmer_len,
+                                             str.buffer))
+    print(path)
+    fread(path)[[2]]
+  })
+
+  # counts <- as.matrix(do.call(cbind, counts))
+  colnames(counts) <- conditions
+  kmers <- GetKmerList(kmer_len)
+  R_1 <- Norm(counts[, 2])/Norm(counts[, 1])
+  R_2 <- Norm(counts[, 4])/Norm(counts[, 3])
+  bg_col <- "gray70"
+  cols <- rep(bg_col, length(R_1))
+  order_cols <- seq(length(kSeedSites))
+  names(order_cols) <- kSiteColors[rev(kSeedSites)]
+  cols_per_site <- sapply(rev(kSeedSites), function(site) {
+    kSiteColors[site]
+    })
+  names(cols_per_site) <- rev(kSeedSites)
+  names(order_cols) <- kSeedSites
+  for (site in rev(kSeedSites)) {
+    seq <- GetSiteSeq(mirna, site)
+    cols[grep(seq, kmers)] <- kSiteColors[site]
+  }
+  SubfunctionCall(FigureSaveFile)
+  xmin <- 1e-1
+  xmax <- 1e3
+  ymin <- xmin
+  ymax <- xmax
+  BlankPlot(log="xy")
+  x <- R_1
+  y <- R_2
+  xy <- GetPlotFractionalCoords(0.05, 0.95, log='xy')
+  AddCorrelationToPlot(log(x), log(y), xy[1], xy[2],
+                       rsquared=TRUE, adj=c(0, 1))
+  inds_bg <- which(cols == bg_col)
+  inds_bg <- inds_bg[seq(1, length(inds_bg), by=floor(length(inds_bg)/10000))]
+  inds_bg <- inds_bg[1:1e4]
+  inds_color <- unlist(sapply(cols_per_site, function(color) {
+    which(cols == color)
+  }))
+  message("number of background points:")
+  message(length(inds_bg))
+  inds <- c(inds_bg, inds_color)
+  x <- x[inds]
+  y <- y[inds]
+  cols <- cols[inds]
+
+  # Make x=y line:
+  abline(0, 1, lty=2)
+  # Make axes:
+  AddLogAxis(1,
+             label=expression("9-nt"~italic(k)*"-mer enrichment; Replicate 1"))
+  AddLogAxis(2,
+             label=expression(text="9-nt"~italic(k)*"-mer enrichment; Replicate 2"),
+             col="blue")
+  # Add the points to the plot:
+  Points(x, y, col=ConvertRColortoRGB(cols, alpha=0.5))        
+  legend.coords <- GetPlotFractionalCoords(1, 0.025, log='xy')
+  Legend(legend.coords,
+         legend=c(ConvertTtoUandMmtoX(kSeedSites), "None"),
+         col=c(kSiteColors[kSeedSites], "gray80"), xjust=1, yjust=0)
+
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
 
 
 

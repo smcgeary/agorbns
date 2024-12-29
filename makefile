@@ -14,16 +14,13 @@ MIRNAbc_HeLa_four = miR-155 miR-7 miR-1 miR-124
 
 
 ## PREPROCESSING DIRECTORIES AND SCRIPTS #######################################
-DIR_pp = PreProcessReads/ # Used GitHub2019 ************************************
-SCR_mp = MakeMiRNAReadFile.py # Used GitHub2019 ********************************
-SCR_mp = MakeMiRNAReadFile.sh # Used GitHub2019 ********************************
-SCR_pp = MakeReadFile.py # Used GitHub2019 *************************************
-SCR_pp = MakeReadFile.sh # Used GitHub2019 *************************************
+DIR_pp = PreProcessReads/# Used GitHub2019 *************************************
+SCR_mp = MakeMiRNAReadFile.sh# Used GitHub2019 *********************************
+SCR_pp = MakeReadFile.sh# Used GitHub2019 *************************************
 DIR_as = AssignSiteTypes/# Used GitHub2019 ************************************
-SCR_as = AssignSites.py # Used GitHub2019 **************************************
 SCR_as = AssignSites.sh # Used GitHub2019 **************************************
-SCR_af = AssignFlanks.py # Used GitHub2019 *************************************
 SCR_af = AssignFlanks.sh # Used GitHub2019 *************************************
+SCR_am = AssignMiRNAs.sh # Used GitHub2019 *************************************
 DIR_kd = SolveForKds/# Used GitHub2019 *****************************************
 SCR_sc = MakeSiteCountTable.py # Used GitHub2019 *******************************
 SCR_msc = MakeMultiSiteCountTable.py # Used GitHub2019 *************************
@@ -197,10 +194,10 @@ LEN_MIN = 4
 PreprocessAgoPurity :
 	@(job=""; \
 	for MIRNA in miR-1 miR-155; do \
-		job="python $(DIR_pp)$(SCR_mp) $$MIRNA AGO_purity S1007_P "; \
-		job=$$job" -test"; \
+		job="sbatch $(DIR_pp)$(SCR_mp) $$MIRNA AGO_purity S1007_P"; \
+		job=$$job"$(test) -jobs 19"; \
 		echo $$job; \
-		$$job;\
+		$$job; \
 	done)
 
 
@@ -273,6 +270,15 @@ AssignSites :
 		$$job; \
 	done)
 
+AssignMiRNAsAgoPurity :
+	@(job=""; \
+	for MIRNA in miR-1 miR-155; do \
+		job="sbatch $(DIR_as)$(SCR_am) $$MIRNA AGO_purity S1007_P"; \
+		job=$$job"$(test) -jobs 19"; \
+		echo $$job; \
+		$$job; \
+	done)
+
 AssignFlanks :
 	@(for CON in $(COND); do \
 		job="sbatch $(DIR_as)$(SCR_af) $(mirna) $(exp) $$CON "; \
@@ -283,6 +289,28 @@ AssignFlanks :
 
 
 
+
+FitFlankKds :
+	@(job_py="conda run -n agorbns python $(DIR_kd)$(SCR_fc) $(mirna) $(exp) $(n_constant) $(sitelist)"$(BUFFER3P); \
+	echo $$job_py; \
+	$$job_py; \
+	if [ "$(mirna)" = "miR-7-23nt" ]; then \
+		MIRSITE="miR-7"; \
+	else \
+		MIRSITE="$(mirna)"; \
+	fi; \
+	echo $$MIRSITE; \
+	DIR="$(DIR_as)site_categories/$(sitelist)/sites."$$MIRSITE"_$(sitelist).txt"; \
+	echo $$DIR; \
+	for SITE in `cat $$DIR`; do \
+		echo $$SITE; \
+		job1="sbatch $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE"$(BUFFER3P); \
+		# job2="bsub Rscript $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE -nocombI"$(BUFFER3P); \
+		echo $$job1; \
+		# echo $$job2; \
+		$$job1; \
+		# $$job2; \
+	done)
 
 
 
@@ -1788,34 +1816,7 @@ AssignPositionalKmersProgrammedLibSeedEx :
 
 # Use:
 #
-FitFlankKds :
-	@(job_py="conda run -n agorbns python $(DIR_kd)$(SCR_fc) $(mirna) $(exp) $(n_constant) $(sitelist)"$(BUFFER3P); \
-	echo $$job_py; \
-	$$job_py; \
-	if [ "$(mirna)" = "miR-7-23nt" ]; then \
-		MIRSITE="miR-7"; \
-	else \
-		MIRSITE="$(mirna)"; \
-	fi; \
-	echo $$MIRSITE; \
-	DIR="$(DIR_as)site_categories/$(sitelist)/sites."$$MIRSITE"_$(sitelist).txt"; \
-	echo $$DIR; \
-	for SITE in `cat $$DIR`; do \
-		echo $$SITE; \
-		job1="sbatch $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE"$(BUFFER3P); \
-		# job2="bsub Rscript $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE -nocombI"$(BUFFER3P); \
-		echo $$job1; \
-		# echo $$job2; \
-		$$job1; \
-		# $$job2; \
-	done)
-		# job1="Rscript $(HOME)$(DIR_kd)$(SCR_fkd) $(mirna) $(exp)"; \
-		# job1=$$job1" $(n_constant) $(sitelist) '$$SITE'"; \
-		# echo $$job1; \
-		# bsub $$job1; \
-		# job2=$$job1" -nocombI"; \
-		# echo $$job2; \
-		# bsub $$job2; \
+
 
 AssignAllSitesEquilibrium :
 	echo $(MIRNAe)

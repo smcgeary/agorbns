@@ -65,8 +65,8 @@ def check_read(reads, barcode, experiment, byte_convert, k_phi_x = k_phi_x):
         elif "N" in seq:
             counts_readtypes_map["N"] += 1
         # 3. That "B" is not in the quality score.
-        elif "B" in score:
-            counts_readtypes_map["B"] += 1
+        # elif "B" in score:
+        #     counts_readtypes_map["B"] += 1
         # 4. That the read has the correct multiplexing bardcode.
         # elif read_barcode != barcode:
             # counts_readtypes_map["M"] += 1
