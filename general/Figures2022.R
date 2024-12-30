@@ -1,54 +1,69 @@
+rm()
+
 source("general/ThrPFunctions.R")
-library(wCorr)
-source("general/GenericFigures.R")
-source("Repression/repression_workspace.R")
-pt_cex_final <- 1.35
-# pch21_lwd.cex <- 0.7 * par()$cex
-legend_pch <- 19
-line_dash_length <- 2
-occupancy_schematic_bg_cex <- 0.45
-occupancy_schematic_bg_col <- "#989898"
-occupancy_mirna_seq_col <- "#958872"
+# library(wCorr)
+# source("general/GenericFigures.R")
+# source("Repression/repression_workspace.R")
+# pt_cex_final <- 1.35
+# # pch21_lwd.cex <- 0.7 * par()$cex
+# legend_pch <- 19
+# line_dash_length <- 2
+# occupancy_schematic_bg_cex <- 0.45
+# occupancy_schematic_bg_col <- "#989898"
+# occupancy_mirna_seq_col <- "#958872"
 
-AGO_mir_label <- "[AGO2-miRNA] (pM)"
-AGO_mir1_label <-"[AGO2-miR-1]"
-AGO_mir1_label_no_conc <- "AGO2-miR-1 library"
-
-
-slopes_lm <- rep(NA, 7)
-
-names(slopes_lm) <- c(kMirnas[1:6], "flanks")
+# AGO_mir_label <- "[AGO2-miRNA] (pM)"
+# AGO_mir1_label <-"[AGO2-miR-1]"
+# AGO_mir1_label_no_conc <- "AGO2-miR-1 library"
 
 
-kThrPLengthCols <- rev(viridis::plasma(10))[3:10]
-names(kThrPLengthCols) <- 4:11
-kThrPPositionCols <- rev(viridis::inferno(17))[3:17]
-names(kThrPPositionCols) <- 9:23
+# slopes_lm <- rep(NA, 7)
 
-kThrpReporterColors <- c("#006400", "darkolivegreen2", "#3EB000")
-kThrpReporterColors <- c("#6A8F24", "#7BFC01", "#3CB371")
-names(kThrpReporterColors) <- c("4mer-m13.16", "9mer-m11.19", "9mer-m13.21")
+# names(slopes_lm) <- c(kMirnas[1:6], "flanks")
 
 
-graphics.off()
+# kThrPLengthCols <- rev(viridis::plasma(10))[3:10]
+# names(kThrPLengthCols) <- 4:11
+# kThrPPositionCols <- rev(viridis::inferno(17))[3:17]
+# names(kThrPPositionCols) <- 9:23
 
-kMaxValueColor <- "coral"
+# kThrpReporterColors <- c("#006400", "darkolivegreen2", "#3EB000")
+# kThrpReporterColors <- c("#6A8F24", "#7BFC01", "#3CB371")
+# names(kThrpReporterColors) <- c("4mer-m13.16", "9mer-m11.19", "9mer-m13.21")
 
-## Global variable for whether or not the offset axis should be inverted.
-kOffsetInv <- "x"
 
-kNucleotideColorsThrP <- c(`A`="blue", `C`="purple", `G`="red", `U`="forestgreen", `T`="forestgreen")
+
+# kMaxValueColor <- "coral"
+
+# ## Global variable for whether or not the offset axis should be inverted.
+# kOffsetInv <- "x"
+
+# kNucleotideColorsThrP <- c(`A`="blue", `C`="purple", `G`="red", `U`="forestgreen", `T`="forestgreen")
 
                                   # blue         # magenta      # orange       # teal
-kNucleotideColorsColorBlind <- c(`A`="#0077BB", `C`="#EE3377", `G`="#EE7733", `U`="#009988", `T`="#009988")
 
-kNucleotideColorsColorBlind <- c(`A`="#785EF0", `C`="#DC267F", `G`="#FE6100", `U`="#FFB000", `T`="#FFB000")
+# kNucleotideColorsColorBlind <- c(`A`="#7A6CFF", `C`="#AE4B57", `G`="#F6921E", `U`="#00A14B", `T`="#00A14B")
 
-kNucleotideColorsColorBlind <- c(`A`="#0077BB", `C`="#33BBEE", `G`="#009988", `U`="#EE7733", `T`="#EE7733")
 
-kNucleotideColorsColorBlind <- c(`A`="#66CCEE", `C`="#EE6677", `G`="#CCBB44", `U`="#228833", `T`="#228833")
-
-kNucleotideColorsColorBlind <- c(`A`="#7A6CFF", `C`="#AE4B57", `G`="#F6921E", `U`="#00A14B", `T`="#00A14B")
+FigureSaveFile2 <- function(pdf.plot, height=5, width=5, xpos=20, ypos=20) {
+  if (class(pdf.plot) == "character") {
+    print(pdf.plot)
+    figure.split <- unlist(strsplit(pdf.plot, split="\\.", perl=TRUE))
+    figure <- figure.split[1]
+    if (length(figure.split) > 2) {
+      panel <- paste0(figure.split[2:length(figure.split)], collapse=".")
+    } else {
+      panel <- figure.split[2]
+    }
+    figurename <- paste0(figure, panel)
+    path <- paste0("McGearyBisariaEtAl_2022/Figure_", figure, "/", figurename, "_raw.pdf")
+    pdf(file=path, height=2.2/5*height, width=2.2/5*width, useDingbats=FALSE)
+    par(kPDFParameters)
+  } else {
+    dev.new(xpos=xpos, ypos=ypos, height=height, width=width)
+    par(kPlotParameters)
+  }
+}
 
 
 ################################################################################

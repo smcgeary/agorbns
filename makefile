@@ -194,7 +194,7 @@ LEN_MIN = 4
 PreprocessAgoPurity :
 	@(job=""; \
 	for MIRNA in miR-1 miR-155; do \
-		job="sbatch $(DIR_pp)$(SCR_mp) $$MIRNA AGO_purity S1007_P"; \
+		job="sbatch $(DIR_pp)$(SCR_mp) $$MIRNA AGO_purity S1006_P"; \
 		job=$$job"$(test) -jobs 19"; \
 		echo $$job; \
 		$$job; \
@@ -273,7 +273,7 @@ AssignSites :
 AssignMiRNAsAgoPurity :
 	@(job=""; \
 	for MIRNA in miR-1 miR-155; do \
-		job="sbatch $(DIR_as)$(SCR_am) $$MIRNA AGO_purity S1007_P"; \
+		job="sbatch $(DIR_as)$(SCR_am) $$MIRNA AGO_purity S1006_P"; \
 		job=$$job"$(test) -jobs 19"; \
 		echo $$job; \
 		$$job; \

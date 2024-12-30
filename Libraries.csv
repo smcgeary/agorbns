@@ -1,6 +1,6 @@
 Date,SL,Barcode,PCR cycles,GTC ID,BioA (nM),Exp,Exp_type,Spike,3prime,Lane,miRNA,S100,Pool,Sample type,Rep,Batch,Cell Line,SRR number,Path,,,,
-,8,ACTTGA,,L1_1935,1.9151,140603_WIGTC-HISEQA_C4W8TACXX,AGO_purity,,,8,miR-1,7,NA,S1007_P,,,,SRR10432899,miR-1/smallRNA_seq/reads/AGO2_pur.txt,,,,
-,9,GATCAG,,L1_1936,1.4516,140603_WIGTC-HISEQA_C4W8TACXX,AGO_purity,,,8,miR-155,7,NA,S1007_P,,,,SRR10432900,miR-155/smallRNA_seq/reads/AGO2_pur.txt,,,,
+,5,ACAGTG,,L1_1932,3.2651,140603_WIGTC-HISEQA_C4W8TACXX,AGO_purity,,,8,miR-1,6,NA,S1006_P,,,,SRR10432899,miR-1/smallRNA_seq/reads/AGO2_pur.txt,,,,
+,6,GCCAAT,,L1_1933,1.5239,140603_WIGTC-HISEQA_C4W8TACXX,AGO_purity,,,8,miR-155,6,NA,S1006_P,,,,SRR10432900,miR-155/smallRNA_seq/reads/AGO2_pur.txt,,,,
 15.01.10,10,ATCACG,,L1_2406,2.4173,150120_WIGTC-HISEQ2A_C67BAANXX,equil_pilot,s124_8mer,TCG,6,"miR-1,miR-155",NA,3,I,,,,SRR10533738,miR-1/agorbns/reads/pur1_input.txt,,,,
 ,12,TTAGGC,,L1_2408,15.8586,150120_WIGTC-HISEQ2A_C67BAANXX,equil_pilot,s124_8mer,TCG,6,miR-1,,3,L100A10,,,,SRR10533739,miR-1/agorbns/reads/pur1_10%.txt,,,,
 15.06.23,17,ATCACG,,L1_2572,24.6,150714_WIGTC-HISEQB_C7EWJACXX,equilibrium,"s124_8mer,s155_8mer",TCG,2,miR-1,,4,I,,,,SRR10533740,miR-1/agorbns/reads/pur2_input.txt,,,,

@@ -1,5 +1,5 @@
 rm()
-source("general/general.R")
+# source("general/general.R")
 source("general/ModelingFunctions.R")
 source("general/PlotFunctions.R")
 
@@ -12,41 +12,23 @@ occupancy_schematic_bg_cex <- 0.45
 FigureSaveFile <- function(pdf.plot, height=5, width=5, xpos=20, ypos=20) {
   if (class(pdf.plot) == "character") {
     print(pdf.plot)
-    # Checks if the first six characters are a date, which means it should go in
-    # the "figures" folder.
-    if (grepl("^[0-9]*$", substr(pdf.plot, 1, 6))) {
-      path_split <- unlist(strsplit(pdf.plot, split="/"))
-      date <- path_split[1]
-      figure <- path_split[2]
-      dir_path <- file.path("figures", date)
-      if (!file.exists(dir_path)) {
-        dir.create(dir_path)
-      }
-      path <- paste0(dir_path, "/", figure, ".pdf")
-    # Alternative, where the figure goes into the 2017_Paper folder.
+    figure.split <- unlist(strsplit(pdf.plot, split="\\.", perl=TRUE))
+    figure <- figure.split[1]
+    if (length(figure.split) > 2) {
+      panel <- paste0(figure.split[2:length(figure.split)], collapse=".")
     } else {
-      figure.split <- unlist(strsplit(pdf.plot, split="\\.", perl=TRUE))
-      figure <- figure.split[1]
-      if (length(figure.split) > 2) {
-        panel <- paste0(figure.split[2:length(figure.split)], collapse=".")
-      } else {
-        panel <- figure.split[2]    
-      }
-      figurename <- paste0(figure, panel)
-      path <- paste0("McGearyLinEtAl_2019/Figure_", figure, "/", figurename, "_raw.pdf")
-      print(path)
+      panel <- figure.split[2]
     }
+    figurename <- paste0(figure, panel)
+    path <- paste0("McGearyLinEtAl_2019/Figure_", figure, "/", figurename, "_raw.pdf")
     pdf(file=path, height=2.2/5*height, width=2.2/5*width, useDingbats=FALSE)
     par(kPDFParameters)
   } else {
     dev.new(xpos=xpos, ypos=ypos, height=height, width=width)
-    par(kPlotParameters)    
-  }  
+    par(kPlotParameters)
+  }
 }
 
-
-
-# source("general/GenericFigures.R")
 
 ################################################################################
 # FIGURE 1
@@ -1977,44 +1959,29 @@ PlotAllSamplePlFlanks <- function(mirna, site, condition, mir.start=1,
 ################################################################################
 
 # S1A___________________________________________________________________________
-PlotAgoPrepPurity <- function(experiment="AGO_purity", unique=FALSE,
-                              no_marker=FALSE, no_adapter=FALSE, geo_test=FALSE,
-                              height=4.5, width=4.5, xpos=20, ypos=20,
-                              pdf.plot=FALSE) {
-  out_matrix <- matrix(0)
-  if (geo_test) str_geotest <- "_geotest"
-  else          str_geotest <- ""
+PlotAgoPrepPurity <- function(experiment="AGO_purity", height=4.5, width=4.5,
+                              xpos=20, ypos=20, pdf.plot=FALSE) {
+  # if (geo_test) str_geotest <- "_geotest"
+  # else          str_geotest <- ""
+  # if (geo_test) {
+  #   break
+  # }
+  # if (unique || no_marker || no_adapter || geo_test) {
+  #   break
+  # }
   # Gets the expression data within the experiment:
   out <- do.call("cbind", lapply(c("miR-1", "miR-155"), function(mirna) {
-    out <- do.call("cbind", lapply(seq(5, 7), function(i_s) {
-      out <- do.call("cbind", lapply(c("I", "P"), function(cond) {
-        condition <- paste0("S100", i_s, "_", cond, str_geotest)
-
-        # counts <- GetMirnaCountData(mirna, condition, unique=unique,
-        #                             no_marker=no_marker, no_adapter=no_adapter)
-        counts <- GetMirnaCountData(mirna, "S1007_P", unique=unique,
-                                    no_marker=no_marker, no_adapter=no_adapter)
-
-
+        counts <- GetMirnaCountData(mirna, "S1006_P")
         count_total <- rowSums(counts)
         names(count_total) <- rownames(counts)
         count_total
-      }))
-      colnames(out) <- paste0("S100", i_s, "_", c("I", "P"))
-      out
-    }))
-    out
   }))
-  exclude_rows <- c("Unmapped")
-  if (!(no_marker)) exclude_rows <- c(exclude_rows, "18nt_marker", "30nt_marker")
-  if (!(no_adapter)) exclude_rows <- c(exclude_rows, "5p_adapter", "3p_adapter")
-  # Get the rows similar to how I used to do it, without the redundant inputs
-  out <- out[, c(1, 2, 8, 3, 4, 10, 5, 6, 12)]
-
-  out <<- out
-
+  colnames(out) <- paste0(c("miR-1", "miR-155"), "_S1006_P")
+  print(out[1:10, ])
+  out_global <<- out
+  exclude_rows <- c("Unmapped", "18nt_marker", "30nt_marker", "5p_adapter", "3p_adapter")
+  print(exclude_rows)
   # Takes out the markers and unpammped categories from the table.
-  out_new <<- out
   unmapped  <- out["Unmapped", ]
   out <- out[!(rownames(out) %in% exclude_rows),]
   # Isolate the exogenously loaded miRNA in the S100 extract
@@ -2023,7 +1990,7 @@ PlotAgoPrepPurity <- function(experiment="AGO_purity", unique=FALSE,
   spike_df <- out[spike_rows, ]
   exog_df <- t(t(out[exog_rows, ])/colSums(spike_df))
   endog_df <- t(t(out[setdiff(rownames(out), c(exog_rows, spike_rows)), ])/colSums(spike_df))
-  row_order <- order(-rowSums(endog_df[,c(5, 6)]))
+  row_order <- order(-rowSums(endog_df))
   endog_df <- endog_df[row_order,]
   ind_mir4521 <- grep("miR-4521", rownames(endog_df))
   endog_df <- rbind(endog_df[-ind_mir4521,], endog_df[ind_mir4521,])
@@ -2086,8 +2053,8 @@ PlotAgoPrepPurity <- function(experiment="AGO_purity", unique=FALSE,
        labels=c("miRNA", "AGO2-miR-1", "AGO2-miR-155"), cex=text_cex, xpd=NA)
   # add row names:
   text(-0.15, y_pos_text, adj=0, labels=legend_labels, cex=text_cex, xpd=NA)
-  text(verts[3] - 0.025, y_pos_text, adj=1, format(round(norm_df[, 5], 0), nsmall=0, big.mark=","), cex=text_cex, xpd=NA)
-  text(verts[4] - 0.08, y_pos_text, adj=1, format(round(norm_df[, 6], 0), nsmall=0, big.mark=","), cex=text_cex, xpd=NA)
+  text(verts[3] - 0.025, y_pos_text, adj=1, format(round(norm_df[, 1], 0), nsmall=0, big.mark=","), cex=text_cex, xpd=NA)
+  text(verts[4] - 0.08, y_pos_text, adj=1, format(round(norm_df[, 2], 0), nsmall=0, big.mark=","), cex=text_cex, xpd=NA)
   # Horizontal lines
   segments(verts[1], y_pos_col_labels, verts[length(verts)], y_pos_col_labels, xpd=NA)
   if (class(pdf.plot) == "character") {
@@ -2345,9 +2312,15 @@ MakeFigure4 <- function() {
   message("Done Fig. 4")
 }
 
-MakeSupplementaryFigure1 <- function() {
+MakeFigureS1 <- function() {
   message("Making fig. S1")
-  PlotAgoPrepPurity(pdf.plot="S1.A", no_marker=FALSE, no_adapter=FALSE)
+
+  ## make PreprocessAgoPurity
+  ## make AssignMiRNAsAgoPurity
+
+  PlotAgoPrepPurity(pdf.plot="S1.A")
+  print("done")
+  break
   PlotMiR1_KmersCorrelation(pdf.plot="S1.B", kmer_len=9)
   PlotEnrichmentsAgainstKds("miR-1", sitelist="canonical", buffer=TRUE,
                             combined=FALSE, pdf.plot="S1.C")
@@ -2368,7 +2341,7 @@ MakeSupplementaryFigure1 <- function() {
   message("Done fig. S1")
 }
 
-MakeSupplementaryFigure2 <- function() {
+MakeFigureS2 <- function() {
   message("Making fig. S2.")
   PlotCompetitorOligoSiteSchematic(pdf.plot="S2.A")
   PlotSiteKds("lsy-6", adjusted_height=TRUE, pdf.plot="S2.Bi")
@@ -2381,7 +2354,7 @@ MakeSupplementaryFigure2 <- function() {
   message("Done fig. S2.")
 }
 
-MakeSupplementaryFigure3 <- function() {
+MakeFigureS3 <- function() {
   message("Making fig. S3.")
   PlotBaekKds("miR-1", combined=FALSE, buffer=TRUE, pdf.plot="S3.A")
   PlotBaekKds("let-7a", pdf.plot="S3.B")
@@ -2392,7 +2365,7 @@ MakeSupplementaryFigure3 <- function() {
   message("Done fig. S3.")
 }
 
-MakeSupplementaryFigure4 <- function() {
+MakeFigureS4 <- function() {
   message("Making fig. S4.")
   PlotBulgeKds("miR-1", combined=FALSE, buffer=TRUE, pdf.plot="S4.B")
   PlotDelKds("miR-1", , combined=FALSE, buffer=TRUE, pdf.plot="S4.C")
@@ -2410,7 +2383,7 @@ MakeSupplementaryFigure4 <- function() {
 }
 
 
-MakeSupplementaryFigure5 <- function() {
+MakeFigureS5 <- function() {
   message("Making fig. S5.")
   PlotReporterAssaySchematicLetters(pdf.plot="S5.A")
   PlotReporterAssayKdVsL2fc("miR-1", pdf.plot="S5.Bi")
@@ -2422,7 +2395,7 @@ MakeSupplementaryFigure5 <- function() {
   message("Done fig. S5.")
  }
 
-MakeSupplementaryFigure6 <- function() {
+MakeFigureS6 <- function() {
   message("Making fig. S6.")
   PlotSiteFlankKds("let-7a", adjusted_height=TRUE, width=7.3,
                    pdf.plot="S6.A")
@@ -2460,12 +2433,12 @@ MakeRefereeResponseFigure <- function() {
 # MakeFigure2()
 # MakeFigure3()
 # MakeFigure4()
-MakeSupplementaryFigure1()
-# MakeSupplementaryFigure2()
-# MakeSupplementaryFigure3()
-# MakeSupplementaryFigure4()
-# MakeSupplementaryFigure5()
-# MakeSupplementaryFigure6()
+MakeFigureS1()
+# MakeFigureS2()
+# MakeFigureS3()
+# MakeFigureS4()
+# MakeFigureS5()
+# MakeFigureS6()
 
 
 
