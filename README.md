@@ -158,6 +158,6 @@ submission systems, such as IBM LSF.
 
 If you use this code in your research, please cite:
 
-McGeary, S.E.*, Lin, K.S.*, Shi, C.Y., Pham, T.M., Bisaria, N., Kelley, G.M., and Bartel, D.P. (2019). The biochemical basis of miRNA targeting efficacy. Science, 366, eaav1741.
+McGeary, S.E.\*, Lin, K.S.\*, Shi, C.Y., Pham, T.M., Bisaria, N., Kelley, G.M., and Bartel, D.P. (2019). The biochemical basis of miRNA targeting efficacy. Science, 366, eaav1741.
 
-McGeary, S.E.*, Bisaria, N.*, Pham, T.M., Wang, P.Y., and Bartel, D.P. (2022). MicroRNA 3′-compensatory pairing occurs through two binding modes, with affinity shaped by nucleotide identity and position. eLife, 11, e69803.
+McGeary, S.E.\*, Bisaria, N.\*, Pham, T.M., Wang, P.Y., and Bartel, D.P. (2022). MicroRNA 3′-compensatory pairing occurs through two binding modes, with affinity shaped by nucleotide identity and position. eLife, 11, e69803.
