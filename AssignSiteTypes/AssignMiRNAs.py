@@ -6,27 +6,18 @@ imp.load_source("general", "general/general.py")
 imp.load_source("RBNS_methods", "general/RBNS_methods.py")
 from general import *
 from RBNS_methods import *
-# from sitetypes import get_seq_site_map
 from collections import defaultdict
 
-# marker_18nt = "AGCGUGUAGGGAUCCAAA"
-# weird   =   "GGAGCGTGTAGGATCCAAATCGTATGCC"
 marker_18nt_d = "AGCGTGTAGGGATCCAAA"
-# marker_30nt = "GGCAUUAACGCGGCCGCUCUACAAUAGUGA"
-#                # GGTCGTTTCCCGGCCCATGCACCATCGT
 marker_30nt_d = "GGCATTAACGCGGCCGCTCTACAATAGTGA"
 
-# adapter_5p = "GUUCAGAGUUCUACAGUCCGACGAUC"
 adapter_5p_d = "GTTCAGAGTTCTACAGTCCGACGATC"
 adapter_3p_sRS = "TCGTATGCCGTCTTCTGCTTG"
-# dme_miR_14_5p = "GGGAGCGAGACGGGGACUCACU"
 dme_miR_14_5p_d = "GGGAGCGAGACGGGGACTCACT"
-# xtr_miR_427 = "GAAAGUGCUUUCUGUUUUGGGCG"
 xtr_miR_427_d = "GAAAGTGCTTTCTGTTTTGGGCG"
 
 
 
-# FUNCTIONS
 marker_seqs = [marker_18nt_d, marker_30nt_d]
 marker_names = ["18nt_marker", "30nt_marker"]
 
@@ -42,6 +33,7 @@ name_file_path = "AssignSiteTypes/mirna_name_conversion_table.txt"
 
 lit_base_map = dict()
 
+# FUNCTIONS
 
 def GetThreePrimeBarcodeOverlap(read, adapt=adapter_3p_sRS):
     window = len(adapt)
@@ -155,32 +147,8 @@ def assign_mirna(read_seqs, seq_mirna_map, test):
         adapter_pos = GetThreePrimeBarcodeOverlap(seq)
         barcode =  seq[:14]
         seq_segment = seq[14:adapter_pos]
-        if seq in ["AGGCAGGCAGGCGGTGGAATGTAAAGAAGTATGTATTCGT",
-                   "GGCTGCTGGTTGGATGGAATGTAAAGAAGTATGTATTCGT",
-                   "CGACATCGATCAGTTGGAATGTAAAGAAGTATCGTATGCC"]:
-            print(seq)
-            print("-"*14 + "."*len(seq_segment) + "-"*(len(seq) - adapter_pos))
-            print(" "*14 + "123456789!12345678")
-            # print("adapter_pos:")
-            # print(adapter_pos)
-            # print("barcode:")
-            # print(barcode)
-            # print("seq_segment:")
-            # print(seq_segment)
-            # print(len(seq_segment) >= 18)
-            # print(len(seq_dict[seq_segment[:18]]))
-            sys.stdout.flush()
         if len(seq_segment) >= 18:
             seq_dict[seq_segment[:18]].append(barcode[:18])
-        if seq in ["AGGCAGGCAGGCGGTGGAATGTAAAGAAGTATGTATTCGT",
-                   "GGCTGCTGGTTGGATGGAATGTAAAGAAGTATGTATTCGT",
-                   "CGACATCGATCAGTTGGAATGTAAAGAAGTATCGTATGCC"]:
-            print(len(seq_dict[seq_segment[:18]]))
-            sys.stdout.flush()
-        # if adapter_5p_d[:18] == seq[14:14+18] and test:
-        #     print(seq[:adapter_pos])
-        #     print(" "*14 + adapter_5p_d)
-        sys.stdout.flush()
     return seq_dict
 
 def main():
@@ -242,17 +210,15 @@ def main():
     print("unmapped plus: %s" %(uncounted_plus))
 
     mirna_count_df = pd.DataFrame.from_dict(mirna_count_dict, orient="index")
-    mirna_count_unique_df = pd.DataFrame.from_dict(mirna_count_unique_dict, orient="index")
+    # mirna_count_unique_df = pd.DataFrame.from_dict(mirna_count_unique_dict, orient="index")
 
     table_path = get_analysis_path(mirna, experiment, condition,
                                      "AGO_pur_counts", ext=ext)
-    unique_table_path = get_analysis_path(mirna, experiment, condition,
-                                     "AGO_pur_counts", ext=ext + "_unique")
+    # unique_table_path = get_analysis_path(mirna, experiment, condition,
+    #                                  "AGO_pur_counts", ext=ext + "_unique")
 
-    print(table_path)
-    print(unique_table_path)
     mirna_count_df.to_csv(table_path, sep="\t")
-    mirna_count_unique_df.to_csv(unique_table_path, sep="\t")
+    # mirna_count_unique_df.to_csv(unique_table_path, sep="\t")
 
     print_time_elapsed(time_start)
 ################################################################################

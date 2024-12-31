@@ -20,7 +20,8 @@ from concurrent.futures import ProcessPoolExecutor
 # HOME_DIR = "/lab/bartel1_ata/mcgeary/computation/AgoRBNS/"
 DATA_DIR = "/data/processed/"
 
-
+print("hi")
+print(pd)
 # Map of the sequences associated with the quantitative spikes put into some of
 # the libraries (that are actually used in the analyses).
 seq_spike_map = {
@@ -149,7 +150,7 @@ CONDITIONS_PY = {
         "miR-1"  : conditions_py_nocombI
     },
     "equil_c2_nb" : {                                                           # 6
-        "let-7a-21nt"  : ["I", "I", "40", "12.6", "12.6_2", "4", "1.26",
+        "let-7a-21nt"  : ["I", "I", "40", "12.6,1", "12.6,2", "4", "1.26",
                           "0.4", "0"]
     },
     "equil_sc_nb" : {
@@ -290,8 +291,6 @@ INPUT_LIST_I_COMBINED_NB = [("miR-7-23nt", "equilibrium2_nb",   "I"),
 
 
 
-
-
 def print_time_elapsed(time_start):
     time_sec = time.time() - time_start
     time_h = time_sec // 3600
@@ -336,6 +335,46 @@ def get_rc(seq, rna=False):
     rev_complement_list = [nucleotide_complement_map[i] for i in seq][::-1]
     rev_complement = "".join(rev_complement_list)
     return(rev_complement)
+
+
+# Used in 2022 paper, not 2019 main-text.
+def LCSuff(seq1, seq2):
+    if len(seq1) > 0 and len(seq2) > 0 and seq1[-1] == seq2[-1]:
+        return(LCSuff(seq1[:-1], seq2[:-1]) + 1)
+    else:
+        return(0)
+
+
+
+# Used in 2022 paper, not in 2019 main-text.
+def LCSubString(seq1, seq2, alt_len=None):
+    # Make all prefixes of both strings
+    if len(seq1) == 0 or len(seq2) == 0:
+        return([0, [[], []]])
+    else:
+        pre_1 = [seq1[:i] for i in range(1, len(seq1) + 1)]
+        pre_2 = [seq2[:i] for i in range(1, len(seq2) + 1)]
+        # All paired combinations between the prefixes:
+        pre_pairs = [(i, j) for i in pre_1 for j in pre_2]
+        # The Longest common suffixes of the pairs
+        LCs = [LCSuff(i[0], i[1]) for i in pre_pairs]
+        if len(LCs) == 0:
+            print(seq1)
+            print(seq2)
+        if alt_len:
+            LCmax = alt_len
+        else:
+            LCmax = max(LCs)
+        if LCmax == 0:
+            return([0, [[], []]])
+        else:
+            inds_max = [ind for (ind, lc) in enumerate(LCs) if lc == LCmax]
+            # Find the starting positions of the longest substrings in the first
+            # and second sequence, respectively:
+
+            inds_1 = [i//len(pre_2) - LCmax + 1 for i in inds_max]
+            inds_2 = [i%len(pre_2) - LCmax + 1 for i in inds_max]
+            return([LCmax, [inds_1, inds_2]])
 
 
 
@@ -506,7 +545,7 @@ def multiproc_file(path, n_jobs, func, test, *args, **kwargs):
         print("path:")
         print(path)
         if test:
-            process_size = 300000
+            process_size = 3000
             n_jobs = 2
         else:
             file_lines = int(wc_proc.communicate()[0].split()[0])
@@ -958,40 +997,8 @@ def randomword(length):
 #         s_list = [s for (i, s) in enumerate(s_list) if removes[i] == 0]
 #     return(s_list)
 
-# def LCSuff(seq1, seq2):
-#     if len(seq1) > 0 and len(seq2) > 0 and seq1[-1] == seq2[-1]:
-#         return(LCSuff(seq1[:-1], seq2[:-1]) + 1)
-#     else:
-#         return(0)
 
-# def LCSubString(seq1, seq2, alt_len=None):
-#     # Make all prefixes of both strings
-#     if len(seq1) == 0 or len(seq2) == 0:
-#         return([0, [[], []]])
-#     else:
-#         pre_1 = [seq1[:i] for i in range(1, len(seq1) + 1)]
-#         pre_2 = [seq2[:i] for i in range(1, len(seq2) + 1)]
-#         # All paired combinations between the prefixes:
-#         pre_pairs = [(i, j) for i in pre_1 for j in pre_2]
-#         # The Longest common suffixes of the pairs
-#         LCs = [LCSuff(i[0], i[1]) for i in pre_pairs]
-#         if len(LCs) == 0:
-#             print(seq1)
-#             print(seq2)
-#         if alt_len:
-#             LCmax = alt_len
-#         else:
-#             LCmax = max(LCs)
-#         if LCmax == 0:
-#             return([0, [[], []]])
-#         else:
-#             inds_max = [ind for (ind, lc) in enumerate(LCs) if lc == LCmax]
-#             # Find the starting positions of the longest substrings in the first
-#             # and second sequence, respectively:
 
-#             inds_1 = [i//len(pre_2) - LCmax + 1 for i in inds_max]
-#             inds_2 = [i%len(pre_2) - LCmax + 1 for i in inds_max]
-#             return([LCmax, [inds_1, inds_2]])
 
 
 # def intersection(lst1, lst2): 

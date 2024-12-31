@@ -1,6 +1,20 @@
-rm()
+################################################################################
+# Figures2022.R
+################################################################################
+# This script generates the figures associated with McGeary, Bisaria, et al.
+# 2022, which focuses on analysis of pairing of the miRNA 3-prime end,
+# using AGO-RBNS libraries that include a programmed site against a particular
+# miRNA.
+#
+# Analyses using the processed data must be performed in order to generat each
+# figure, which can be done by copying the commands before each figure subpanel
+# into a terminal, assuming the `agorbns` conda environment has been activated.
 
+rm(list = ls())
 source("general/ThrPFunctions.R")
+source("general/PlotFunctions.R")
+source("general/PlotFunctions2022.R")
+library(shape)
 # library(wCorr)
 # source("general/GenericFigures.R")
 # source("Repression/repression_workspace.R")
@@ -22,8 +36,13 @@ source("general/ThrPFunctions.R")
 # names(slopes_lm) <- c(kMirnas[1:6], "flanks")
 
 
-# kThrPLengthCols <- rev(viridis::plasma(10))[3:10]
-# names(kThrPLengthCols) <- 4:11
+kThrPLengthCols <- rev(viridis::plasma(10))[3:10]
+names(kThrPLengthCols) <- 4:11
+kFigure2SiteColors <- c(
+  "#D4C9E5", "#AD83BA", "#824D99", "#536BBA", "#4E96BB", "#5FAA9F", "#87BA6D",
+  "#C9B844", "#E59437", "#E25B2B", "#B2221E", "#521913"
+)
+
 # kThrPPositionCols <- rev(viridis::inferno(17))[3:17]
 # names(kThrPPositionCols) <- 9:23
 
@@ -31,12 +50,12 @@ source("general/ThrPFunctions.R")
 # kThrpReporterColors <- c("#6A8F24", "#7BFC01", "#3CB371")
 # names(kThrpReporterColors) <- c("4mer-m13.16", "9mer-m11.19", "9mer-m13.21")
 
+## Global variable for the color in heatmaps that is at or exceeds the maximum.
+kMaxValueColor <- "coral"
+## Global variable for whether or not the offset axis should be inverted.
+kOffsetInv <- "x"
 
 
-# kMaxValueColor <- "coral"
-
-# ## Global variable for whether or not the offset axis should be inverted.
-# kOffsetInv <- "x"
 
 # kNucleotideColorsThrP <- c(`A`="blue", `C`="purple", `G`="red", `U`="forestgreen", `T`="forestgreen")
 
@@ -575,752 +594,746 @@ PlotPositionalEnrichmentForProgramedLibrary <- function(
 # }
 
 
-# PlotCombinedEnrichmentAndKd <- function(site,
-#   mirna="let-7a-21nt", experiment="equil_c2_nb", n_constant_r=0,
-#   n_constant_kd=3, sitelist="progthrp_suppcomp", nbomitc=FALSE,
-#   corrected_kds=TRUE, len_lim=c(4, 11), offset_lim=c(-4, 16), collapsemm=FALSE,
-#   equilibrium_nb=FALSE, justlegend=FALSE, condition=40, start=1, stop=18,
-#   seedex=TRUE, ps=0, plot_enrich=FALSE, height=2, width=5, xpos=20, ypos=20,
-#   pdf.plot=FALSE 
-# ) {
-#   ###### Get the enrichment values to plot alongside the Kd values. ############
-#   # Load the two data tables.
-#   kmer_len <- as.numeric(strsplit(site, split="mer")[[1]][1])
-#   print(kmer_len)
-#   n_constant <- n_constant_r
-#   pc_I <- SubfunctionCall(GetPositionalKmersProgrammedLib,
-#                           condition="I")[, start:stop]
-#   pc_A <- SubfunctionCall(GetPositionalKmersProgrammedLib)[, start:stop]
-#   pc_I_global <- pc_I
-#   pc_A_global <- pc_A
-#   # STUFF TO HELP WITH WRITING THE METHODS #
-#   # Give the psuedo counts
-#   ps_I <- sum(pc_I)/nrow(pc_I)*ps
-#   ps_A <- sum(pc_A)/nrow(pc_A)*ps
-#   # Add the pseudo counts and normalize.
-#   norm_I <- (pc_I + ps_I)/sum(pc_I + ps_I)
-#   norm_A <- (pc_A + ps_A)/sum(pc_A + ps_A)
-#   # Make the enrichment table.
-#   R_A <- norm_A / norm_I
-#   R_mat <- R_A
-#   print(head(R_mat))
-#   ## GET THE KDs #############
-#   n_constant <- n_constant_kd
-#   if (corrected_kds) {
-#     kds <- SubfunctionCall(ApplyKdCorrection, prog_n_constant=n_constant,
-#                            rand_n_constant=n_constant, prog_sitelist=sitelist)
-#   } else { 
-#     if (mirna == "miR-1" & experiment == "equilibrium") {
-#       combined <- FALSE
-#       buffer <- TRUE
-#     } else if (mirna == "miR-7-23nt" & experiment == "equilibrium2_nb") {
-#       combined <- FALSE
-#       buffer <- FALSE
-#     } else {
-#       combined <- TRUE
-#       buffer <- FALSE
-#     }
-#     kds <- SubfunctionCall(EquilPars, sitelist=sitelist)
-#   }
+PlotCombinedEnrichmentAndKd <- function(site,
+  mirna="let-7a-21nt", experiment="equil_c2_nb", n_constant_r=0,
+  n_constant_kd=3, sitelist="progthrp_suppcomp", nbomitc=FALSE,
+  corrected_kds=TRUE, len_lim=c(4, 11), offset_lim=c(-4, 16), collapsemm=FALSE,
+  equilibrium_nb=FALSE, justlegend=FALSE, condition=40, start=1, stop=18,
+  seedex=TRUE, ps=0, plot_enrich=FALSE, height=2, width=5, xpos=20, ypos=20,
+  pdf.plot=FALSE 
+) {
+  ###### Get the enrichment values to plot alongside the Kd values. ############
+  # Load the two data tables.
+  kmer_len <- as.numeric(strsplit(site, split="mer")[[1]][1])
+  print(kmer_len)
+  n_constant <- n_constant_r
+  pc_I <- SubfunctionCall(GetPositionalKmersProgrammedLib,
+                          condition="I")[, start:stop]
+  pc_A <- SubfunctionCall(GetPositionalKmersProgrammedLib)[, start:stop]
+  pc_I_global <- pc_I
+  pc_A_global <- pc_A
+  # STUFF TO HELP WITH WRITING THE METHODS #
+  # Give the psuedo counts
+  ps_I <- sum(pc_I)/nrow(pc_I)*ps
+  ps_A <- sum(pc_A)/nrow(pc_A)*ps
+  # Add the pseudo counts and normalize.
+  print("Pseudo count:")
+  print(ps)
+  norm_I <- (pc_I + ps_I)/sum(pc_I + ps_I)
+  norm_A <- (pc_A + ps_A)/sum(pc_A + ps_A)
+  # Make the enrichment table.
+  R_A <- norm_A / norm_I
+  R_mat <- R_A
+  ## GET THE KDs #############
+  n_constant <- n_constant_kd
+  if (corrected_kds) {
+    kds <- SubfunctionCall(ApplyKdCorrection, prog_n_constant=n_constant,
+                           rand_n_constant=n_constant, prog_sitelist=sitelist)
+  } else { 
+    if (mirna == "miR-1" & experiment == "equilibrium") {
+      combined <- FALSE
+      buffer <- TRUE
+    } else if (mirna == "miR-7-23nt" & experiment == "equilibrium2_nb") {
+      combined <- FALSE
+      buffer <- FALSE
+    } else {
+      combined <- TRUE
+      buffer <- FALSE
+    }
+    kds <- SubfunctionCall(EquilPars, sitelist=sitelist)
+  }
 
-#   target <- sprintf("^%s\\|.*\\|Comp_Kd", site)
-#   inds <- grep(target, rownames(kds), perl=TRUE, value=TRUE)
-#   df_use <- kds[inds, ]
-#   sites_inds <- grep(sprintf("^%s\\|.*\\|Comp_Kd", site), rownames(df_use), perl=TRUE)
-#   site_pos <- as.integer(gsub("^.*mer-m(.*)\\..*$", replacement="\\1", site))
-#   pos <- as.integer(gsub("^(.*)\\|(.*)\\|(Comp_Kd$)", replacement="\\2", rownames(df_use)))
-#   offsets <- pos - site_pos
-#   inds_pos <- which(offsets >= offset_lim[1] & offsets <= offset_lim[2])
-#   offsets <- offsets[inds_pos]
-#   df_use_pos <- df_use[inds_pos, ]
-#   # df_use_pos <- df_use_pos[order(offsets), ]
+  target <- sprintf("^%s\\|.*\\|Comp_Kd", site)
+  inds <- grep(target, rownames(kds), perl=TRUE, value=TRUE)
+  df_use <- kds[inds, ]
+  sites_inds <- grep(sprintf("^%s\\|.*\\|Comp_Kd", site), rownames(df_use), perl=TRUE)
+  site_pos <- as.integer(gsub("^.*mer-m(.*)\\..*$", replacement="\\1", site))
+  pos <- as.integer(gsub("^(.*)\\|(.*)\\|(Comp_Kd$)", replacement="\\2", rownames(df_use)))
+  offsets <- pos - site_pos
+  inds_pos <- which(offsets >= offset_lim[1] & offsets <= offset_lim[2])
+  offsets <- offsets[inds_pos]
+  df_use_pos <- df_use[inds_pos, ]
+  # df_use_pos <- df_use_pos[order(offsets), ]
 
-#   site_sequence <- GetSiteSeq(mirna, site)
-#   print(site_sequence)
-#   R_mat_use <- R_mat[site_sequence, ]
+  site_sequence <- GetSiteSeq(mirna, site)
+  print(site_sequence)
+  R_mat_use <- R_mat[site_sequence, ]
 
-#   print(R_mat_use)
-#   names(R_mat_use) <- -1*(1:length(R_mat_use)) + 25 + n_constant_r - kmer_len + 1 + 9
-#   print(R_mat_use)
+  print(R_mat_use)
+  names(R_mat_use) <- -1*(1:length(R_mat_use)) + 25 + n_constant_r - kmer_len + 1 + 9
+  print(R_mat_use)
 
-#   rownames(df_use_pos) <- gsub("^(.*)\\|(.*)\\|(.*)$", replace="\\2", rownames(df_use_pos), perl=TRUE)
-#   if (plot_enrich) height <- 1.75
-#   else             height <- 2.25
-#   SubfunctionCall(FigureSaveFile2)
-#   xmin <- -4 + site_pos
-#   xmax <- 16 + site_pos
-#   if (plot_enrich) {
-#     par(mar=c(0.5, 3, 0.5, 4))
-#     ymin <- 1
-#     ymax <- 100
-#   } else {
-#     par(mar=c(3, 3, 0.5, 4))
-#     ymin <- 1e-3
-#     ymax <- 1e-1
-#   }
+  rownames(df_use_pos) <- gsub("^(.*)\\|(.*)\\|(.*)$", replace="\\2", rownames(df_use_pos), perl=TRUE)
+  if (plot_enrich) height <- 1.75
+  else             height <- 2.25
+  SubfunctionCall(FigureSaveFile2)
+  xmin <- -4 + site_pos
+  xmax <- 16 + site_pos
+  if (plot_enrich) {
+    par(mar=c(0.5, 3, 0.5, 4))
+    ymin <- 1
+    ymax <- 100
+  } else {
+    par(mar=c(3, 3, 0.5, 4))
+    ymin <- 1e-3
+    ymax <- 1e-1
+  }
 
-#   BlankPlot(log="y", inv="x")
-#   x <- 9:26
-#   if (plot_enrich) {
-#     y_lab <- "Enrichment"    
-#     colors <- ColorViridisPalette(R_mat_use[as.character(9:26)], steps=100,
-#                                   min=0, max=20, palettemax=0.8)
-#     lines(9:26, R_mat_use[as.character(9:26)], col="gray")
-#     points(9:26, R_mat_use[as.character(9:26)], pch=19,
-#            cex=2*par("cex"), col=colors)
-#     segments(x0=xmin, y0=ymin, x1=xmax, lty=2, xpd=NA)
-#     # Add the top line of the label, that gives the kmer motif itself. #########
-#     site_lab <- ConvertTtoU(site_sequence)
-#     xy <- GetPlotFractionalCoords(0.025, 0.95, log="y", inv="x")
-#     text(xy[1], xy[2], labels=site_lab, adj=0)
-#     # Add the second label saying "Piars to ....."
-#     xy <- GetPlotFractionalCoords(0.025, 0.82, log="y", inv="x")
-#     site_pos <- gsub("^.*mer-m(.*)*$", replacement="\\1", site)
-#     site_pos <- gsub("\\.", replacement="-", site_pos)
-#     text(xy[1], xy[2], labels=sprintf("Pairs to nt %s", site_pos), adj=0)
+  BlankPlot(log="y", inv="x")
+  x <- 9:26
+  if (plot_enrich) {
+    y_lab <- "Enrichment"    
+    colors <- ColorViridisPalette(R_mat_use[as.character(9:26)], steps=100,
+                                  min=0, max=20, palettemax=0.8)
+    lines(9:26, R_mat_use[as.character(9:26)], col="gray")
+    points(9:26, R_mat_use[as.character(9:26)], pch=19,
+           cex=2*par("cex"), col=colors)
+    segments(x0=xmin, y0=ymin, x1=xmax, lty=2, xpd=NA)
+    # Add the top line of the label, that gives the kmer motif itself. #########
+    site_lab <- ConvertTtoU(site_sequence)
+    xy <- GetPlotFractionalCoords(0.025, 0.95, log="y", inv="x")
+    text(xy[1], xy[2], labels=site_lab, adj=0)
+    # Add the second label saying "Piars to ....."
+    xy <- GetPlotFractionalCoords(0.025, 0.82, log="y", inv="x")
+    site_pos <- gsub("^.*mer-m(.*)*$", replacement="\\1", site)
+    site_pos <- gsub("\\.", replacement="-", site_pos)
+    text(xy[1], xy[2], labels=sprintf("Pairs to nt %s", site_pos), adj=0)
 
-#   } else {
-#     cols <- kThrPLengthCols[as.character(kmer_len)]
-#     segments(x0=x, y0=df_use_pos[as.character(9:26), 3],
-#              y1=df_use_pos[as.character(9:26), 5], col=cols, lwd=1, xpd=NA)
-#     lines(x, df_use_pos[as.character(9:26), 2], col=cols, lwd=1, xpd=NA)
-#     points(x, df_use_pos[as.character(9:26), 2], col=cols, pch=20, xpd=NA)      
+  } else {
+    cols <- kThrPLengthCols[as.character(kmer_len)]
+    segments(x0=x, y0=df_use_pos[as.character(9:26), 3],
+             y1=df_use_pos[as.character(9:26), 5], col=cols, lwd=1, xpd=NA)
+    lines(x, df_use_pos[as.character(9:26), 2], col=cols, lwd=1, xpd=NA)
+    points(x, df_use_pos[as.character(9:26), 2], col=cols, pch=20, xpd=NA)      
 
-#     # lines(9:26, df_use_pos[as.character(9:26), 2])
-#     y_lab <- "Relative Kd"
-#     AddLinearAxis(1, 1, 4, label="")
-#     # ymin <- ymin/sqrt(10)
-#     offset_labs <- c(-4, 0, 4, 8, 12, 16)
-#     offset_x <- offset_labs + site_pos
-#     text(x=offset_x, y=ymin/4, labels=offset_labs, adj=0.5, xpd=NA)
-#     par(lheight=.8)
-#     mtext(side=1, text="k-mer\nposition", cex=par("cex"), at=xmin - 1, adj=0, padj=0, line=0.25)
+    # lines(9:26, df_use_pos[as.character(9:26), 2])
+    y_lab <- "Relative Kd"
+    AddLinearAxis(1, 1, 4, label="")
+    # ymin <- ymin/sqrt(10)
+    offset_labs <- c(-4, 0, 4, 8, 12, 16)
+    offset_x <- offset_labs + site_pos
+    text(x=offset_x, y=ymin/4, labels=offset_labs, adj=0.5, xpd=NA)
+    par(lheight=.8)
+    mtext(side=1, text="k-mer\nposition", cex=par("cex"), at=xmin - 1, adj=0, padj=0, line=0.25)
 
-#     mtext(side=1, text="Offset", at=xmin - 1, cex=par("cex"), adj=0, padj=0, line=1.5)
-#     segments(x0=xmin, y0=ymax, x1=xmax, lty=2, xpd=NA)
-#   }
-#   AddLogAxis(2, label=y_lab)
-
-
-
-
-#   # kds_use_global <<- kds_use
-#   # R_mat_use_global <<- R_mat_use
-#   # print(site_pos)
-
-#   # print(kds_use)
-#   # print(R_mat_use)
-#   if (class(pdf.plot) == "character") {
-#     dev.off()
-#   }
-# }
-
-
-# # 2B, 3B&D______________________________________________________________________
-# PlotBestThreePrimeSite <- function(
-#   mirna="let-7a-21nt", experiment="equil_c2_nb", n_constant=3,
-#   sitelist="progthrp_suppcomp", nbomitc=FALSE, corrected_kds=TRUE,
-#   len_lim=c(4, 11), collapsemm=FALSE, equilibrium_nb=FALSE, justlegend=FALSE,
-#   alt_height=FALSE, height=5, width=10, xpos=20, ypos=20, pdf.plot=FALSE
-# ) {
-#   ################### Load the Kds ########################################
-#   # The text_bound is the fold-difference in comparison to the geometric mean of
-#   # the 18 programmed kds, first was 1.5, but trying some other values.
-#   text_bound <- 1.5
-
-#   # These are calculations to allow multiple lengths to be shown in the
-#   # justlegend=TRUE plots shown in Figure 7, and Supplemental Figure 12&13.
-#   ymin_f <- 0.001/6
-#   ymax_f <- 0.7/6
-#   # fc_f <- 1.8
-#   # fc_f <- 1.4
-#   num_sites <- len_lim[2] - len_lim[1] + 1
-#   y_mir_site <- (ymax_f*ymin_f^9)^(1/10)
-
-#   # y_first_site <- fc_f*y_mir_site
-#   # y_top_site <- fc_f^8*y_mir_site
-#   # ymax_adjusted <- fc_f^(num_sites - 8)*ymax_f
-#   # ymax_adjusted <- 0.015
-#   ymax_adjusted <- 0.001*1.5*1.4^(num_sites + 2)
-#   # print(sprintf("y_top_site:%s", y_top_site))
-#   print(sprintf("ymax_adjusted:%s", ymax_adjusted))
-#   # Find the fraction of the 10 units used up by the difference from the
-#   # minimum to the first site, and the top site to the maximum:
-#   # user_bottom <- log10(y_first_site/ymin_f)/log10(ymax_f/ymin_f)*10
-#   # user_top <- log10(ymax_f/y_top_site)/log10(ymax_f/ymin_f)*10
-#   # Adjust the height for a variable number of sites:
-#   # height_adjusted <- ((10 - user_bottom - user_top)*num_sites/8 + user_bottom + user_top + 1)*2.5/11
-
-#   height_adjusted <- 2* 1/11 * (1 + 10*((log(1.5) + (num_sites + 2)*log(1.4))/(log(1.5) + 7*log(1.4))))
-#   print(sprintf("height_adjusted: %s", height_adjusted))
-#   if (corrected_kds) {
-#     kds <- SubfunctionCall(ApplyKdCorrection, prog_n_constant=n_constant,
-#                            rand_n_constant=n_constant, prog_sitelist=sitelist)
-#   } else { 
-#     if (mirna == "miR-1" & experiment == "equilibrium") {
-#       combined <- FALSE
-#       buffer <- TRUE
-#     } else if (mirna == "miR-7-23nt" & experiment == "equilibrium2_nb") {
-#       combined <- FALSE
-#       buffer <- FALSE
-#     } else {
-#       combined <- TRUE
-#       buffer <- FALSE
-#     }
-#     kds <- SubfunctionCall(EquilPars, sitelist=sitelist)
-#   }
-#   kds_global <<- kds
-#   break
-#   names_cols_use <- as.character(len_lim[1]:len_lim[2])
-#   cols <- kThrPLengthCols[names_cols_use]
-#   if (justlegend) {
-#     width <- 4
-#     height <- 2.5 
-#     height <- height_adjusted
-#     SubfunctionCall(FigureSaveFile2)
-#     par(mar=c(1, 0, 0, 0))  
-#     xmin <- 21.5
-#     xmax <- 41
-#     ymin <- 0.001
-#     ymax <- ymax_adjusted
-#     # message(sprintf("ymin is %s", ymin))
-#     # message(sprintf("ymax is %s", ymax))
-#     BlankPlot(log="y")
-#     # segments(x0=xmin, x1=xmax, y0=ymin, xpd=NA, lwd=1, col="black")
-#     # segments(x0=xmin, x1=xmax, y0=ymin*1.5, xpd=NA, lwd=1, col="red")
-#     # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4, xpd=NA, lwd=1, col="purple")
-#     # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4*1.4, xpd=NA, lwd=1, col="purple")
-#     # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4*1.4*1.4, xpd=NA, lwd=1, col="purple")
-#     # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4*1.4*1.4*1.4, xpd=NA, lwd=1, col="purple")
-#     # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4*1.4*1.4*1.4*1.4, xpd=NA, lwd=1, col="purple")
-#     # # segments(x0=xmin, x1=xmax, y0=y_top_site, xpd=NA, lwd=1, col="blue")
-#     # # segments(x0=xmin, x1=xmax, y0=ymax_adjusted, xpd=NA, lwd=4, col="green")
-
-#   } else {
-#     if (alt_height) {
-#       height <- 3.7
-#     }
-#     #################### Open the plot window ##############################
-#     SubfunctionCall(FigureSaveFile2)
-#     if (alt_height || height == 3.7*9/9.75) {
-#       par(mar=c(3, 3.58, 0.7, 1.42))
-#     }
-#     xmin <- -4
-#     xmax <- 42
-#     if (corrected_kds) {
-#       ymin <- 0.0001
-#     } else {
-#       ymin <- 0.0003
-#     }
-#     ymax <- 1
-#     BlankPlot(log="y")
-#     xmax <- 16 # This allows the axes to not extend all the way across the plot.
-
-#     if (sitelist == "progthrp_suppcomp" & collapsemm) {
-#       ref_kd <- kds["Comp_Kd", 2]
-#     } else {
-#       mm_inds <- grep("^8mer-mm[ACTG][2-7]_Kd$", rownames(kds),
-#                                  perl=TRUE)
-#       ref_kd <- GeoMean(kds[mm_inds, 2])
-#     }
-#     segments(x0=xmin, y0=ref_kd, x1=xmax + 0.5, lty=2, lwd=0.5)
-#     # segments(x0=xmin, y0=ref_kd/text_bound, x1=xmax, lty=3, lwd=0.5)
-#     x_skew <- seq(-0.1, 0.1, length.out=len_lim[2] - len_lim[1] + 1)
-#     names(x_skew) <- names(cols)
-#   }
-#   print("made it here")
-#   if (!justlegend) {
-#     s8mer_kd <- GeoMean(kds[grep("^8mer\\|.*\\|Comp_Kd$",
-#                                  rownames(kds), perl=TRUE), 2])
-#     s6mer_kd <- GeoMean(kds[grep("^6mer\\|.*\\|Comp_Kd$",
-#                                  rownames(kds), perl=TRUE), 2])
-#     if (sitelist == "programmed_suppcomp" & collapsemm) {
-#       mm_kd    <- GeoMean(kds[grep("^Comp_Kd$",
-#                                    rownames(kds), perl=TRUE), 2])
-#     } else {
-#       mm_kd    <- GeoMean(kds[grep("^8mer-mm[ACGT][2-7]_Kd$",
-#                                    rownames(kds), perl=TRUE), 2])    
-#     }
-#     # s8mer_kd_norm <- s8mer_kd*mm_kd/(s8mer_kd + mm_kd)
-#     # s6mer_kd_norm <- s6mer_kd*mm_kd/(s6mer_kd + mm_kd)
-#     if (mirna %in% c("let-7a-21nt", "let-7a_plus1", "let-7a_minus1",
-#                      "let-7a_miR-155")) {
-#       if (equilibrium_nb) {
-#         mirna_rand <- "let-7a-21nt"
-#         experiment_rand <- "equilibrium_nb"
-#       } else {
-#         mirna_rand <- "let-7a"
-#         experiment_rand <- "equilibrium"
-#       }
-#     } else if (mirna == "miR-155_let-7a") {
-#       mirna_rand <- "miR-155"
-#       experiment_rand <- "equilibrium"
-#     } else {
-#       mirna_rand <- mirna
-#       experiment_rand <- "equilibrium"
-#     }
-#     if (mirna == "miR-1") {
-#       buffer_rand <- TRUE
-#       combined_rand <- FALSE
-#     } else {
-#       buffer_rand <- FALSE
-#       combined_rand <- TRUE
-#     }
-#     segments(xmin, s8mer_kd, x1=xmax + 0.5, col=kSiteColors["8mer"])
-#     segments(xmin, s6mer_kd, x1=xmax + 0.5, col=kSiteColors["6mer"])  
-#     text(xmax + 1, s8mer_kd, labels="8mer", adj=c(0, 0.5), xpd=NA)
-#     text(xmax + 1, s6mer_kd, labels="6mer", adj=c(0, 0.5), xpd=NA)
-#     text(xmax + 1, ref_kd, labels="Seed m.m.", adj=c(0, 0.5), xpd=NA)
-#   }
-#   # Change the xmax value to allow for the complex legend to be plotted on the
-#   # right-hand-side of the plot.
-#   legend_names <- c()
-#   # Variable names corresponding to the total number of sites plotted, and the
-#   # the number of sites with binding affinity better than 1.5 fold better than
-#   # the mismatch site on its own.
-#   total_sites_plotted <- 0
-#   total_sites_better <- 0
-#   worse_sites <- c()
-#   sapply(len_lim[1]:len_lim[2], function(kmer) {
-#     ##################### Get all sites of length k #####################
-#     target <- sprintf("^%smer-m[0-9]{1,2}\\.[0-9]{1,2}\\|.*\\|Comp_Kd", kmer)
-#     inds <- grep(target, rownames(kds), perl=TRUE, value=TRUE)
-#     if (kmer == 4) {
-#       if (mirna == "miR-1") {
-#         inds <- grep("^4mer-m15.*|^4mer-m19.*", inds, value=TRUE, invert=TRUE,
-#                       perl=TRUE)
-#       } else if (mirna == "miR-7-23nt") {
-#         inds <- grep("^4mer-m17.*|^4mer-m20.*", inds, value=TRUE, invert=TRUE,
-#                       perl=TRUE)
-#       }
-#     }
-#     df_use <- kds[inds, ]
-#     best_site <- rownames(df_use)[which.min(df_use[, 2])]
-#     site_pos <- gsub("^.*mer-m(.*)\\..*$", replacement="\\1", best_site)
-#     best_site <- gsub("^(.*)\\|.*\\|Comp_Kd", replacement="\\1", best_site)
-#     legend_names <<- c(legend_names, best_site)
-#     best_site_grep <- gsub("\\.", replacement="\\\\\\.", best_site)
-#     best_inds <- grep(sprintf("^%s\\|.*\\|Comp_Kd", best_site_grep), rownames(df_use), perl=TRUE)
-#     df_use <- df_use[best_inds, ]
-#     pos <- as.integer(gsub("^(.*)\\|(.*)\\|(Comp_Kd$)", replacement="\\2", rownames(df_use)))
-#     offsets <- pos - as.integer(site_pos)
-#     inds_pos <- which(offsets >= xmin & offsets <= xmax)
-#     offsets <- offsets[inds_pos]
-#     df_use_pos <- df_use[inds_pos, ]
-#     df_use_pos <- df_use_pos[order(offsets), ]
-#     offsets_original <- sort(offsets)
-#     offsets <- 20 - sort(offsets) - 8
-#     # Places the asterisk by the cleavage site
-#     if (mirna == "let-7a-21nt" & !justlegend) {
-#       if ((experiment == "equil_c2_nb" & kmer == 10) |
-#           (experiment == "equil_c_nb"  & kmer == 11)) {
-#         ind_use <- which(offsets_original == 0)
-#         y_txt <- df_use_pos[ind_use, 5]*1.1
-#         text(x=20 - 8, y=y_txt, labels="*", adj=c(0.5, 0.5), cex=par("cex")*5)
-#       }
-#     }
-#     if (mirna == "let-7a-21nt" & !justlegend) {
-#       if (kmer %in% c(4, 10)) {
-#         value_use <- min(df_use_pos[, 2])
-#         value_ind <- which(df_use_pos[, 2] == value_use)
-#         Arrows(x0=offsets[value_ind], y0=0.4, y1=0.2, x1=offsets[value_ind],
-#                col=ConvertRColortoRGB(cols[as.character(kmer)], alpha=1),
-#                arr.type="triangle", arr.adj=0, arr.length=0.035, arr.width=0.08)
-#         adj_x_dict <- c(0.65, 0.45)
-#         names(adj_x_dict) <- c("10", "4")
-#         text(offsets[value_ind], 0.5,
-#              labels=sprintf("+%s nt", 12 - offsets[value_ind]),
-#              col=ConvertRColortoRGB(cols[as.character(kmer)], alpha=1),
-#              adj=c(adj_x_dict[as.character(kmer)], 0))
-#              # adj=c(0.5, 0))
-#       }
-#     }
-#     if (kmer == 11 & !justlegend) {
-#       lkds <- log(ref_kd/df_use[inds_pos, 2])
-#       # message(sprintf("Mean benefit of kd at this length: %s", exp(mean(lkds))))
-#       message(sprintf("Max benefit of log-kd at this length: %s", max(lkds)))
-#       message(sprintf("Standard deviation of kd at this length: %s", sd(lkds)))
-#       message(sprintf("(Standard deviation of logkd)/max(logkd) at this length: %1.1f%%", 100*sd(lkds)/max(lkds)))
-#     }
-#     if (!justlegend) {
-#       total_sites_plotted <<- total_sites_plotted + length(inds_pos)
-#       total_sites_better  <<- total_sites_better  + length(which(df_use[inds_pos, 2] < (ref_kd/text_bound)))
-#       worse_sites <<- c(worse_sites, rownames(df_use)[inds_pos][which(df_use[inds_pos, 2] >= (ref_kd/text_bound))])
-#       segments(x0=offsets + x_skew[as.character(kmer)], y0=df_use_pos[, 3],
-#                y1=df_use_pos[, 5],
-#                col=ConvertRColortoRGB(cols[as.character(kmer)], alpha=0.5), lwd=1, xpd=NA)
-#       lines(offsets, df_use_pos[, 2], col=cols[as.character(kmer)], lwd=1, xpd=NA)
-#       points(offsets, df_use_pos[, 2], col=cols[as.character(kmer)], pch=20)      
-#     }
-#   })
-#   if (!justlegend) {
-#     message(sprintf("Number of sites better than %s fold above background kd: %s",
-#                     text_bound, total_sites_better/total_sites_plotted))
-#     print(worse_sites)
-#     ################# Add axes ##############################
-#     alt_lab_pos <- c(-4, 0, 4, 8, 12, 16)
-#     AddLinearAxis(1, tick.space=1, label.space=5, alt_lab=rev(alt_lab_pos),
-#                   alt_lab_pos=alt_lab_pos, label="Offset (nt)", adj_pos=0.2)
-#     AddLogAxis(2, label="Relative Kd")
-
-#   }
-#   ##### Make the legend-schematic on the right hand side of the plot. ##########
-#   mirnalist <- unlist(strsplit(kMirnaSeqs[mirna], split=""))
-#   if (width == 7.4) {
-#     pos_left <- 18.5
-#     pos_right <- pos_left + (40 - pos_left)*length(mirnalist)/21
-#   } else {
-#     pos_left <- 22.5
-#     pos_right <- pos_left + (37 - pos_left)*length(mirnalist)/21
-#   }
-#   mirnalist_rev <- c(rev(mirnalist), "-5'")
-#   mir_pos_x <- seq(pos_left, pos_right, length.out=length(mirnalist))
-#   del_mir_pos_x <- mir_pos_x[length(mirnalist)] - mir_pos_x[length(mirnalist) - 1]
-#   mir_pos_x <- c(mir_pos_x, mir_pos_x[length(mirnalist)] + 1.5*del_mir_pos_x)
-#   if (height == 3.7*9/9.75) {
-#     foldchange_y <- 1.92
-#     num_dip <- 1.74
-#     y_mir_site <- ymin*3.1
-
-#   } else if (!justlegend) {
-#     foldchange_y <- 1.8
-#     num_dip <- 1.7
-#   } else {
-#     # These get used in Figure 7 and Figure7-figure supplements.
-#     y_mir_site <- ymin*1.5
-
-#     # foldchange_y <- 1.8
-#     foldchange_y <- 1.4
-
-#     # num_dip <- 1.6
-#     num_dip <- 1.3
-#   }
-#   if (corrected_kds & !justlegend) {
-#     foldchange_y <- foldchange_y*log(1/ymin)/log(1/0.0002)
-#   }
-#   y_base <- y_mir_site
-#   if (justlegend) {
-#     y_dip <- y_mir_site/1.15
-#   } else if (height == 3.7*9/9.75) {
-#     y_dip <- y_mir_site/1.2
-#   } else {
-#     y_dip <- y_mir_site/1.25
-#   }
-#   mir_pos_y <- c(rep(y_base, length(mirnalist) - 1), rep(y_dip, 2))
-#   cols_mirna <- rep(c("black", "black", "#F7931D", "black", "#ED1C24", "black"),
-#               times=c(1, length(mirnalist) - 17, 4, 5, 6, 2))
-#   text(x=mir_pos_x, y=mir_pos_y, labels=mirnalist_rev, xpd=NA,
-#        adj=c(0.5, 0.5), col=cols_mirna)
-#   mir_nums <- c(length(mirnalist), 16, 13, 8, 7, 6, 5, 4, 3, 2, 1)
-#   mir_nums_x <- mir_pos_x[length(mirnalist) + 1 - mir_nums]
-#   mir_nums_y <- (mir_pos_y[length(mirnalist) + 1 - mir_nums])/num_dip
-#   text(x=mir_nums_x, y=mir_nums_y, labels=mir_nums, xpd=NA,
-#        adj=c(0.5, 0.5), col=c("black", "#F7931D", "#F7931D", "black",
-#                               rep("#ED1C24", 6), "black"))
-#   dot_pos <- setdiff(mir_pos_x[-length(mir_pos_x)], mir_nums_x)
-#   points(x=dot_pos, y=rep(mir_nums_y[1], length(dot_pos)), pch=20, cex=0.5,
-#          col=rep(c("black", "#F7931D", "black"),
-#                  times=c(length(mirnalist) - 17, 2, 4)),
-#          xpd=NA)
-#   y_val <- mir_pos_y[1]
-#   print(legend_names)
-#   for (name_i in rev(legend_names)) {
-#     y_val <- y_val*foldchange_y
-#     print(foldchange_y)
-#     name_split <- unlist(strsplit(name_i, split="mer-m"))
-#     len_i <- name_split[1]
-#     name_split <- name_split[2]
-#     name_split_2 <- unlist(strsplit(name_split, split="\\|"))[1]
-#     start_stop <- as.integer(unlist(strsplit(name_split_2, split="\\.")))
-#     start_positions <- mir_pos_x[length(mirnalist) + 1 - start_stop[1]:start_stop[2]]
-#     segments(x0=start_positions[1], y0=y_val,
-#              x1=start_positions[length(start_positions)], lwd=1.5,
-#              col=cols[len_i])
-#     points(x=c(start_positions[1], start_positions[length(start_positions)]),
-#            y=rep(y_val, 2), pch=19, col=cols[len_i], cex=1.4)
-#     dot_pos <- setdiff(mir_pos_x[1:(length(mirnalist) - 8)], start_positions)
-#     points(x=dot_pos, y=rep(y_val, length(dot_pos)), col="gray", pch=20,
-#            cex=0.3)
-#     text(x=mir_pos_x[length(mirnalist) - 6], y=y_val,
-#          labels=sprintf("%s-%s", start_stop[1], start_stop[2]), adj=c(0, 0.5))
-#   }
-#   if (!justlegend) {
-#     text(x=mean(mir_pos_x), y=y_val*foldchange_y^2,
-#          labels="Range of 3'\npairing")
-#   }
-#   # Add text indicating which miRNA is being plotted.
-#   if (mirna == "let-7a-21nt") {
-#     if (experiment == "equil_c_nb") {
-#       mirna_txt <- "let-7a rep."
-#     } else {
-#       mirna_txt <- "let-7a"
-#     }
-#   } else if (mirna == "let-7a_minus1") {
-#     mirna_txt <- "let-7a(-1)"
-#   } else if (mirna == "let-7a_plus1") {
-#     mirna_txt <- "let-7a(+1)"
-#   } else if (mirna == "miR-7-23nt") {
-#     mirna_txt <- "miR-7"
-#   } else {
-#     mirna_txt <- mirna
-#   }
-#   if (justlegend) {
-#     str_line <- -1.5
-#     str_at <- xmin + (xmax - xmin)*0.95
-#     mtext(text=mirna_txt, side=3, line=str_line, at=str_at, adj=1,
-#           cex=par("cex"))
-#   } else {
-#     text(x=mir_nums_x[length(mir_nums_x)] + strwidth("U-5'")*0.5, y=y_base/(num_dip^2.5), labels=mirna_txt,
-#          adj=c(1, 1), xpd=NA)
-#     xy <- GetPlotFractionalCoords(0, 1, log="y")
-#     print(xy)
-#     text(x=xy[1] + 0.5, y=xy[2], labels=mirna_txt,
-#          adj=c(0, 1), xpd=NA)
-#   }
+    mtext(side=1, text="Offset", at=xmin - 1, cex=par("cex"), adj=0, padj=0, line=1.5)
+    segments(x0=xmin, y0=ymax, x1=xmax, lty=2, xpd=NA)
+  }
+  AddLogAxis(2, label=y_lab)
 
 
 
-#   line2user <- function(line, side) {
-#     lh <- par('cin')[2] * par('cex') * par('lheight')
-#     x_off <- diff(grconvertX(c(0, lh), 'inches', 'npc'))
-#     y_off <- diff(grconvertY(c(0, lh), 'inches', 'npc'))
-#     switch(side,
-#            `1` = grconvertY(-line * y_off, 'npc', 'user'),
-#            `2` = grconvertX(-line * x_off, 'npc', 'user'),
-#            `3` = grconvertY(1 + line * y_off, 'npc', 'user'),
-#            `4` = grconvertX(1 + line * x_off, 'npc', 'user'),
-#            stop("Side must be 1, 2, 3, or 4", call.=FALSE))
-#   }
-#   # abline(h=line2user(0:-10, 1), lty=3, xpd=TRUE)
-#   # segments(x0=xmin, y0=ymin, x1=xmax, xpd=NA)
 
-#   # segments(x0=xmin, y0=y_first_site, x1=xmax, xpd=NA)
+  # kds_use_global <<- kds_use
+  # R_mat_use_global <<- R_mat_use
+  # print(site_pos)
 
-#   # segments(x0=xmin, y0=y_top_site, x1=xmax, xpd=NA)
-
-#   # segments(x0=xmin, y0=ymax_adjusted, x1=xmax, lwd=4, xpd=NA)
+  # print(kds_use)
+  # print(R_mat_use)
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
 
 
+# 2B, 3B&D______________________________________________________________________
+PlotBestThreePrimeSite <- function(
+  mirna="let-7a-21nt", experiment="equil_c2_nb", n_constant=3,
+  sitelist="progthrp_suppcomp", nbomitc=FALSE, corrected_kds=TRUE,
+  len_lim=c(4, 11), collapsemm=FALSE, equilibrium_nb=FALSE, justlegend=FALSE,
+  alt_height=FALSE, height=5, width=10, xpos=20, ypos=20, pdf.plot=FALSE
+) {
+  ################### Load the Kds ########################################
+  # The text_bound is the fold-difference in comparison to the geometric mean of
+  # the 18 programmed kds, first was 1.5, but trying some other values.
+  text_bound <- 1.5
 
-#   if (class(pdf.plot) == "character") {
-#     dev.off()
-#   }
-# }
+  # These are calculations to allow multiple lengths to be shown in the
+  # justlegend=TRUE plots shown in Figure 7, and Supplemental Figure 12&13.
+  ymin_f <- 0.001/6
+  ymax_f <- 0.7/6
+  # fc_f <- 1.8
+  # fc_f <- 1.4
+  num_sites <- len_lim[2] - len_lim[1] + 1
+  y_mir_site <- (ymax_f*ymin_f^9)^(1/10)
 
-# # 2C____________________________________________________________________________
-# PlotPairingMatrix <- function(
-#   mirna, experiment, offset, n_constant=3, sitelist="progthrp_suppcomp",
-#   model_values=FALSE, makeglobalmodel=TRUE, offset_lim=c(-4, 16),
-#   len_lim=c(4, 11), pos3p_lim=c(9, 12), corrected_kds=FALSE, sumseed=FALSE,
-#   F_method=FALSE, exponential=FALSE, intercept=FALSE, fixed_offset=0, log_plus_one=FALSE,
-#   supp_base=FALSE, offset_base=FALSE, site_base=NULL, residual=FALSE, key=FALSE,
-#   xlabels=TRUE, suppress_label=FALSE, label_offset=FALSE, mirna_label=FALSE,
-#   extralabel=FALSE, loop=FALSE, alt_top=FALSE, max_value_check=NULL,
-#   height=2.8, width=2.47, xpos=20, ypos=20, pdf.plot=FALSE
-# ) {
-#   # Load the data matrix.
-#   print("in pairing range matrix function")
-#   if (model_values) {
-#     if (makeglobalmodel) {
-#       if (sitelist == "progthrp") {
-#         model <<- SubfunctionCall(FitPairingOffsetAndMismatchModelWithError)
-#       } else {
-#         model <<- SubfunctionCall(FitPairingAndOffsetModelWithError)
-#       }
-#     }
-#     offset_name <- as.character(offset)
-#     if (log_plus_one) {
-#       R_mat <- log10(exp(t(model$pairing$MLE) + model$offsets[offset_name, 1]) + 1)
-#     } else {
-#       R_mat <- t(model$pairing$MLE)
-#       R_mat <- R_mat*model$offsets[offset_name, 1]
-#       R_mat_use_temp_global <<- R_mat
-#     }
-#     # This just makes anything with data NA, even if there is a model value for
-#     # it.
-#     R_mat_data <- t(SubfunctionCall(MakePairingMatrix))
-#     R_mat_data_use <- R_mat_data
-#     R_mat_data_use_global <<- R_mat_data_use
-#     R_mat_data <- R_mat_data*0 + 1
-#     R_mat <- R_mat*(R_mat_data*0 + 1)
-#     R_mat_global <<- R_mat
-#     if (residual) {
-#       R_mat <- R_mat_data - R_mat
-#     }
-#   } else {
-#     R_mat <- t(SubfunctionCall(MakePairingMatrix))
-#     R_mat_global_data <<- R_mat
-#   }
-#   mar1 <- 2.2
-#   mar2 <- 0.5
-#   mar3 <- 1.8
-#   if(key) {
-#     width <- 4
-#     mar4 <- 9.23
-#   } else {
-#     mar4 <- 2.5
-#   }
-#   R_mat <<- R_mat
-#   # This is the conversion factor in order to have the correct height of the
-#   # plot for the specified width, that makes each box of equal height and width.
-#   mir_length <- nchar(kMirnaSeqs[mirna])
-#   SubfunctionCall(FigureSaveFile2)
-#   par(mar=c(mar1, mar2, mar3, mar4))
-#   xmin <- 0
-#   xmax <- nrow(R_mat)
-#   ymin <- 0
-#   ymax <- ncol(R_mat) 
-#   BlankPlot()
-#   # Assign the positions of the corners of the boxes.
-#   xlefts <- rep(seq(0, ncol(R_mat) - 1), nrow(R_mat))
-#   xright <- xlefts + 1
-#   ybottom <- rep(rev(seq(ymax - 1, ymin)), each=ncol(R_mat))
-#   ytop <- ybottom + 1
-#   # Make the x-axis
-#   y_axis_pos <- seq(ymin, ymax - 1) + 0.5
-#   y_axis_labs <- rownames(R_mat)
-#   for (i in 1:length(y_axis_labs)) {
-#     if (i %% 2 == 0) {
-#       y_axis_labs[i] <- ""
-#     }
-#   }
-#   AddLinearAxis(1, 1, 1, label="3'-paired nt",
-#                 label_pos_ticks=TRUE,
-#                 alt_lab=colnames(R_mat),
-#                 alt_lab_y_dist=0.01,
-#                 alt_lab_pos=xmin:(xmax - 1) + 0.5,
-#                 alt_tick_pos=TRUE)
-#   AddLinearAxis(4, 1, 2, label="5'-paired nt",
-#                 alt_lab=y_axis_labs,
-#                 alt_lab_pos=y_axis_pos,
-#                 alt_tick_pos=TRUE,
-#                 line=0.8)
-#   # Add the label for the seed if not plotting relative to seed kds.
-#   col.inds <- floor((R_mat)/log10(700)*99 + 1)
-#   x_lab_pos <- -0.75
-#   pos_5p <- as.integer(rep(rownames(R_mat), each=ncol(R_mat)))
-#   pos_3p <- as.integer(rep(colnames(R_mat), nrow(R_mat)))
-#   impossible_cols <- which(pos_5p > pos_3p)
+  # y_first_site <- fc_f*y_mir_site
+  # y_top_site <- fc_f^8*y_mir_site
+  # ymax_adjusted <- fc_f^(num_sites - 8)*ymax_f
+  # ymax_adjusted <- 0.015
+  ymax_adjusted <- 0.001*1.5*1.4^(num_sites + 2)
+  # print(sprintf("y_top_site:%s", y_top_site))
+  print(sprintf("ymax_adjusted:%s", ymax_adjusted))
+  # Find the fraction of the 10 units used up by the difference from the
+  # minimum to the first site, and the top site to the maximum:
+  # user_bottom <- log10(y_first_site/ymin_f)/log10(ymax_f/ymin_f)*10
+  # user_top <- log10(ymax_f/y_top_site)/log10(ymax_f/ymin_f)*10
+  # Adjust the height for a variable number of sites:
+  # height_adjusted <- ((10 - user_bottom - user_top)*num_sites/8 + user_bottom + user_top + 1)*2.5/11
 
-#   start_col <- 0
-#   r_col <- 0.4
-#   # Make distribution of 100 colors and a 101th gray color for NA indeces.
-#   color.dist <- c(rev(cubeHelix(100, start=start_col, r=r_col, hue=0.8)),
-#                   "gray90", "white")
-#   color.dist[100] <- kMaxValueColor
-#   # Make the color index scale.
-#   # col.inds <- sapply(t(col.inds), function(col.ind) {
-#   #   min(max(1, col.ind), 100)
-#   # })
-#   col.inds <- t(col.inds)
-#   col.inds[which(col.inds > 100)] <- 100
-#   col.inds[which(col.inds < 1)] <- 1
-#   col.inds[which(is.na(col.inds))] <- 101
-#   col.inds[impossible_cols] <- 102
-#   # Make the color rectangle.
-#   rect(xlefts, ybottom, xright, ytop, col=color.dist[col.inds], lwd=0.4, 
-#        xpd=NA, border="white")
-#   # Make the key.
-#   if (key) {
-#     mir_scale <- (mir_length - 11)/(21 - 11)
-#     if (alt_top) {
-#       max_value_use <- max(max_value_check, max(10^R_mat, na.rm=TRUE))
-#       if (max_value_use > 700) {
-#         labels <- c(1, 3, 10, 30, 100, 300, 700, 100*round(max_value_use/100))
-#       } else {
-#         labels <- c(1, 3, 10, 30, 100, 300, 700)
-#       }
-#     } else {
-#       labels <- c(1, 3, 10, 30, 100, 300, 700)
-#     }
-#     # if (alt_top) {
-#       print(labels)
-#       num_boxes <- ceiling(log(labels[length(labels)])/log(700)*100)
-#     # } else {
-#       # num_boxes <- 100
-#     # }
-#     print(num_boxes)
-#     color.dist <- c(rev(cubeHelix(100, start=start_col, r=r_col, hue=0.8)),
-#                     rep(kMaxValueColor, num_boxes - 100))
-#     y_div <- (ymax - ymin)/num_boxes
-#     kpl <- xmax + 5*mir_scale # Left-hand position of the key
-#     kw <- mir_scale                # Width of the key
-#     rect(xleft=kpl,
-#          ybottom=seq(num_boxes)*y_div - y_div,
-#          xright=kpl + kw,
-#          ytop=seq(num_boxes)*y_div,
-#          col=color.dist, xpd=NA, border=NA)
-#     # Generate the axis for the legend and the label
-#     bottom <- ymin + y_div/2
-#     top <- ymax - y_div/2
-#     # if (kdrel) {
-#     pos_labels <- log(labels)
-#     centered_labels <- pos_labels - pos_labels[1]
-#     norm_labels <- centered_labels/(centered_labels[length(centered_labels)])
-#     height_span <- top - bottom
-#     pos_labels <- norm_labels*height_span + y_div/2
-#     labels <- as.character(labels)
-#     labels[1] <- expression(""<=1)
-#     axis(4, at=pos_labels, labels=labels, lwd=par()$lwd, pos=kpl + kw, xpd=NA)
-#     text(x=kpl + kw + 3*mir_scale, y=ymax/2,
-#          labels=bquote(italic(K)[D]*.(" fold change")),
-#          srt=270, xpd=NA)
-#   }  
-#   # # Add the label indicating how many nucleotides of pairing.
-#   if (model_values) {
-#     if (label_offset) {
-#       mtext(text=sprintf("%s-nt offset; model", offset), side=3, at=xmax, adj=1,
-#             cex=par("cex"))    
-#     } else {
-#       mtext(text="Model-estimated values", side=3,
-#             at=xmin, adj=0, cex=par("cex"))      
-#     }
-#   } else if (!(suppress_label)) {
-#     if (loop) {
-#       unit <- "loop"
-#     } else {
-#       unit <- "offset"
-#     }
-#     mtext(text=sprintf("%s-nt %s", offset, unit), side=3,
-#           at=xmax, adj=1, cex=par("cex"))    
-#   }
-#   # If the `mirna_label` conditional is true, add the label saying which miRNA
-#   # is being looked at.
-#   if (mirna_label) {
-#     if (mirna == "let-7a-21nt") {
-#       mirna_txt <- "let-7a"
-#     } else if (mirna == "let-7a_minus1") {
-#       mirna_txt <- "let-7a(-1)"
-#     } else if (mirna == "let-7a_plus1") {
-#       mirna_txt <- "let-7a(+1)"
-#     } else if (mirna == "let-7a_miR-155") {
-#       mirna_txt <- "let-7a-miR-155"
-#     } else if (mirna == "miR-155_let-7a") {
-#       mirna_txt <- "miR-155-let-7a"
-#     } else {
-#       mirna_txt <- mirna
-#     }
-#     x <- GetPlotFractionalCoords(0.125, 0.5)[1]
-#     mtext(text=mirna_txt, side=3, line=0.8, at=x, adj=0, cex=par("cex"))
-#   }
+  height_adjusted <- 2* 1/11 * (1 + 10*((log(1.5) + (num_sites + 2)*log(1.4))/(log(1.5) + 7*log(1.4))))
+  print(sprintf("height_adjusted: %s", height_adjusted))
+  if (corrected_kds) {
+    kds <- SubfunctionCall(ApplyKdCorrection, prog_n_constant=n_constant,
+                           rand_n_constant=n_constant, prog_sitelist=sitelist)
+  } else { 
+    if (mirna == "miR-1" & experiment == "equilibrium") {
+      combined <- FALSE
+      buffer <- TRUE
+    } else if (mirna == "miR-7-23nt" & experiment == "equilibrium2_nb") {
+      combined <- FALSE
+      buffer <- FALSE
+    } else {
+      combined <- TRUE
+      buffer <- FALSE
+    }
+    kds <- SubfunctionCall(EquilPars, sitelist=sitelist)
+  }
+  kds_global <<- kds
+  names_cols_use <- as.character(len_lim[1]:len_lim[2])
+  cols <- kThrPLengthCols[names_cols_use]
+  if (justlegend) {
+    width <- 4
+    height <- 2.5 
+    height <- height_adjusted
+    SubfunctionCall(FigureSaveFile2)
+    par(mar=c(1, 0, 0, 0))  
+    xmin <- 21.5
+    xmax <- 41
+    ymin <- 0.001
+    ymax <- ymax_adjusted
+    # message(sprintf("ymin is %s", ymin))
+    # message(sprintf("ymax is %s", ymax))
+    BlankPlot(log="y")
+    # segments(x0=xmin, x1=xmax, y0=ymin, xpd=NA, lwd=1, col="black")
+    # segments(x0=xmin, x1=xmax, y0=ymin*1.5, xpd=NA, lwd=1, col="red")
+    # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4, xpd=NA, lwd=1, col="purple")
+    # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4*1.4, xpd=NA, lwd=1, col="purple")
+    # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4*1.4*1.4, xpd=NA, lwd=1, col="purple")
+    # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4*1.4*1.4*1.4, xpd=NA, lwd=1, col="purple")
+    # segments(x0=xmin, x1=xmax, y0=ymin*1.5*1.4*1.4*1.4*1.4*1.4, xpd=NA, lwd=1, col="purple")
+    # # segments(x0=xmin, x1=xmax, y0=y_top_site, xpd=NA, lwd=1, col="blue")
+    # # segments(x0=xmin, x1=xmax, y0=ymax_adjusted, xpd=NA, lwd=4, col="green")
 
-#   if (extralabel) {
-#     str.end3prand <- "r"
-#     if (collapsemm) {
-#       str.collapsemm <- "sum"
-#     } else {
-#       str.collapsemm <- "geo"
-#     }
-#     mtext(text=sprintf("%s_%s", str.end3prand, str.collapsemm), side=3,
-#           line=0.7, at=xmax, adj=1, cex=par("cex"))    
-#   }
+  } else {
+    if (alt_height) {
+      height <- 3.7
+    }
+    #################### Open the plot window ##############################
+    SubfunctionCall(FigureSaveFile2)
+    if (alt_height || height == 3.7*9/9.75) {
+      par(mar=c(3, 3.58, 0.7, 1.42))
+    }
+    xmin <- -4
+    xmax <- 42
+    if (corrected_kds) {
+      ymin <- 0.0001
+    } else {
+      ymin <- 0.0003
+    }
+    ymax <- 1
+    BlankPlot(log="y")
+    xmax <- 16 # This allows the axes to not extend all the way across the plot.
 
-#   # Finish the plot.
-#   if (class(pdf.plot) == "character") {
-#     dev.off()
-#   }
-#   return(R_mat)
-# }
+    if (sitelist == "progthrp_suppcomp" & collapsemm) {
+      ref_kd <- kds["Comp_Kd", 2]
+    } else {
+      mm_inds <- grep("^8mer-mm[ACTG][2-7]_Kd$", rownames(kds),
+                                 perl=TRUE)
+      ref_kd <- GeoMean(kds[mm_inds, 2])
+    }
+    segments(x0=xmin, y0=ref_kd, x1=xmax + 0.5, lty=2, lwd=0.5)
+    # segments(x0=xmin, y0=ref_kd/text_bound, x1=xmax, lty=3, lwd=0.5)
+    x_skew <- seq(-0.1, 0.1, length.out=len_lim[2] - len_lim[1] + 1)
+    names(x_skew) <- names(cols)
+  }
+  print("made it here")
+  if (!justlegend) {
+    s8mer_kd <- GeoMean(kds[grep("^8mer\\|.*\\|Comp_Kd$",
+                                 rownames(kds), perl=TRUE), 2])
+    s6mer_kd <- GeoMean(kds[grep("^6mer\\|.*\\|Comp_Kd$",
+                                 rownames(kds), perl=TRUE), 2])
+    if (sitelist == "programmed_suppcomp" & collapsemm) {
+      mm_kd    <- GeoMean(kds[grep("^Comp_Kd$",
+                                   rownames(kds), perl=TRUE), 2])
+    } else {
+      mm_kd    <- GeoMean(kds[grep("^8mer-mm[ACGT][2-7]_Kd$",
+                                   rownames(kds), perl=TRUE), 2])    
+    }
+    # s8mer_kd_norm <- s8mer_kd*mm_kd/(s8mer_kd + mm_kd)
+    # s6mer_kd_norm <- s6mer_kd*mm_kd/(s6mer_kd + mm_kd)
+    if (mirna %in% c("let-7a-21nt", "let-7a_plus1", "let-7a_minus1",
+                     "let-7a_miR-155")) {
+      if (equilibrium_nb) {
+        mirna_rand <- "let-7a-21nt"
+        experiment_rand <- "equilibrium_nb"
+      } else {
+        mirna_rand <- "let-7a"
+        experiment_rand <- "equilibrium"
+      }
+    } else if (mirna == "miR-155_let-7a") {
+      mirna_rand <- "miR-155"
+      experiment_rand <- "equilibrium"
+    } else {
+      mirna_rand <- mirna
+      experiment_rand <- "equilibrium"
+    }
+    if (mirna == "miR-1") {
+      buffer_rand <- TRUE
+      combined_rand <- FALSE
+    } else {
+      buffer_rand <- FALSE
+      combined_rand <- TRUE
+    }
+    segments(xmin, s8mer_kd, x1=xmax + 0.5, col=kSiteColors["8mer"])
+    segments(xmin, s6mer_kd, x1=xmax + 0.5, col=kSiteColors["6mer"])  
+    text(xmax + 1, s8mer_kd, labels="8mer", adj=c(0, 0.5), xpd=NA)
+    text(xmax + 1, s6mer_kd, labels="6mer", adj=c(0, 0.5), xpd=NA)
+    text(xmax + 1, ref_kd, labels="Seed m.m.", adj=c(0, 0.5), xpd=NA)
+  }
+  # Change the xmax value to allow for the complex legend to be plotted on the
+  # right-hand-side of the plot.
+  legend_names <- c()
+  # Variable names corresponding to the total number of sites plotted, and the
+  # the number of sites with binding affinity better than 1.5 fold better than
+  # the mismatch site on its own.
+  total_sites_plotted <- 0
+  total_sites_better <- 0
+  worse_sites <- c()
+  sapply(len_lim[1]:len_lim[2], function(kmer) {
+    ##################### Get all sites of length k #####################
+    target <- sprintf("^%smer-m[0-9]{1,2}\\.[0-9]{1,2}\\|.*\\|Comp_Kd", kmer)
+    inds <- grep(target, rownames(kds), perl=TRUE, value=TRUE)
+    if (kmer == 4) {
+      if (mirna == "miR-1") {
+        inds <- grep("^4mer-m15.*|^4mer-m19.*", inds, value=TRUE, invert=TRUE,
+                      perl=TRUE)
+      } else if (mirna == "miR-7-23nt") {
+        inds <- grep("^4mer-m17.*|^4mer-m20.*", inds, value=TRUE, invert=TRUE,
+                      perl=TRUE)
+      }
+    }
+    df_use <- kds[inds, ]
+    best_site <- rownames(df_use)[which.min(df_use[, 2])]
+    site_pos <- gsub("^.*mer-m(.*)\\..*$", replacement="\\1", best_site)
+    best_site <- gsub("^(.*)\\|.*\\|Comp_Kd", replacement="\\1", best_site)
+    legend_names <<- c(legend_names, best_site)
+    best_site_grep <- gsub("\\.", replacement="\\\\\\.", best_site)
+    best_inds <- grep(sprintf("^%s\\|.*\\|Comp_Kd", best_site_grep), rownames(df_use), perl=TRUE)
+    df_use <- df_use[best_inds, ]
+    pos <- as.integer(gsub("^(.*)\\|(.*)\\|(Comp_Kd$)", replacement="\\2", rownames(df_use)))
+    offsets <- pos - as.integer(site_pos)
+    inds_pos <- which(offsets >= xmin & offsets <= xmax)
+    offsets <- offsets[inds_pos]
+    df_use_pos <- df_use[inds_pos, ]
+    df_use_pos <- df_use_pos[order(offsets), ]
+    offsets_original <- sort(offsets)
+    offsets <- 20 - sort(offsets) - 8
+    # Places the asterisk by the cleavage site
+    if (mirna == "let-7a-21nt" & !justlegend) {
+      if ((experiment == "equil_c2_nb" & kmer == 10) |
+          (experiment == "equil_c_nb"  & kmer == 11)) {
+        ind_use <- which(offsets_original == 0)
+        y_txt <- df_use_pos[ind_use, 5]*1.1
+        text(x=20 - 8, y=y_txt, labels="*", adj=c(0.5, 0.5), cex=par("cex")*5)
+      }
+    }
+    if (mirna == "let-7a-21nt" & !justlegend) {
+      if (kmer %in% c(4, 10)) {
+        value_use <- min(df_use_pos[, 2])
+        value_ind <- which(df_use_pos[, 2] == value_use)
+        Arrows(x0=offsets[value_ind], y0=0.4, y1=0.2, x1=offsets[value_ind],
+               col=ConvertRColortoRGB(cols[as.character(kmer)], alpha=1),
+               arr.type="triangle", arr.adj=0, arr.length=0.035, arr.width=0.08)
+        adj_x_dict <- c(0.65, 0.45)
+        names(adj_x_dict) <- c("10", "4")
+        text(offsets[value_ind], 0.5,
+             labels=sprintf("+%s nt", 12 - offsets[value_ind]),
+             col=ConvertRColortoRGB(cols[as.character(kmer)], alpha=1),
+             adj=c(adj_x_dict[as.character(kmer)], 0))
+             # adj=c(0.5, 0))
+      }
+    }
+    if (kmer == 11 & !justlegend) {
+      lkds <- log(ref_kd/df_use[inds_pos, 2])
+      # message(sprintf("Mean benefit of kd at this length: %s", exp(mean(lkds))))
+      message(sprintf("Max benefit of log-kd at this length: %s", max(lkds)))
+      message(sprintf("Standard deviation of kd at this length: %s", sd(lkds)))
+      message(sprintf("(Standard deviation of logkd)/max(logkd) at this length: %1.1f%%", 100*sd(lkds)/max(lkds)))
+    }
+    if (!justlegend) {
+      total_sites_plotted <<- total_sites_plotted + length(inds_pos)
+      total_sites_better  <<- total_sites_better  + length(which(df_use[inds_pos, 2] < (ref_kd/text_bound)))
+      worse_sites <<- c(worse_sites, rownames(df_use)[inds_pos][which(df_use[inds_pos, 2] >= (ref_kd/text_bound))])
+      segments(x0=offsets + x_skew[as.character(kmer)], y0=df_use_pos[, 3],
+               y1=df_use_pos[, 5],
+               col=ConvertRColortoRGB(cols[as.character(kmer)], alpha=0.5), lwd=1, xpd=NA)
+      lines(offsets, df_use_pos[, 2], col=cols[as.character(kmer)], lwd=1, xpd=NA)
+      points(offsets, df_use_pos[, 2], col=cols[as.character(kmer)], pch=20)      
+    }
+  })
+  if (!justlegend) {
+    message(sprintf("Number of sites better than %s fold above background kd: %s",
+                    text_bound, total_sites_better/total_sites_plotted))
+    print(worse_sites)
+    ################# Add axes ##############################
+    alt_lab_pos <- c(-4, 0, 4, 8, 12, 16)
+    AddLinearAxis(1, tick.space=1, label.space=5, alt_lab=rev(alt_lab_pos),
+                  alt_lab_pos=alt_lab_pos, label="Offset (nt)", adj_pos=0.2)
+    AddLogAxis(2, label="Relative Kd")
+
+  }
+  ##### Make the legend-schematic on the right hand side of the plot. ##########
+  mirnalist <- unlist(strsplit(kMirnaSeqs[mirna], split=""))
+  if (width == 7.4) {
+    pos_left <- 18.5
+    pos_right <- pos_left + (40 - pos_left)*length(mirnalist)/21
+  } else {
+    pos_left <- 22.5
+    pos_right <- pos_left + (37 - pos_left)*length(mirnalist)/21
+  }
+  mirnalist_rev <- c(rev(mirnalist), "-5'")
+  mir_pos_x <- seq(pos_left, pos_right, length.out=length(mirnalist))
+  del_mir_pos_x <- mir_pos_x[length(mirnalist)] - mir_pos_x[length(mirnalist) - 1]
+  mir_pos_x <- c(mir_pos_x, mir_pos_x[length(mirnalist)] + 1.5*del_mir_pos_x)
+  if (height == 3.7*9/9.75) {
+    foldchange_y <- 1.92
+    num_dip <- 1.74
+    y_mir_site <- ymin*3.1
+
+  } else if (!justlegend) {
+    foldchange_y <- 1.8
+    num_dip <- 1.7
+  } else {
+    # These get used in Figure 7 and Figure7-figure supplements.
+    y_mir_site <- ymin*1.5
+
+    # foldchange_y <- 1.8
+    foldchange_y <- 1.4
+
+    # num_dip <- 1.6
+    num_dip <- 1.3
+  }
+  if (corrected_kds & !justlegend) {
+    foldchange_y <- foldchange_y*log(1/ymin)/log(1/0.0002)
+  }
+  y_base <- y_mir_site
+  if (justlegend) {
+    y_dip <- y_mir_site/1.15
+  } else if (height == 3.7*9/9.75) {
+    y_dip <- y_mir_site/1.2
+  } else {
+    y_dip <- y_mir_site/1.25
+  }
+  mir_pos_y <- c(rep(y_base, length(mirnalist) - 1), rep(y_dip, 2))
+  cols_mirna <- rep(c("black", "black", "#F7931D", "black", "#ED1C24", "black"),
+              times=c(1, length(mirnalist) - 17, 4, 5, 6, 2))
+  text(x=mir_pos_x, y=mir_pos_y, labels=mirnalist_rev, xpd=NA,
+       adj=c(0.5, 0.5), col=cols_mirna)
+  mir_nums <- c(length(mirnalist), 16, 13, 8, 7, 6, 5, 4, 3, 2, 1)
+  mir_nums_x <- mir_pos_x[length(mirnalist) + 1 - mir_nums]
+  mir_nums_y <- (mir_pos_y[length(mirnalist) + 1 - mir_nums])/num_dip
+  text(x=mir_nums_x, y=mir_nums_y, labels=mir_nums, xpd=NA,
+       adj=c(0.5, 0.5), col=c("black", "#F7931D", "#F7931D", "black",
+                              rep("#ED1C24", 6), "black"))
+  dot_pos <- setdiff(mir_pos_x[-length(mir_pos_x)], mir_nums_x)
+  points(x=dot_pos, y=rep(mir_nums_y[1], length(dot_pos)), pch=20, cex=0.5,
+         col=rep(c("black", "#F7931D", "black"),
+                 times=c(length(mirnalist) - 17, 2, 4)),
+         xpd=NA)
+  y_val <- mir_pos_y[1]
+  print(legend_names)
+  for (name_i in rev(legend_names)) {
+    y_val <- y_val*foldchange_y
+    print(foldchange_y)
+    name_split <- unlist(strsplit(name_i, split="mer-m"))
+    len_i <- name_split[1]
+    name_split <- name_split[2]
+    name_split_2 <- unlist(strsplit(name_split, split="\\|"))[1]
+    start_stop <- as.integer(unlist(strsplit(name_split_2, split="\\.")))
+    start_positions <- mir_pos_x[length(mirnalist) + 1 - start_stop[1]:start_stop[2]]
+    segments(x0=start_positions[1], y0=y_val,
+             x1=start_positions[length(start_positions)], lwd=1.5,
+             col=cols[len_i])
+    points(x=c(start_positions[1], start_positions[length(start_positions)]),
+           y=rep(y_val, 2), pch=19, col=cols[len_i], cex=1.4)
+    dot_pos <- setdiff(mir_pos_x[1:(length(mirnalist) - 8)], start_positions)
+    points(x=dot_pos, y=rep(y_val, length(dot_pos)), col="gray", pch=20,
+           cex=0.3)
+    text(x=mir_pos_x[length(mirnalist) - 6], y=y_val,
+         labels=sprintf("%s-%s", start_stop[1], start_stop[2]), adj=c(0, 0.5))
+  }
+  if (!justlegend) {
+    text(x=mean(mir_pos_x), y=y_val*foldchange_y^2,
+         labels="Range of 3'\npairing")
+  }
+  # Add text indicating which miRNA is being plotted.
+  if (mirna == "let-7a-21nt") {
+    if (experiment == "equil_c_nb") {
+      mirna_txt <- "let-7a rep."
+    } else {
+      mirna_txt <- "let-7a"
+    }
+  } else if (mirna == "let-7a_minus1") {
+    mirna_txt <- "let-7a(-1)"
+  } else if (mirna == "let-7a_plus1") {
+    mirna_txt <- "let-7a(+1)"
+  } else if (mirna == "miR-7-23nt") {
+    mirna_txt <- "miR-7"
+  } else {
+    mirna_txt <- mirna
+  }
+  if (justlegend) {
+    str_line <- -1.5
+    str_at <- xmin + (xmax - xmin)*0.95
+    mtext(text=mirna_txt, side=3, line=str_line, at=str_at, adj=1,
+          cex=par("cex"))
+  } else {
+    text(x=mir_nums_x[length(mir_nums_x)] + strwidth("U-5'")*0.5, y=y_base/(num_dip^2.5), labels=mirna_txt,
+         adj=c(1, 1), xpd=NA)
+    xy <- GetPlotFractionalCoords(0, 1, log="y")
+    print(xy)
+    text(x=xy[1] + 0.5, y=xy[2], labels=mirna_txt,
+         adj=c(0, 1), xpd=NA)
+  }
+  line2user <- function(line, side) {
+    lh <- par('cin')[2] * par('cex') * par('lheight')
+    x_off <- diff(grconvertX(c(0, lh), 'inches', 'npc'))
+    y_off <- diff(grconvertY(c(0, lh), 'inches', 'npc'))
+    switch(side,
+           `1` = grconvertY(-line * y_off, 'npc', 'user'),
+           `2` = grconvertX(-line * x_off, 'npc', 'user'),
+           `3` = grconvertY(1 + line * y_off, 'npc', 'user'),
+           `4` = grconvertX(1 + line * x_off, 'npc', 'user'),
+           stop("Side must be 1, 2, 3, or 4", call.=FALSE))
+  }
+  # abline(h=line2user(0:-10, 1), lty=3, xpd=TRUE)
+  # segments(x0=xmin, y0=ymin, x1=xmax, xpd=NA)
+
+  # segments(x0=xmin, y0=y_first_site, x1=xmax, xpd=NA)
+
+  # segments(x0=xmin, y0=y_top_site, x1=xmax, xpd=NA)
+
+  # segments(x0=xmin, y0=ymax_adjusted, x1=xmax, lwd=4, xpd=NA)
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+# 2C____________________________________________________________________________
+PlotPairingMatrix <- function(
+  mirna, experiment, offset, n_constant=3, sitelist="progthrp_suppcomp",
+  model_values=FALSE, makeglobalmodel=TRUE, offset_lim=c(-4, 16),
+  len_lim=c(4, 11), pos3p_lim=c(9, 12), corrected_kds=FALSE, sumseed=FALSE,
+  F_method=FALSE, exponential=FALSE, intercept=FALSE, fixed_offset=0, log_plus_one=FALSE,
+  supp_base=FALSE, offset_base=FALSE, site_base=NULL, residual=FALSE, key=FALSE,
+  xlabels=TRUE, suppress_label=FALSE, label_offset=FALSE, mirna_label=FALSE,
+  extralabel=FALSE, loop=FALSE, alt_top=FALSE, max_value_check=NULL,
+  height=2.8, width=2.47, xpos=20, ypos=20, pdf.plot=FALSE
+) {
+  # Load the data matrix.
+  print("in pairing range matrix function")
+  if (model_values) {
+    if (makeglobalmodel) {
+      if (sitelist == "progthrp") {
+        model <<- SubfunctionCall(FitPairingOffsetAndMismatchModelWithError)
+      } else {
+        model <<- SubfunctionCall(FitPairingAndOffsetModelWithError)
+      }
+    }
+    offset_name <- as.character(offset)
+    if (log_plus_one) {
+      R_mat <- log10(exp(t(model$pairing$MLE) + model$offsets[offset_name, 1]) + 1)
+    } else {
+      R_mat <- t(model$pairing$MLE)
+      R_mat <- R_mat*model$offsets[offset_name, 1]
+      R_mat_use_temp_global <<- R_mat
+    }
+    # This just makes anything with data NA, even if there is a model value for
+    # it.
+    R_mat_data <- t(SubfunctionCall(MakePairingMatrix))
+    R_mat_data_use <- R_mat_data
+    R_mat_data_use_global <<- R_mat_data_use
+    R_mat_data <- R_mat_data*0 + 1
+    R_mat <- R_mat*(R_mat_data*0 + 1)
+    R_mat_global <<- R_mat
+    if (residual) {
+      R_mat <- R_mat_data - R_mat
+    }
+  } else {
+    R_mat <- t(SubfunctionCall(MakePairingMatrix))
+    R_mat_global_data <<- R_mat
+  }
+  mar1 <- 2.2
+  mar2 <- 0.5
+  mar3 <- 1.8
+  if(key) {
+    width <- 4
+    mar4 <- 9.23
+  } else {
+    mar4 <- 2.5
+  }
+  R_mat <<- R_mat
+  # This is the conversion factor in order to have the correct height of the
+  # plot for the specified width, that makes each box of equal height and width.
+  mir_length <- nchar(kMirnaSeqs[mirna])
+  SubfunctionCall(FigureSaveFile2)
+  par(mar=c(mar1, mar2, mar3, mar4))
+  xmin <- 0
+  xmax <- nrow(R_mat)
+  ymin <- 0
+  ymax <- ncol(R_mat) 
+  BlankPlot()
+  # Assign the positions of the corners of the boxes.
+  xlefts <- rep(seq(0, ncol(R_mat) - 1), nrow(R_mat))
+  xright <- xlefts + 1
+  ybottom <- rep(rev(seq(ymax - 1, ymin)), each=ncol(R_mat))
+  ytop <- ybottom + 1
+  # Make the x-axis
+  y_axis_pos <- seq(ymin, ymax - 1) + 0.5
+  y_axis_labs <- rownames(R_mat)
+  for (i in 1:length(y_axis_labs)) {
+    if (i %% 2 == 0) {
+      y_axis_labs[i] <- ""
+    }
+  }
+  AddLinearAxis(1, 1, 1, label="3'-paired nt",
+                label_pos_ticks=TRUE,
+                alt_lab=colnames(R_mat),
+                alt_lab_y_dist=0.01,
+                alt_lab_pos=xmin:(xmax - 1) + 0.5,
+                alt_tick_pos=TRUE)
+  AddLinearAxis(4, 1, 2, label="5'-paired nt",
+                alt_lab=y_axis_labs,
+                alt_lab_pos=y_axis_pos,
+                alt_tick_pos=TRUE,
+                line=0.8)
+  # Add the label for the seed if not plotting relative to seed kds.
+  col.inds <- floor((R_mat)/log10(700)*99 + 1)
+  x_lab_pos <- -0.75
+  pos_5p <- as.integer(rep(rownames(R_mat), each=ncol(R_mat)))
+  pos_3p <- as.integer(rep(colnames(R_mat), nrow(R_mat)))
+  impossible_cols <- which(pos_5p > pos_3p)
+
+  start_col <- 0
+  r_col <- 0.4
+  # Make distribution of 100 colors and a 101th gray color for NA indeces.
+  color.dist <- c(rev(cubeHelix(100, start=start_col, r=r_col, hue=0.8)),
+                  "gray90", "white")
+  color.dist[100] <- kMaxValueColor
+  # Make the color index scale.
+  # col.inds <- sapply(t(col.inds), function(col.ind) {
+  #   min(max(1, col.ind), 100)
+  # })
+  col.inds <- t(col.inds)
+  col.inds[which(col.inds > 100)] <- 100
+  col.inds[which(col.inds < 1)] <- 1
+  col.inds[which(is.na(col.inds))] <- 101
+  col.inds[impossible_cols] <- 102
+  # Make the color rectangle.
+  rect(xlefts, ybottom, xright, ytop, col=color.dist[col.inds], lwd=0.4, 
+       xpd=NA, border="white")
+  # Make the key.
+  if (key) {
+    mir_scale <- (mir_length - 11)/(21 - 11)
+    if (alt_top) {
+      max_value_use <- max(max_value_check, max(10^R_mat, na.rm=TRUE))
+      if (max_value_use > 700) {
+        labels <- c(1, 3, 10, 30, 100, 300, 700, 100*round(max_value_use/100))
+      } else {
+        labels <- c(1, 3, 10, 30, 100, 300, 700)
+      }
+    } else {
+      labels <- c(1, 3, 10, 30, 100, 300, 700)
+    }
+    # if (alt_top) {
+      print(labels)
+      num_boxes <- ceiling(log(labels[length(labels)])/log(700)*100)
+    # } else {
+      # num_boxes <- 100
+    # }
+    print(num_boxes)
+    color.dist <- c(rev(cubeHelix(100, start=start_col, r=r_col, hue=0.8)),
+                    rep(kMaxValueColor, num_boxes - 100))
+    y_div <- (ymax - ymin)/num_boxes
+    kpl <- xmax + 5*mir_scale # Left-hand position of the key
+    kw <- mir_scale                # Width of the key
+    rect(xleft=kpl,
+         ybottom=seq(num_boxes)*y_div - y_div,
+         xright=kpl + kw,
+         ytop=seq(num_boxes)*y_div,
+         col=color.dist, xpd=NA, border=NA)
+    # Generate the axis for the legend and the label
+    bottom <- ymin + y_div/2
+    top <- ymax - y_div/2
+    # if (kdrel) {
+    pos_labels <- log(labels)
+    centered_labels <- pos_labels - pos_labels[1]
+    norm_labels <- centered_labels/(centered_labels[length(centered_labels)])
+    height_span <- top - bottom
+    pos_labels <- norm_labels*height_span + y_div/2
+    labels <- as.character(labels)
+    labels[1] <- expression(""<=1)
+    axis(4, at=pos_labels, labels=labels, lwd=par()$lwd, pos=kpl + kw, xpd=NA)
+    text(x=kpl + kw + 3*mir_scale, y=ymax/2,
+         labels=bquote(italic(K)[D]*.(" fold change")),
+         srt=270, xpd=NA)
+  }  
+  # # Add the label indicating how many nucleotides of pairing.
+  if (model_values) {
+    if (label_offset) {
+      mtext(text=sprintf("%s-nt offset; model", offset), side=3, at=xmax, adj=1,
+            cex=par("cex"))    
+    } else {
+      mtext(text="Model-estimated values", side=3,
+            at=xmin, adj=0, cex=par("cex"))      
+    }
+  } else if (!(suppress_label)) {
+    if (loop) {
+      unit <- "loop"
+    } else {
+      unit <- "offset"
+    }
+    mtext(text=sprintf("%s-nt %s", offset, unit), side=3,
+          at=xmax, adj=1, cex=par("cex"))    
+  }
+  # If the `mirna_label` conditional is true, add the label saying which miRNA
+  # is being looked at.
+  if (mirna_label) {
+    if (mirna == "let-7a-21nt") {
+      mirna_txt <- "let-7a"
+    } else if (mirna == "let-7a_minus1") {
+      mirna_txt <- "let-7a(-1)"
+    } else if (mirna == "let-7a_plus1") {
+      mirna_txt <- "let-7a(+1)"
+    } else if (mirna == "let-7a_miR-155") {
+      mirna_txt <- "let-7a-miR-155"
+    } else if (mirna == "miR-155_let-7a") {
+      mirna_txt <- "miR-155-let-7a"
+    } else {
+      mirna_txt <- mirna
+    }
+    x <- GetPlotFractionalCoords(0.125, 0.5)[1]
+    mtext(text=mirna_txt, side=3, line=0.8, at=x, adj=0, cex=par("cex"))
+  }
+
+  if (extralabel) {
+    str.end3prand <- "r"
+    if (collapsemm) {
+      str.collapsemm <- "sum"
+    } else {
+      str.collapsemm <- "geo"
+    }
+    mtext(text=sprintf("%s_%s", str.end3prand, str.collapsemm), side=3,
+          line=0.7, at=xmax, adj=1, cex=par("cex"))    
+  }
+
+  # Finish the plot.
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+  return(R_mat)
+}
 
 # ################################################################################
 # # FIGURE S2
@@ -1404,170 +1417,171 @@ PlotPositionalEnrichmentForProgramedLibrary <- function(
 #   }
 # }
 
-# # S2D-K, S3A&B__________________________________________________________________
-# PlotOneThreePrimeSite <- function(
-#   kmer, mirna, experiment, n_constant=3, sitelist="progthrp_suppcomp",
-#   sumseed=FALSE, corrected_kds=TRUE, offset_lim=c(-4, 16), equilibrium_nb=FALSE,
-#   mirna_label=FALSE, height=3.7, width=3.7, xpos=20, ypos=20, pdf.plot=FALSE
-# ) {
-#   if (corrected_kds) {
-#     kds <- SubfunctionCall(ApplyKdCorrection, prog_n_constant=n_constant,
-#                            rand_n_constant=n_constant,
-#                            prog_sitelist="progthrp_suppcomp")
-#     if (mirna == "miR-155" & kmer >= 8) ymin <- 1e-5
-#     else                                ymin <- 1e-4
+# S2D-K, S3A&B__________________________________________________________________
+PlotOneThreePrimeSite <- function(
+  kmer, mirna, experiment, n_constant=3, sitelist="progthrp_suppcomp",
+  sumseed=FALSE, corrected_kds=TRUE, offset_lim=c(-4, 16), equilibrium_nb=FALSE,
+  mirna_label=FALSE, height=3.7, width=3.7, xpos=20, ypos=20, pdf.plot=FALSE
+) {
+  if (corrected_kds) {
+    kds <- SubfunctionCall(ApplyKdCorrection, prog_n_constant=n_constant,
+                           rand_n_constant=n_constant,
+                           prog_sitelist="progthrp_suppcomp")
+    if (mirna == "miR-155" & kmer >= 8) ymin <- 1e-5
+    else                                ymin <- 1e-4
 
-#   } else {
-#     if (mirna == "miR-1" & experiment == "equilibrium") {
-#       combined <- FALSE
-#       buffer <- TRUE
-#     } else if (mirna == "miR-7-23nt" & experiment == "equilibrium2_nb") {
-#       combined <- FALSE
-#       buffer <- FALSE
-#     } else {
-#       combined <- TRUE
-#       buffer <- FALSE
-#     }
-#     kds <- SubfunctionCall(EquilPars)
-#     ymin <- 3e-4
-#   }
-#   SubfunctionCall(FigureSaveFile2)
-#   xmin <- offset_lim[1]
-#   xmax <- offset_lim[2]
-#   ymax <- 1
-#   par(mar=c(3, 3, 1, 1))
-#   BlankPlot(log="y", inv=kOffsetInv)
-#   if (sitelist == "progthrp_suppcomp" & sumseed) {
-#     print(kds["Comp_Kd", 2])
-#     segments(x0=xmin, kds["Comp_Kd", 2], x1=xmax, lty=2, lwd=0.5)
-#   } else {
-#     print(kds[grep("^8mer-mm[ACTG][2-7]_Kd$",
-#                                        rownames(kds),
-#                                        perl=TRUE), 2])
-#     segments(x0=xmin, GeoMean(kds[grep("^8mer-mm[ACTG][2-7]_Kd$",
-#                                        rownames(kds),
-#                                        perl=TRUE), 2]), x1=xmax, lty=2, lwd=0.5)    
-#   }
-#   grep_str <- sprintf("^%smer-m[0-9]{1,2}\\.[0-9]{1,2}\\|.*\\|Comp_Kd", kmer)
-#   inds <- grep(grep_str, rownames(kds), perl=TRUE, value=TRUE)
-#   kds <- kds[inds, ]
-#   # Get all the thrp site names.
-#   sites_thrp <- gsub("^(.*)\\|.*\\|.*$", replacement="\\1", rownames(kds))
-#   unique_sites_thrp <- rev(unique(sites_thrp))
-#   pos_1 <- as.integer(gsub("^.*mer-m(.*)\\..*$", replacement="\\1",
-#                            unique_sites_thrp))
-#   unique_sites_thrp <- unique_sites_thrp[order(pos_1)]
-#   len_sites_thrp <- length(unique_sites_thrp)
-#   x_skew <- seq(-0.1, 0.1, length.out=len_sites_thrp)
-#   cols <- GetColors(n=12, scheme="smooth rainbow",
-#                     stops=c(0.05, 1))[1:len_sites_thrp]
-#   names(x_skew) <- unique_sites_thrp
-#   names(cols) <- unique_sites_thrp
-#   # Operate over each site.
-#   # legend_names <- unique_sites_thrp
-#   print(unique_sites_thrp)
-#   if (mirna == "miR-1") {
-#     sites_remove <- c("4mer-m15.18", "4mer-m19.22")
-#   } else if (mirna == "miR-7-23nt") {
-#     sites_remove <- c("4mer-m17.20", "4mer-m20.23")
-#   } else {
-#     sites_remove <- c()
-#   }
-#   unique_sites_thrp <- setdiff(unique_sites_thrp, sites_remove)
-#   cols <- cols[unique_sites_thrp]
-#   sapply(unique_sites_thrp, function(site) {
-#     message("___________")
-#     message(site)
+  } else {
+    if (mirna == "miR-1" & experiment == "equilibrium") {
+      combined <- FALSE
+      buffer <- TRUE
+    } else if (mirna == "miR-7-23nt" & experiment == "equilibrium2_nb") {
+      combined <- FALSE
+      buffer <- FALSE
+    } else {
+      combined <- TRUE
+      buffer <- FALSE
+    }
+    kds <- SubfunctionCall(EquilPars)
+    ymin <- 3e-4
+  }
+  SubfunctionCall(FigureSaveFile2)
+  xmin <- offset_lim[1]
+  xmax <- offset_lim[2]
+  ymax <- 1
+  par(mar=c(3, 3, 1, 1))
+  BlankPlot(log="y", inv=kOffsetInv)
+  if (sitelist == "progthrp_suppcomp" & sumseed) {
+    print(kds["Comp_Kd", 2])
+    segments(x0=xmin, kds["Comp_Kd", 2], x1=xmax, lty=2, lwd=0.5)
+  } else {
+    print(kds[grep("^8mer-mm[ACTG][2-7]_Kd$",
+                                       rownames(kds),
+                                       perl=TRUE), 2])
+    segments(x0=xmin, GeoMean(kds[grep("^8mer-mm[ACTG][2-7]_Kd$",
+                                       rownames(kds),
+                                       perl=TRUE), 2]), x1=xmax, lty=2, lwd=0.5)    
+  }
+  grep_str <- sprintf("^%smer-m[0-9]{1,2}\\.[0-9]{1,2}\\|.*\\|Comp_Kd", kmer)
+  inds <- grep(grep_str, rownames(kds), perl=TRUE, value=TRUE)
+  kds <- kds[inds, ]
+  # Get all the thrp site names.
+  sites_thrp <- gsub("^(.*)\\|.*\\|.*$", replacement="\\1", rownames(kds))
+  unique_sites_thrp <- rev(unique(sites_thrp))
+  pos_1 <- as.integer(gsub("^.*mer-m(.*)\\..*$", replacement="\\1",
+                           unique_sites_thrp))
+  unique_sites_thrp <- unique_sites_thrp[order(pos_1)]
+  len_sites_thrp <- length(unique_sites_thrp)
+  x_skew <- seq(-0.1, 0.1, length.out=len_sites_thrp)
+  # cols <- GetColors(n=12, scheme="smooth rainbow",
+  #                   stops=c(0.05, 1))[1:len_sites_thrp]
+  cols <- kFigure2SiteColors[1:len_sites_thrp]
+  names(x_skew) <- unique_sites_thrp
+  names(cols) <- unique_sites_thrp
+  # Operate over each site.
+  # legend_names <- unique_sites_thrp
+  print(unique_sites_thrp)
+  if (mirna == "miR-1") {
+    sites_remove <- c("4mer-m15.18", "4mer-m19.22")
+  } else if (mirna == "miR-7-23nt") {
+    sites_remove <- c("4mer-m17.20", "4mer-m20.23")
+  } else {
+    sites_remove <- c()
+  }
+  unique_sites_thrp <- setdiff(unique_sites_thrp, sites_remove)
+  cols <- cols[unique_sites_thrp]
+  sapply(unique_sites_thrp, function(site) {
+    message("___________")
+    message(site)
 
-#     grep_str <- sprintf("^%smer-m[0-9]{1,2}\\.[0-9]{1,2}\\|.*\\|Comp_Kd", kmer)
-#     inds <- grep(site, rownames(kds), value=TRUE)
-#     df_use <- kds[inds, ]
-#     # Get the site position 5-prime most position
-#     site_pos <- gsub("^.*mer-m(.*)\\..*$", replacement="\\1", site)
-#     # Get the starting point of that site at each position in order to calculate
-#     # the offset.
-#     pos <- as.integer(gsub("^(.*)\\|(.*)\\|(Comp_Kd$)", replacement="\\2",
-#                       rownames(df_use)))
-#     offsets <- pos - as.integer(site_pos)
-#     inds_pos <- which(offsets >= xmin & offsets <= xmax)
-#     offsets <- offsets[inds_pos]
-#     df_use_pos <- df_use[inds_pos, ]
-#     # This make sure that the offsets are in order, because they are not in the
-#     # random libraries, due to how the scripting is different.
-#     df_use_pos <- df_use_pos[order(offsets), ]
-#     offsets <- sort(offsets)
-#     # Make the error bars, lines, and points for the figure.
-#     # NOTE: The error bars have been given a 50% transparency.
-#     segments(x0=offsets + x_skew[site], y0=df_use_pos[, 3], y1=df_use_pos[, 5],
-#              col=ConvertRColortoRGB(cols[site], alpha=0.5), lwd=1, xpd=NA)
-#     lines(offsets, df_use_pos[, 2], col=cols[site], lwd=1)
-#     points(offsets, df_use_pos[, 2], col=cols[site], pch=20)
-#     if (mirna == "let-7a-21nt") {
-#       if (kmer >= 8 & as.integer(site_pos) == 9) {
-#         ind_use <- which(offsets == 0)
-#         y_txt <- df_use_pos[ind_use, 5]*1.1
-#         text(x=0, y=y_txt, labels="*", adj=c(0.5, 0.5), cex=par("cex")*5)
-#       }
-#       if (kmer >= 6 & as.integer(site_pos) %in% c(11, 12)) {
-#         x_use <- c(0.5, 3)
-#         y0_use <- c(0.45, 0.25)
-#         labels <- c("+1-0 nt", "+3 nt")
+    grep_str <- sprintf("^%smer-m[0-9]{1,2}\\.[0-9]{1,2}\\|.*\\|Comp_Kd", kmer)
+    inds <- grep(site, rownames(kds), value=TRUE)
+    df_use <- kds[inds, ]
+    # Get the site position 5-prime most position
+    site_pos <- gsub("^.*mer-m(.*)\\..*$", replacement="\\1", site)
+    # Get the starting point of that site at each position in order to calculate
+    # the offset.
+    pos <- as.integer(gsub("^(.*)\\|(.*)\\|(Comp_Kd$)", replacement="\\2",
+                      rownames(df_use)))
+    offsets <- pos - as.integer(site_pos)
+    inds_pos <- which(offsets >= xmin & offsets <= xmax)
+    offsets <- offsets[inds_pos]
+    df_use_pos <- df_use[inds_pos, ]
+    # This make sure that the offsets are in order, because they are not in the
+    # random libraries, due to how the scripting is different.
+    df_use_pos <- df_use_pos[order(offsets), ]
+    offsets <- sort(offsets)
+    # Make the error bars, lines, and points for the figure.
+    # NOTE: The error bars have been given a 50% transparency.
+    segments(x0=offsets + x_skew[site], y0=df_use_pos[, 3], y1=df_use_pos[, 5],
+             col=ConvertRColortoRGB(cols[site], alpha=0.5), lwd=1, xpd=NA)
+    lines(offsets, df_use_pos[, 2], col=cols[site], lwd=1)
+    points(offsets, df_use_pos[, 2], col=cols[site], pch=20)
+    if (mirna == "let-7a-21nt") {
+      if (kmer >= 8 & as.integer(site_pos) == 9) {
+        ind_use <- which(offsets == 0)
+        y_txt <- df_use_pos[ind_use, 5]*1.1
+        text(x=0, y=y_txt, labels="*", adj=c(0.5, 0.5), cex=par("cex")*5)
+      }
+      if (kmer >= 6 & as.integer(site_pos) %in% c(11, 12)) {
+        x_use <- c(0.5, 3)
+        y0_use <- c(0.45, 0.25)
+        labels <- c("+1-0 nt", "+3 nt")
 
-#         names(x_use) <- c("12", "11")
-#         names(y0_use) <- c("12", "11")
-#         names(labels) <- c("12", "11")
-#         Arrows(x0=x_use[as.character(site_pos)], y0=y0_use[as.character(site_pos)], y1=0.2,
-#                x1=x_use[as.character(site_pos)], col=cols[site],
-#                arr.type="triangle", arr.adj=0, arr.length=0.035, arr.width=0.08)
-#         adj_x_dict <- c(0.45, 0.65)
-#         names(adj_x_dict) <- names(x_use)
-#         text(x_use[as.character(site_pos)],
-#              y0_use[as.character(site_pos)]*(6/5),
-#              labels=labels[as.character(site_pos)],
-#              col=cols[site],
-#              adj=c(adj_x_dict[as.character(site_pos)], 0))
-#       }
-#     }
+        names(x_use) <- c("12", "11")
+        names(y0_use) <- c("12", "11")
+        names(labels) <- c("12", "11")
+        Arrows(x0=x_use[as.character(site_pos)], y0=y0_use[as.character(site_pos)], y1=0.2,
+               x1=x_use[as.character(site_pos)], col=cols[site],
+               arr.type="triangle", arr.adj=0, arr.length=0.035, arr.width=0.08)
+        adj_x_dict <- c(0.45, 0.65)
+        names(adj_x_dict) <- names(x_use)
+        text(x_use[as.character(site_pos)],
+             y0_use[as.character(site_pos)]*(6/5),
+             labels=labels[as.character(site_pos)],
+             col=cols[site],
+             adj=c(adj_x_dict[as.character(site_pos)], 0))
+      }
+    }
      
-#   })
+  })
 
-#   alt_lab_pos <- c(-4, 0, 4, 8, 12, 16)
-#   AddLinearAxis(1, tick.space=1, label.space=5, alt_lab_pos=alt_lab_pos,
-#                 label="Offset (nt)")
-#   AddLogAxis(2, label="Relative Kd")
+  alt_lab_pos <- c(-4, 0, 4, 8, 12, 16)
+  AddLinearAxis(1, tick.space=1, label.space=5, alt_lab_pos=alt_lab_pos,
+                label="Offset (nt)")
+  AddLogAxis(2, label="Relative Kd")
 
-#   # Add title to the plot.
-#   xy <- GetPlotFractionalCoords(0.025, 1, log="y", inv=kOffsetInv)
-#   text(xy[1], xy[2], sprintf("%s bp of 3' pairing", kmer), adj=c(0, 0), xpd=NA)
-#   xy <- GetPlotFractionalCoords(0.5, 0, log="y")
-#   legend_names <- gsub(sprintf("^%smer-m(.*)\\.(.*)$", kmer), replacement="\\1-\\2",
-#                        unique_sites_thrp, perl=TRUE)
-#   Legend(xy, legend=legend_names, col=cols, ncol=3, xjust=0.5, yjust=0)
-#   # Add the mirna label to the top of the plot.
-#   if (mirna_label) {
-#     if (mirna == "let-7a-21nt") {
-#       if (experiment == "equil_c_nb") {
-#         mirna_txt <- "let-7a rep."
-#       } else {
-#         mirna_txt <- "let-7a"
-#       }
-#     } else if (mirna == "let-7a_minus1") {
-#       mirna_txt <- "let-7a(-1)"
-#     } else if (mirna == "let-7a_plus1") {
-#       mirna_txt <- "let-7a(+1)"
-#     } else if (mirna == "miR-7-23nt") {
-#       mirna_txt <- "miR-7"
-#     } else {
-#       mirna_txt <- mirna
-#     }
-#     xy <- GetPlotFractionalCoords(1, 1, log="y", inv=kOffsetInv)
-#     text(xy[1], xy[2], mirna_txt, adj=c(1, 0), xpd=NA)
-#     # mtext(text=mirna_txt, side=3, line=0, at=xmin, adj=1, cex=par("cex"))
-#   }
-#   if (class(pdf.plot) == "character") {
-#     dev.off()
-#   }
-# }
+  # Add title to the plot.
+  xy <- GetPlotFractionalCoords(0.025, 1, log="y", inv=kOffsetInv)
+  text(xy[1], xy[2], sprintf("%s bp of 3' pairing", kmer), adj=c(0, 0), xpd=NA)
+  xy <- GetPlotFractionalCoords(0.5, 0, log="y")
+  legend_names <- gsub(sprintf("^%smer-m(.*)\\.(.*)$", kmer), replacement="\\1-\\2",
+                       unique_sites_thrp, perl=TRUE)
+  Legend(xy, legend=legend_names, col=cols, ncol=3, xjust=0.5, yjust=0)
+  # Add the mirna label to the top of the plot.
+  if (mirna_label) {
+    if (mirna == "let-7a-21nt") {
+      if (experiment == "equil_c_nb") {
+        mirna_txt <- "let-7a rep."
+      } else {
+        mirna_txt <- "let-7a"
+      }
+    } else if (mirna == "let-7a_minus1") {
+      mirna_txt <- "let-7a(-1)"
+    } else if (mirna == "let-7a_plus1") {
+      mirna_txt <- "let-7a(+1)"
+    } else if (mirna == "miR-7-23nt") {
+      mirna_txt <- "miR-7"
+    } else {
+      mirna_txt <- mirna
+    }
+    xy <- GetPlotFractionalCoords(1, 1, log="y", inv=kOffsetInv)
+    text(xy[1], xy[2], mirna_txt, adj=c(1, 0), xpd=NA)
+    # mtext(text=mirna_txt, side=3, line=0, at=xmin, adj=1, cex=par("cex"))
+  }
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
 
 # ################################################################################
 # # FIGURE 3
@@ -6877,6 +6891,8 @@ MakeFigure1 <- function() {
   # C.__________________________________________________________________________
   # Illustrator schematic.
   # D.__________________________________________________________________________
+  ## make mirna=let-7a-21nt exp=equil_c2_nb PreprocessData
+  ## make mirna=let-7a-21nt exp=equil_c2_nb n_constant=0 len_k=8 seedex=1 AssignPositionalKmersProgrammedLib
   PlotPositionalEnrichmentForProgramedLibrary(
     "let-7a-21nt", "equil_c2_nb", "40", 0, 8, stop=31, ps=0, pdf.plot="1.D"
   )
@@ -6887,6 +6903,12 @@ MakeFigure1 <- function() {
 MakeFigure2 <- function(corrected_kds=TRUE) {
   message("Making Fig. 2")
   # A.__________________________________________________________________________
+  ## make mirna=let-7a-21nt exp=equil_c2_nb n_constant=3 AssignBipartiteSites
+  ## python SolveForKds/MakeSiteCountTable.py let-7a-21nt equil_c2_nb 3 progthrp_suppcomp
+  ## sbatch SolveForKds/FitSiteKds.sh let-7a-21nt equil_c2_nb 3 progthrp_suppcomp
+  ## make mirna=let-7a exp=equilibrium n_constant=3 AssignBipartiteSitesRandom
+  ## python SolveForKds/MakeSiteCountTable.py let-7a equilibrium 3 randthrp_comp
+  ## sbatch SolveForKds/FitSiteKds.sh let-7a equilibrium 3 randthrp_comp
   PlotCombinedEnrichmentAndKd("8mer-m11.18", plot_enrich=TRUE, pdf.plot="2.Ai")
   PlotCombinedEnrichmentAndKd("8mer-m11.18", pdf.plot="2.Aii")
   # B.__________________________________________________________________________
@@ -8202,16 +8224,9 @@ MakeFigure7s2 <- function(model_values=FALSE, mm_and_bulge=TRUE) {
 
 
 
-
-
-
-
-
-
-
 ############## END FIGURES FOR THE PAPER #######################################
-MakeFigure1()
-# MakeFigure2()
+# MakeFigure1()
+MakeFigure2()
 # MakeFigure3()
 # MakeFigure4()
 # MakeFigure5()

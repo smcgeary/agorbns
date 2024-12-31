@@ -6,7 +6,6 @@ imp.load_source("general", "general/general.py")
 imp.load_source("RBNS_methods", "general/RBNS_methods.py")
 from general import *
 from RBNS_methods import *
-# from sitetypes import get_seq_site_map
 
 # FUNCTIONS
 def assign_site(read_seqs, _mirna, _sitelist, experiment,

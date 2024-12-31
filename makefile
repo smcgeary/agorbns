@@ -30,21 +30,24 @@ SCR_fkd = FitFlankKds.sh# Used GitHub2019 **************************************
 DIR_plfold = AnalyzeStructure/# Used GitHub2019 ********************************
 SCR_plfold = MakeSiteStructureAnalysisFiles.sh # Used GitHub2019 ***************
 
+DIR_as2022 = AssignSiteTypes2022/# Used GitHub2022 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+SCR_akpl = AssignKmersProgrammedLib.sh# Used GitHub2022 $$$$$$$$$$$$$$$$$$$$$$$$
+SCR_abs = AssignBipartiteSitesProgrammedLib.sh# GitHub2022 $$$$$$$$$$$$$$$$$$$$$
+SCR_absr = AssignBipartiteSitesRandLib.sh# GitHub2022 $$$$$$$$$$$$$$$$$$$$$$$$$$
 
-SCR_abs = AssignBipartiteSitesProgrammedLib.py # Used for ThrP paper
+
+
 SCR_abms = AssignBipartiteMismatchSitesProgrammedLib.py # Used for ThrP paper
 SCR_abmsr = AssignBipartiteMismatchSitesRandLib.py # Used for ThrP paper
 # SCR_absn = AssignBipartiteSitesProgrammedLibNew.py # Used for ThrP paper
 ## USED TO GET THE KD VALUES WITH 1 to 1 correspondence with the sites in #
 ## the let-7a reporter library. ###########################################
 SCR_absprl = AssignBipartiteSitesProgrammedLib_reporter_temp.py ###########
-SCR_absr = AssignBipartiteSitesRandLib.py # Used for ThrP paper
 SCR_akbo = AssessProgrammedKmers.py # Used for ThrP paper
 SCR_ak = AssignKmers.py
 # SCR_akr = AssignKmersNew.py
 SCR_ack = AssignCompetitorKmers.py
 SCR_apk = AssignPositionalKmers.py
-SCR_akpl = AssignKmersProgrammedLib.py # Used for ThrP paper
 
 
 SCR_ppskd = FitProgrammedPositionKds.R
@@ -101,9 +104,10 @@ else ifeq ($(exp), equilibrium_2_tp)
 		0,1 0,2
 	COND = I I_combined 40 12.6 4 1.26 0.4 0
 	COND_P =
-else ifeq ($(exp), $(filter $(exp), equil_c2_nb equil_c2_alt_nb))
-	COND = I 40 12.6 12.6_2 4 1.26 0.4 0
-	COND_P = $(COND)
+else ifeq ($(exp), equil_c2_nb)
+	COND = I 40 12.6,1 12.6,2 4 1.26 0.4 0
+	COND_P = I 40 4 1.26 0.4 0
+	COND_P_DUP = 12.6
 else ifeq ($(exp), equil_c_nb)
 		COND = I 40 12.6 4 1.26 0.4 0
 		COND_P = $(COND)
@@ -174,6 +178,14 @@ else
 	WOB = ''
 endif
 
+ifdef seedex
+	SEEDEX = ' -seedex'
+else
+	SEEDEX = ''
+endif
+
+
+
 # This conditional definition allows for an alternative competitor oligo to be
 # queried (specifically used to figure out which let-7a is used in the second
 # equilibrium_mmseed_nb experiment).
@@ -201,8 +213,6 @@ PreprocessAgoPurity :
 	done)
 
 
-
-
 # takes functions $(mirna), $(exp), and $(test)
 
 ## Logic behind this is that is that some experiments have only reps 1 and 2.
@@ -221,7 +231,7 @@ PreprocessData :
 			for REP in 1 2; do \
 				job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
 				echo $$job; \
-				# $$job; \
+				$$job; \
 			done ;\
 		done; \
 	else \
@@ -229,36 +239,17 @@ PreprocessData :
 		for CON in $(COND_P); do \
 			job=$$job_prefix"$$CON$(test) -jobs 19"; \
 			echo $$job; \
-			# $$job; \
+			$$job; \
 		done; \
 	fi; \
 	for CON in $(COND_P_DUP); do \
 		for REP in $$DUP_REPS; do \
 			job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
 			echo $$job; \
-			# $$job; \
+			$$job; \
 		done; \
 	done)
 
-
-
-PreprocessAllEquilibrium :
-	make mirna=miR-1 exp=equilibrium PreprocessData
-	make mirna=let-7a exp=equilibrium PreprocessData
-	make mirna=miR-155 exp=equilibrium PreprocessData
-	make mirna=miR-124 exp=equilibrium PreprocessData
-	make mirna=lsy-6 exp=equilibrium PreprocessData
-	make mirna=miR-7-23nt exp=equilibrium2_nb PreprocessData
-	make mirna=mir-1 exp=equil_pilot PreprocessData
-	make mirna=miR-1 exp=equilibrium_tp PreprocessData
-	make mirna=miR-124 exp=equilibrium_2_tp PreprocessData
-	make mirna=miR-7-24nt exp=equilibrium_tp PreprocessData	
-	job="sbatch $(DIR_pp)$(SCR_pp) miR-1 kin_pilot I_TGT -jobs 19"; \
-	echo $$job; \
-	$$job; \
-	job="sbatch $(DIR_pp)$(SCR_pp) miR-7-24nt equilibrium3_nb I -jobs 19"; \
-	echo $$job; \
-	$$job
 
 
 AssignSites :
@@ -289,7 +280,6 @@ AssignFlanks :
 
 
 
-
 FitFlankKds :
 	@(job_py="conda run -n agorbns python $(DIR_kd)$(SCR_fc) $(mirna) $(exp) $(n_constant) $(sitelist)"$(BUFFER3P); \
 	echo $$job_py; \
@@ -314,6 +304,25 @@ FitFlankKds :
 
 
 
+PreprocessAllEquilibrium :
+	make mirna=miR-1 exp=equilibrium PreprocessData
+	make mirna=let-7a exp=equilibrium PreprocessData
+	make mirna=miR-155 exp=equilibrium PreprocessData
+	make mirna=miR-124 exp=equilibrium PreprocessData
+	make mirna=lsy-6 exp=equilibrium PreprocessData
+	make mirna=miR-7-23nt exp=equilibrium2_nb PreprocessData
+	make mirna=mir-1 exp=equil_pilot PreprocessData
+	make mirna=miR-1 exp=equilibrium_tp PreprocessData
+	make mirna=miR-124 exp=equilibrium_2_tp PreprocessData
+	make mirna=miR-7-24nt exp=equilibrium_tp PreprocessData	
+	job="sbatch $(DIR_pp)$(SCR_pp) miR-1 kin_pilot I_TGT -jobs 19"; \
+	echo $$job; \
+	$$job; \
+	job="sbatch $(DIR_pp)$(SCR_pp) miR-7-24nt equilibrium3_nb I -jobs 19"; \
+	echo $$job; \
+	$$job
+
+
 
 AssignSitesAllEquilibrium :
 	make mirna=miR-1 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) buffer=1 AssignSites
@@ -330,11 +339,6 @@ AssignAllSitesEquilibriumAllSiteLists :
 
 
 
-# PreprocessEquilibrium :
-# 	@(for CON in $(COND_mirna); \
-# 		do { echo python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) $$CON $(nb) $(test); \
-# 		bsub -n 20 python $(DIR_pp)$(SCR_pp) $(mirna) $(exp) $$CON $(nb) $(test);} \
-# 	done)
 
 
 
@@ -418,6 +422,53 @@ CountReporterVariantsV2_mm :
 	bsub -q 18 -n 20 python ReporterScreen/CountReporterVariants.py miR-7 twist_reporter_assay_v2 no_duplex -rep 2 -mm -jobs 19
 
 
+
+################### ALL OF THESE FUNCTIONS ARE FOR THE THREEPRIME PAPER ########
+
+# FOR THREE PRIME PAPER
+AssignBipartiteSites :
+	@(for CON in $(COND); do \
+		job="sbatch $(DIR_as2022)$(SCR_abs) $(mirna) $(exp) $$CON "; \
+		job=$$job"$(n_constant) -jobs 19"; \
+		echo $$job; \
+		$$job; \
+	done)
+
+
+AssignBipartiteSitesRandom :
+	@(for CON in $(COND); do \
+		job="sbatch $(DIR_as2022)$(SCR_absr) $(mirna) $(exp) $$CON "; \
+		job=$$job"$(n_constant)"$(BUFFER3P)" -jobs 19"; \
+		echo $$job; \
+		$$job; \
+	done)
+
+
+
+
+
+
+
+PreprocessAllEquilThrP :
+	make mirna=let-7a-21nt exp=equil_c_nb PreprocessData
+	make mirna=let-7a-21nt exp=equil_c2_nb PreprocessData
+	make mirna=miR-1 exp=equil_c_nb PreprocessData
+	make mirna=let-7a_plus1 exp=equil_c_nb PreprocessData
+	make mirna=let-7a_minus1 exp=equil_c_nb PreprocessData
+	make mirna=miR-155 exp=equil_sc_nb PreprocessData
+	make mirna=let-7a_miR-155 exp=equil_c_nb PreprocessData
+	make mirna=miR-155_let-7a exp=equil_c_nb PreprocessData
+
+
+AssignPositionalKmersProgrammedLib :
+	@(job_prefix="sbatch "; \
+	job_prefix=$$job_prefix"$(DIR_as2022)$(SCR_akpl) $(mirna) $(exp) "; \
+	for CON in $(COND); do \
+		job=$$job_prefix" $$CON $(n_constant) $(len_k)"$(SEEDEX); \
+		echo $$job; \
+		$$job; \
+	done)
+
 # PreprocessEquilibriumPilot :
 # 	@(job=""; \
 # 	for CON in $(COND); do \
@@ -438,40 +489,12 @@ CountReporterVariantsV2_mm :
 
 
 
-PreprocessAllEquilThrP :
-	make mirna=let-7a-21nt exp=equil_c_nb PreprocessData
-	#make mirna=let-7a-21nt exp=equil_s_nb PreprocessData
-	#make mirna=let-7a-21nt exp=equil_c2_alt_nb PreprocessData
-	#make mirna=miR-1 exp=equil_c_alt_nb PreprocessData
-	#make mirna=miR-1 exp=equil_sc_alt_nb PreprocessData
-	make mirna=let-7a-21nt exp=equil_c2_nb PreprocessData
-	make mirna=miR-1 exp=equil_c_nb PreprocessData
-	#make mirna=miR-1 exp=equi_sc_nb PreprocessData
-	make mirna=let-7a_plus1 exp=equil_c_nb PreprocessData
-	make mirna=let-7a_minus1 exp=equil_c_nb PreprocessData
-	#make mirna=let-7a-21nt exp=equil_sc_nb PreprocessData
-	make mirna=miR-155 exp=equil_sc_nb PreprocessData
-	make mirna=let-7a_miR-155 exp=equil_c_nb PreprocessData
-	make mirna=miR-155_let-7a exp=equil_c_nb PreprocessData
 
 
 
 
 
 
-
-################### ALL OF THESE FUNCTIONS ARE FOR THE THREEPRIME PAPER
-
-# FOR THREE PRIME PAPER
-AssignBipartiteSites :
-	@(for CON in $(COND); do \
-		job="bsub -q 18 -n 20 -R span[hosts=1] python "; \
-# 		job="python "; \
-		job=$$job"$(HOME)$(DIR_as)$(SCR_abs) $(mirna) $(exp) $$CON "; \
-		job=$$job"$(n_constant) -jobs 19"; \
-		echo $$job; \
-# 		$$job; \
-	done)
 
 
 AssignBipartiteSitesWithLet7Reporter :
@@ -825,16 +848,6 @@ FitAllMismatchKdsMiR155Let7a :
 
 
 
-
-
-AssignBipartiteSitesRandom :
-	@(for CON in $(COND); do \
-		job="bsub -q 18 -n 20 -R span[hosts=1] python "; \
-		job=$$job"$(HOME)$(DIR_as)$(SCR_absr) $(mirna) $(exp) $$CON "; \
-		job=$$job"$(n_constant)"$(BUFFER3P)" -jobs 19"; \
-		echo $$job; \
-		$$job; \
-	done)
 
 
 # FOR THREE PRIME PAPER
@@ -1795,23 +1808,23 @@ AssignPositionalKmers :
 	python $(HOME)general/SubmitJob.py "$$job")
 
 
-AssignPositionalKmersProgrammedLib :
-	@(job_prefix="bsub -q 18 -n 20 -R span[hosts=1] python "; \
-	job_prefix=$$job_prefix"$(HOME)$(DIR_as)$(SCR_akpl) $(mirna) $(exp) "; \
-	for CON in $(COND); do \
-		job=$$job_prefix" $$CON $(n_constant) $(len_k)"; \
-		echo $$job; \
-		$$job; \
-	done)
+# AssignPositionalKmersProgrammedLib :
+# 	@(job_prefix="bsub -q 18 -n 20 -R span[hosts=1] python "; \
+# 	job_prefix=$$job_prefix"$(HOME)$(DIR_as)$(SCR_akpl) $(mirna) $(exp) "; \
+# 	for CON in $(COND); do \
+# 		job=$$job_prefix" $$CON $(n_constant) $(len_k)"; \
+# 		echo $$job; \
+# 		$$job; \
+# 	done)
 
-AssignPositionalKmersProgrammedLibSeedEx :
-	@(job_prefix="bsub -q 18 -n 20 -R span[hosts=1] python "; \
-	job_prefix=$$job_prefix"$(HOME)$(DIR_as)$(SCR_akpl) $(mirna) $(exp) "; \
-	for CON in $(COND); do \
-		job=$$job_prefix" $$CON $(n_constant) $(len_k) -seedex"; \
-		echo $$job; \
-		$$job; \
-	done)
+# AssignPositionalKmersProgrammedLibSeedEx :
+# 	@(job_prefix="bsub -q 18 -n 20 -R span[hosts=1] python "; \
+# 	job_prefix=$$job_prefix"$(HOME)$(DIR_as)$(SCR_akpl) $(mirna) $(exp) "; \
+# 	for CON in $(COND); do \
+# 		job=$$job_prefix" $$CON $(n_constant) $(len_k) -seedex"; \
+# 		echo $$job; \
+# 		$$job; \
+# 	done)
 
 
 # Use:

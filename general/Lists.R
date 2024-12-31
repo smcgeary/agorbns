@@ -250,7 +250,7 @@ kDinucs <- c("AA", "AT", "TA", "TT",
 
 # kNucs  <- c("A", "U", "C", "G")
 
-# kDNucs <- c("A", "T", "C", "G")
+kDNucs <- c("A", "T", "C", "G")
 
 # kComplements <- c(`A`="T", `C`="G", `G`="C", `T`="A")
 

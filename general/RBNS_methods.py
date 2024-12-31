@@ -1557,38 +1557,38 @@ class KmerList:
 
 
 
-# class KmerPositionalList:
-#     def __init__(self, kmer_len, position_max):
-#         self.len = int(kmer_len)
-#         self.kmers = {barcode : {kmer : [0]*position_max for kmer
-#                                         in get_kmer_list(kmer_len)}
-#                       for barcode in ["TGT", "ACA"]}
-#         self.sum = 0
-#     def __getitem__(self, barcode):
-#         return self.kmers[barcode]
+class KmerPositionalList:
+    def __init__(self, kmer_len, position_max):
+        self.len = int(kmer_len)
+        self.kmers = {barcode : {kmer : [0]*position_max for kmer
+                                        in get_kmer_list(kmer_len)}
+                      for barcode in ["TGT", "ACA"]}
+        self.sum = 0
+    def __getitem__(self, barcode):
+        return self.kmers[barcode]
 
-#     def __len__(self):
-#         return self.len
+    def __len__(self):
+        return self.len
 
-#     def __add__(self, other):
-#         if other.__class__.__name__ == "KmerPositionalList":
-#             print("position_max:")
-#             position_max = len(list(self.kmers["TGT"].items())[0][1])
-#             print(position_max)
-#             _new = KmerPositionalList(len(self), position_max)
-#             _new.kmers = {barcode : {
-#                 kmer : [i_1 + i_2 for (i_1, i_2)
-#                         in zip(self.kmers[barcode][kmer],
-#                                other.kmers[barcode][kmer])]
-#                 for kmer in self.kmers["TGT"].keys()}
-#                           for barcode in ["TGT", "ACA"]}
-#             return(_new)
+    def __add__(self, other):
+        if other.__class__.__name__ == "KmerPositionalList":
+            print("position_max:")
+            position_max = len(list(self.kmers["TGT"].items())[0][1])
+            print(position_max)
+            _new = KmerPositionalList(len(self), position_max)
+            _new.kmers = {barcode : {
+                kmer : [i_1 + i_2 for (i_1, i_2)
+                        in zip(self.kmers[barcode][kmer],
+                               other.kmers[barcode][kmer])]
+                for kmer in self.kmers["TGT"].keys()}
+                          for barcode in ["TGT", "ACA"]}
+            return(_new)
 
-#     def __radd__(self, other):
-#         if other == 0:
-#             return(self)
-#         elif other.__class__.__name__ == "KmerPositionalList":
-#             return(self.__add__(other))
+    def __radd__(self, other):
+        if other == 0:
+            return(self)
+        elif other.__class__.__name__ == "KmerPositionalList":
+            return(self.__add__(other))
 
 #     def __iadd__(self, other):
 #         if other.__class__.__name__ == "KmerPositionalList":

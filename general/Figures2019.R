@@ -1,5 +1,6 @@
 rm()
-# source("general/general.R")
+rm(list = ls())
+source("general/general.R")
 source("general/ModelingFunctions.R")
 source("general/PlotFunctions.R")
 
@@ -2429,11 +2430,11 @@ MakeRefereeResponseFigure <- function() {
 
 
  
-# MakeFigure1()
-# MakeFigure2()
-# MakeFigure3()
-# MakeFigure4()
-MakeFigureS1()
+MakeFigure1()
+MakeFigure2()
+MakeFigure3()
+MakeFigure4()
+# MakeFigureS1()
 # MakeFigureS2()
 # MakeFigureS3()
 # MakeFigureS4()
