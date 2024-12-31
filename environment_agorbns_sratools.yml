@@ -1,0 +1,8 @@
+name: agorbns_sratools
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+  - r
+dependencies:
+  - sra-tools=2.10.7

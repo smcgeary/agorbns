@@ -1,0 +1,17 @@
+name: agorbns_final
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+  - r
+dependencies:
+  - r-base=4.4.2
+  - r-reticulate=1.40.0
+  - python=3.8.20
+  - numpy=1.24.4
+  - pandas=2.0.3
+  - r-rje=1.12.1
+  - r-beeswarm=0.4.0
+  - r-data.table=1.15.4
+  - viennarna=2.7.0
+  - r-shape=1.4.6.1
