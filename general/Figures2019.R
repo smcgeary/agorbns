@@ -1,4 +1,3 @@
-rm()
 rm(list = ls())
 source("general/general.R")
 source("general/ModelingFunctions.R")

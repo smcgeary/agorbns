@@ -431,10 +431,17 @@ def get_exp_info(mirna, experiment, condition, rep=None, nb=None, tp=None):
     csv_file = "Libraries.csv"
     # Load the database of experiments:
     with open(csv_file, 'U') as master:
+        print(master)
         library_list = csv.DictReader(master)
+        # print(list(library_list))
         # Determine the experiment to be analyzed
         exp_file = None
+        print(experiment)
+        print(condition)
+        print(mirna)
         for row in library_list:
+            print(row)
+            print(row["miRNA"])
             ## THIS CAN BE UN-COMMENTED AS A DIAGNOSTIC OF WHY THE PREPROCESSING
             ## ISN'T WORKING.
             # if row["SL"] == "15":

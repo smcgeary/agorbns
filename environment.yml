@@ -6,12 +6,12 @@ channels:
   - r
 dependencies:
   - python=3.8.5
-  - numpy=1.17.4
+  - numpy=1.19.3
   - pandas=0.25.3
   - r-base=3.6.3
   - r-data.table=1.12.2
   - r-beeswarm=0.2.3
   - r-rje=1.10.13
-  - r-reticulate=1.13
+  - r-reticulate=1.40
   - sra-tools=2.10.7
   - viennarna>=2.4

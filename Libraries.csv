@@ -1,4 +1,4 @@
-Date,SL,Barcode,PCR cycles,GTC ID,BioA (nM),Exp,Exp_type,Spike,3prime,Lane,miRNA,S100,Pool,Sample type,Rep,Batch,Cell Line,SRR number,Path,,,,
+﻿Date,SL,Barcode,PCR cycles,GTC ID,BioA (nM),Exp,Exp_type,Spike,3prime,Lane,miRNA,S100,Pool,Sample type,Rep,Batch,Cell Line,SRR number,Path,,,,
 ,5,ACAGTG,,L1_1932,3.2651,140603_WIGTC-HISEQA_C4W8TACXX,AGO_purity,,,8,miR-1,6,NA,S1006_P,,,,SRR10432899,miR-1/smallRNA_seq/reads/AGO2_pur.txt,,,,
 ,6,GCCAAT,,L1_1933,1.5239,140603_WIGTC-HISEQA_C4W8TACXX,AGO_purity,,,8,miR-155,6,NA,S1006_P,,,,SRR10432900,miR-155/smallRNA_seq/reads/AGO2_pur.txt,,,,
 15.01.10,10,ATCACG,,L1_2406,2.4173,150120_WIGTC-HISEQ2A_C67BAANXX,equil_pilot,s124_8mer,TCG,6,"miR-1,miR-155",NA,3,I,,,,SRR10533738,miR-1/agorbns/reads/pur1_input.txt,,,,

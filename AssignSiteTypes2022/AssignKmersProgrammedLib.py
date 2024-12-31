@@ -1,5 +1,5 @@
 ################################################################################
-#AssignKmersProgrammedLib.py
+# AssignKmersProgrammedLib.py
 ################################################################################
 import imp # Used to import general.py
 imp.load_source("general", "general/general.py")

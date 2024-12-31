@@ -8,13 +8,14 @@
                                            # You can change the filenames given with -o and -e to any filenames you'd like
 
 ################################################################################
-#### NOTE: These lines are only necessary if submitting this script to a Slurm-
-#### based job scheduler; specifically to access the sratoolkit commands.
-#### If this script is being run directly in the terminal
-#### `bash SRA_downnload_scripts/download_SRA_files.sh`, these can be commented
-#### out as long as the agorbns environment has already been loaded.
+#### NOTE: These lines are compatible with the O2 cluster at Harvard Medical
+#### school, which uses the SLURM scheduler, and assume the script is being
+#### called from the makefile with the `sbatch [script args]` command.
+#### If this script is being run directly in the terminal using 
+#### `bash [script args]`, these lines can be commented out, and the agorbns
+#### conda environment should be activated.
 module load miniconda3/23.1.0
-source activate /home/sem689/.conda/envs/agorbns
+source activate /home/sem689/.conda/envs/agorbns_new
 ################################################################################
 
 python PreProcessReads/MakeMiRNAReadFile.py $@

@@ -10,13 +10,14 @@
 # metadata.
 
 ################################################################################
-#### NOTE: These lines are only necessary if submitting this script to a Slurm-
-#### based job scheduler; specifically to access the sratoolkit commands.
-#### If this script is being run directly in the terminal
-#### `bash SRA_downnload_scripts/download_SRA_files.sh`, these can be commented
-#### out as long as the agorbns environment has already been loaded.
-module load miniconda3/23.1.0
-source activate /home/sem689/.conda/envs/agorbns
+#### NOTE: These lines are compatible with the O2 cluster at Harvard Medical
+#### school, which uses the SLURM scheduler, and assume the script is being
+#### called with the `sbatch [script args]` command.
+#### If this script is being run directly in the terminal using 
+#### `bash [script args]`, these lines can be commented out, and the agorbns
+#### conda environment should be activated.
+# module load miniconda3/23.1.0
+# source activate /home/sem689/.conda/envs/agorbns_new
 ################################################################################
 
 
@@ -33,7 +34,7 @@ for LINE in $lines
 do
     echo "'$LINE'"
     time_0=$(date +%s)
-    if [ ! -f "data/raw/sra/$LINE.sra" ]
+    if [ ! -f "data/raw/sra/$LINE/$LINE.sra" ]
     then
         echo "Prefetching data."
         prefetch $LINE -O data/raw/sra/$LINE

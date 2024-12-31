@@ -305,22 +305,22 @@ FitFlankKds :
 
 
 PreprocessAllEquilibrium :
-	make mirna=miR-1 exp=equilibrium PreprocessData
-	make mirna=let-7a exp=equilibrium PreprocessData
-	make mirna=miR-155 exp=equilibrium PreprocessData
-	make mirna=miR-124 exp=equilibrium PreprocessData
-	make mirna=lsy-6 exp=equilibrium PreprocessData
-	make mirna=miR-7-23nt exp=equilibrium2_nb PreprocessData
-	make mirna=mir-1 exp=equil_pilot PreprocessData
-	make mirna=miR-1 exp=equilibrium_tp PreprocessData
-	make mirna=miR-124 exp=equilibrium_2_tp PreprocessData
-	make mirna=miR-7-24nt exp=equilibrium_tp PreprocessData	
+	# make mirna=miR-1 exp=equilibrium PreprocessData
+	# make mirna=let-7a exp=equilibrium PreprocessData
+	# make mirna=miR-155 exp=equilibrium PreprocessData
+	# make mirna=miR-124 exp=equilibrium PreprocessData
+	# make mirna=lsy-6 exp=equilibrium PreprocessData
+	# make mirna=miR-7-23nt exp=equilibrium2_nb PreprocessData
+	# make mirna=mir-1 exp=equil_pilot PreprocessData
+	# make mirna=miR-1 exp=equilibrium_tp PreprocessData
+	# make mirna=miR-124 exp=equilibrium_2_tp PreprocessData
+	# make mirna=miR-7-24nt exp=equilibrium_tp PreprocessData	
 	job="sbatch $(DIR_pp)$(SCR_pp) miR-1 kin_pilot I_TGT -jobs 19"; \
 	echo $$job; \
-	$$job; \
+	# $$job; \
 	job="sbatch $(DIR_pp)$(SCR_pp) miR-7-24nt equilibrium3_nb I -jobs 19"; \
 	echo $$job; \
-	$$job
+	# $$job
 
 
 

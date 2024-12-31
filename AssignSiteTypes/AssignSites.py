@@ -1,5 +1,5 @@
 ################################################################################
-#AssignSites.py
+# AssignSites.py
 ################################################################################
 import imp # Used to import general.py
 imp.load_source("general", "general/general.py")
