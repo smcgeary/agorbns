@@ -1,4 +1,4 @@
-name: agorbns2
+name: agorbns
 channels:
   - bioconda
   - conda-forge
@@ -13,5 +13,4 @@ dependencies:
   - r-beeswarm=0.2.3
   - r-rje=1.10.13
   - r-reticulate=1.40
-  - sra-tools=2.10.7
   - viennarna>=2.4

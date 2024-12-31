@@ -20,7 +20,8 @@ def make_data_table(_sitelist, experiment, extension,
         else:
             sites_path = get_analysis_path(mirna, experiment, "I",
                                      count_dir, ext=extension)
-        counts = pd.read_csv(sites_path, header=None, index_col=0, sep="\t")
+        counts = pd.read_csv(sites_path, header=None, index_col=0, 
+                             filter_na=False, sep="\t")
         sites = list(counts.index)
     else:
         sites = _sitelist["names"] + ["None"]
@@ -45,7 +46,10 @@ def make_data_table(_sitelist, experiment, extension,
         path = get_analysis_path(mirna_temp, experiment, condition,
                                  count_dir, ext=extension)
         try:
-            counts = pd.read_csv(path, header=None, index_col=0, sep="\t")
+            print(path)
+            counts = pd.read_csv(path, header=None, na_filter=False,
+                                 index_col=0, sep="\t")
+            print(counts)
             if include_zeros:
                 sXc = pd.concat([sXc, counts], axis=1)
             else:

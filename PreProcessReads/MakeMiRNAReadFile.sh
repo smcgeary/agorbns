@@ -15,7 +15,7 @@
 #### `bash [script args]`, these lines can be commented out, and the agorbns
 #### conda environment should be activated.
 module load miniconda3/23.1.0
-source activate /home/sem689/.conda/envs/agorbns_new
+source activate /home/sem689/.conda/envs/agorbns
 ################################################################################
 
 python PreProcessReads/MakeMiRNAReadFile.py $@

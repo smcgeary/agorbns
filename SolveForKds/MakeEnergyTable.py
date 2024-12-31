@@ -65,6 +65,7 @@ def main():
         dGdf.loc["6mer", mirna] = dG_6mer
     # Write the table.
     path = "general/miRNA_canonical_site_energies.txt"
+    print(dGdf)
     dGdf.to_csv(path, sep="\t") 
     print_time_elapsed(time_start)
 

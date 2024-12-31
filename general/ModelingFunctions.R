@@ -1,15 +1,16 @@
 #23456789!123456789@123456789#123456789$123456789%123456789^123456789&123456789*
-# NOTE, I used to use this function originally, but I cannot get it to work
-# within a conda environment.
-# system("R CMD SHLIB general/AGO_RBNS_functions_test.c")
+# Required to compile the C code:
+system("R CMD SHLIB general/AGO_RBNS_functions.c")
 
-# This alternative approach works. #############################################
+# If this does not work, this is an alternative approach that is less robust.
+## UNCOMMENT IF above system command doesn't work #############################
 # Get the R library path from the environment variable
 # conda_path <- system("echo $CONDA_PREFIX", intern=TRUE)
 # Compile the C file
 # system(paste0("gcc -std=gnu99 -I", conda_path, "/lib/R/include -DNDEBUG -fpic -O3 -fstack-protector --param=ssp-buffer-size=4 -Wformat -Werror=format-security -D_FORTIFY_SOURCE=2 -c general/AGO_RBNS_functions.c -o general/AGO_RBNS_functions.o"))
 # Create the shared library
 # system(paste0("gcc -std=gnu99 -shared -L", conda_path, "/lib/R/lib -Wl,-Bsymbolic-functions -Wl,-z,relro -o general/AGO_RBNS_functions.so general/AGO_RBNS_functions.o -L", conda_path, "/lib/R/lib -lR"))
+## END SECTION TO UNCOMMENT ####################################################
 
 
 dyn.load("general/AGO_RBNS_functions.so")
@@ -58,9 +59,7 @@ SiteOcc <- function(a, kds) { # AGNOSTIC TO MULTISITE
 
 
 
-
-# #23456789!123456789@123456789#123456789$123456789%123456789^123456789&123456789*
-
+##3456789!123456789@123456789#123456789$123456789%123456789^123456789&123456789*
 FreeAgo <- function(kds, l, A) {
   # COMPATIBLE WITH MULTISITE
   # Args:

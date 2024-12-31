@@ -19,8 +19,11 @@ def make_data_table(_sitelist, experiment, extension):
         path = get_analysis_path(mirna, experiment, condition, "multisite_counts",
                                  ext=extension)
         print(path)
-        sXc_list[i] = pd.read_csv(path, header=None, index_col=0, sep="\t")
+        print(pd.read_csv(path, header=None, index_col=0, sep="\t"))
+        sXc_list[i] = pd.read_csv(path, header=None, index_col=0,
+                                  na_filter=False, sep="\t")
     sXc = pd.concat(sXc_list, axis=1).fillna(0)
+    print(sXc)
     return(sXc)
 
 def main():
@@ -42,7 +45,8 @@ def main():
     sXc.columns = CONDITIONS_R[experiment][mirna]
     path = get_analysis_path(mirna, experiment, "all_sites%s" %(extension),
                              "multisite_count_tables")
-    sXc.to_csv(path, sep="\t") 
+    sXc.to_csv(path, sep="\t")
+    print(sXc)
     print(path)
     ensure_directory("data/processed/%s/%s/kds" % (mirna, experiment)) 
     ensure_directory("figures/kds/%s/%s" % (mirna, experiment)) 
