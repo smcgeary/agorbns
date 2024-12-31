@@ -42,7 +42,6 @@ kFigure2SiteColors <- c(
   "#D4C9E5", "#AD83BA", "#824D99", "#536BBA", "#4E96BB", "#5FAA9F", "#87BA6D",
   "#C9B844", "#E59437", "#E25B2B", "#B2221E", "#521913"
 )
-
 # kThrPPositionCols <- rev(viridis::inferno(17))[3:17]
 # names(kThrPPositionCols) <- 9:23
 
@@ -96,6 +95,7 @@ PlotPositionalEnrichmentForProgramedLibrary <- function(
   pdf.plot=FALSE, outputdata=FALSE
 ) {
   # Load the two data tables.
+  print("here")
   pc_I <- SubfunctionCall(GetPositionalKmersProgrammedLib, condition="I")[, start:stop]
   pc_A <- SubfunctionCall(GetPositionalKmersProgrammedLib)[, start:stop]
   pc_I_global <<- pc_I
@@ -194,6 +194,7 @@ PlotPositionalEnrichmentForProgramedLibrary <- function(
     # Figure out the coloring of the kmer nucleotides, based on complementarity to
     # the miRNA.
     mirna_seq <- kMirnaSeqs[mirna]
+    print(mirna_seq)
     rc_mirna_seq <- RevComplement(mirna_seq)
     # Get the sequence of complementarity to the miRNA.
     complementary_seqs <- sapply(kmers, LargestCommonSubstring, seq2=rc_mirna_seq)
@@ -207,6 +208,8 @@ PlotPositionalEnrichmentForProgramedLibrary <- function(
     # Transpose the start_stop_matrix just to be able to go over rows.
 
     start_stop_mat <- t(start_stop_mat)
+    print(kmers)
+    print(start_stop_mat)
     sapply(seq(1, length(kmers)), function(r_ind) {
       kmer = ConvertTtoU(kmers[r_ind])
       y_pos = 21 - r_ind
@@ -219,6 +222,7 @@ PlotPositionalEnrichmentForProgramedLibrary <- function(
       red_i <- setdiff(seq(length(kmer_list)),
                        seq(start_stop_row[1], start_stop_row[2]))
       cols_i[red_i] <- "#EC008B"
+      print(cols_i)
       text(x=xpos_i, y=y_pos, labels=kmer_list, col=cols_i, adj=c(0.5, 0.5),
            xpd=NA)
     })
@@ -8225,7 +8229,7 @@ MakeFigure7s2 <- function(model_values=FALSE, mm_and_bulge=TRUE) {
 
 
 ############## END FIGURES FOR THE PAPER #######################################
-# MakeFigure1()
+MakeFigure1()
 MakeFigure2()
 # MakeFigure3()
 # MakeFigure4()
