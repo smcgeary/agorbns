@@ -6916,11 +6916,10 @@ MakeFigure2 <- function(corrected_kds=TRUE) {
   ## make mirna=let-7a exp=equilibrium n_constant=3 AssignBipartiteSitesRandom
   ## python SolveForKds/MakeSiteCountTable.py let-7a equilibrium 3 randthrp_comp
   ## sbatch SolveForKds/FitSiteKds.sh let-7a equilibrium 3 randthrp_comp
-  # PlotCombinedEnrichmentAndKd("8mer-m11.18", plot_enrich=TRUE, pdf.plot="2.Ai")
-  # PlotCombinedEnrichmentAndKd("8mer-m11.18", pdf.plot="2.Aii")
+  PlotCombinedEnrichmentAndKd("8mer-m11.18", plot_enrich=TRUE, pdf.plot="2.Ai")
+  PlotCombinedEnrichmentAndKd("8mer-m11.18", pdf.plot="2.Aii")
   # B.__________________________________________________________________________
   PlotBestThreePrimeSite(height=4, pdf.plot="2.B")
-  break
   # C.__________________________________________________________________________
   PlotOneThreePrimeSite(4, "let-7a-21nt", "equil_c2_nb", pdf.plot="2.Ci")
   PlotOneThreePrimeSite(5, "let-7a-21nt", "equil_c2_nb", pdf.plot="2.Cii")
@@ -6929,27 +6928,29 @@ MakeFigure2 <- function(corrected_kds=TRUE) {
   PlotOneThreePrimeSite(8, "let-7a-21nt", "equil_c2_nb", pdf.plot="2.Cv")
   PlotOneThreePrimeSite(9, "let-7a-21nt", "equil_c2_nb", pdf.plot="2.Cvi")
   # D.__________________________________________________________________________
+  # Illustrator schematic.
+  # E.__________________________________________________________________________
   PlotPairingMatrix("let-7a-21nt", "equil_c2_nb", -2,
-                    corrected_kds=corrected_kds, pdf.plot="2.Di")
+                    corrected_kds=corrected_kds, pdf.plot="2.Ei")
   PlotPairingMatrix("let-7a-21nt", "equil_c2_nb", 0,
-                    corrected_kds=corrected_kds, pdf.plot="2.Dii")
+                    corrected_kds=corrected_kds, pdf.plot="2.Eii")
   PlotPairingMatrix("let-7a-21nt", "equil_c2_nb",  2,
-                    corrected_kds=corrected_kds, pdf.plot="2.Diii")
+                    corrected_kds=corrected_kds, pdf.plot="2.Eiii")
   PlotPairingMatrix("let-7a-21nt", "equil_c2_nb",  4,
-                    corrected_kds=corrected_kds, pdf.plot="2.Div")
+                    corrected_kds=corrected_kds, pdf.plot="2.Eiv")
   R_mat4 <- R_mat
   message(sprintf("Kd fold change of 11mer-m10.20 a offset 4: %s",
                   10^R_mat["10", "20"]))
   message(sprintf("If that is the max this value should be the same: %s",
                   10^max(R_mat, na.rm=TRUE)))
   PlotPairingMatrix("let-7a-21nt", "equil_c2_nb",  6,
-                    corrected_kds=corrected_kds, pdf.plot="2.Dv")
+                    corrected_kds=corrected_kds, pdf.plot="2.Ev")
   PlotPairingMatrix("let-7a-21nt", "equil_c2_nb",  8,
-                    corrected_kds=corrected_kds, pdf.plot="2.Dvi")
+                    corrected_kds=corrected_kds, pdf.plot="2.Evi")
   PlotPairingMatrix("let-7a-21nt", "equil_c2_nb",  10,
-                    corrected_kds=corrected_kds, pdf.plot="2.Dvii")
+                    corrected_kds=corrected_kds, pdf.plot="2.Evii")
   PlotPairingMatrix("let-7a-21nt", "equil_c2_nb", 12, key=TRUE,
-                    corrected_kds=corrected_kds, pdf.plot="2.Dviii")
+                    corrected_kds=corrected_kds, pdf.plot="2.Eviii")
   message("Done Fig. 2")
 }
 
