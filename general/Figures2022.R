@@ -969,6 +969,7 @@ PlotBestThreePrimeSite <- function(
       total_sites_plotted <<- total_sites_plotted + length(inds_pos)
       total_sites_better  <<- total_sites_better  + length(which(df_use[inds_pos, 2] < (ref_kd/text_bound)))
       worse_sites <<- c(worse_sites, rownames(df_use)[inds_pos][which(df_use[inds_pos, 2] >= (ref_kd/text_bound))])
+      print("making segments, lines, points")
       segments(x0=offsets + x_skew[as.character(kmer)], y0=df_use_pos[, 3],
                y1=df_use_pos[, 5],
                col=ConvertRColortoRGB(cols[as.character(kmer)], alpha=0.5), lwd=1, xpd=NA)
@@ -1122,6 +1123,8 @@ PlotBestThreePrimeSite <- function(
   if (class(pdf.plot) == "character") {
     dev.off()
   }
+  print(pdf.plot)
+  print("graphics off")
 }
 
 # 2C____________________________________________________________________________
@@ -6913,10 +6916,11 @@ MakeFigure2 <- function(corrected_kds=TRUE) {
   ## make mirna=let-7a exp=equilibrium n_constant=3 AssignBipartiteSitesRandom
   ## python SolveForKds/MakeSiteCountTable.py let-7a equilibrium 3 randthrp_comp
   ## sbatch SolveForKds/FitSiteKds.sh let-7a equilibrium 3 randthrp_comp
-  PlotCombinedEnrichmentAndKd("8mer-m11.18", plot_enrich=TRUE, pdf.plot="2.Ai")
-  PlotCombinedEnrichmentAndKd("8mer-m11.18", pdf.plot="2.Aii")
+  # PlotCombinedEnrichmentAndKd("8mer-m11.18", plot_enrich=TRUE, pdf.plot="2.Ai")
+  # PlotCombinedEnrichmentAndKd("8mer-m11.18", pdf.plot="2.Aii")
   # B.__________________________________________________________________________
   PlotBestThreePrimeSite(height=4, pdf.plot="2.B")
+  break
   # C.__________________________________________________________________________
   PlotOneThreePrimeSite(4, "let-7a-21nt", "equil_c2_nb", pdf.plot="2.Ci")
   PlotOneThreePrimeSite(5, "let-7a-21nt", "equil_c2_nb", pdf.plot="2.Cii")

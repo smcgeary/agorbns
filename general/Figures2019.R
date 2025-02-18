@@ -2169,7 +2169,6 @@ MakeFigure1 <- function(uniq=FALSE) {
   ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer -nocombI -single
   PlotSiteEnrichments("miR-1", combined=FALSE, remove_sites=FALSE, buffer=TRUE,
                       pdf.plot="1.E")
-    
   message("Done 1.E")
   PlotSiteKds("miR-1", combined=FALSE, remove_sites=FALSE,
               buffer=TRUE, pdf.plot="1.F")

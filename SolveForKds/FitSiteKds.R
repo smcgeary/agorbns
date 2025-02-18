@@ -564,7 +564,7 @@ OptimizeEquilSitePars <- function(sXc, pars=NULL, fixed=fixed, AGOfixed=FALSE,
   } else {
     data <- sXc[[1]][, start_i:end_i]
   }
-  # data <- data + 1
+  data <- data + 1
 	if ((mirna == "miR-124" & experiment == "equilibrium_2_tp") &
 	    (!("-rep1" %in% args) & !("-rep2" %in% args))) {
   	n_j <- sapply(sXc, function(sXc_i) {
@@ -581,10 +581,8 @@ OptimizeEquilSitePars <- function(sXc, pars=NULL, fixed=fixed, AGOfixed=FALSE,
   }
   # ind_l <- which(colnames(sXc[[1]]) == "I_combined")
   ind_l <- 1 + combined
-  print("here")
-  print(sXc[[1]][, ind_l])
-  l <- Norm(sXc[[1]][, ind_l] + 1)*L_
-  # l <- Norm(sXc[[1]][, ind_l])*L_
+  # l <- Norm(sXc[[1]][, ind_l] + 1)*L_
+  l <- Norm(sXc[[1]][, ind_l])*L_
   print("here)")
   Y <- colSums(data)
   dil <- as.numeric(gsub(",[1234]$", colnames(data), replace=""))/100.0
