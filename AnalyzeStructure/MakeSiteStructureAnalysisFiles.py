@@ -349,7 +349,6 @@ def main():
         "structural_analysis/%s" %(site), ext=extension
     )
     print(out_path)
-    sys.exit()
     output.to_csv(out_path, sep="\t", header=True, index=False)
     print_time_elapsed(time_start)
 
