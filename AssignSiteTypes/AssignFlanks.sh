@@ -3,8 +3,8 @@
 #SBATCH -t 0-00:30                         # Runtime in D-HH:MM format
 #SBATCH -p short                           # Partition to run in
 #SBATCH --mem-per-cpu=2G                   # Memory per core in MiB
-#SBATCH -o jobs/hostname_%j.out            # File to which STDOUT will be written, including job ID (%j)
-#SBATCH -e jobs/hostname_%j.err            # File to which STDERR will be written, including job ID (%j)
+#SBATCH -o /n/groups/klein/mcgeary/gradschool/AgoRBNS/SRUN/%j.out                 # File to which STDOUT will be written, including job ID (%j)
+#SBATCH -e /n/groups/klein/mcgeary/gradschool/AgoRBNS/SRUN/%j.err                 # File to which STDERR will be written, including job ID (%j)
                                            # You can change the filenames given with -o and -e to any filenames you'd like
 
 ################################################################################

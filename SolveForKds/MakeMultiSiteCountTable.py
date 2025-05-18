@@ -30,8 +30,12 @@ def main():
     time_start = time.time()
     # Define all the relevant arguments.
     arguments = ["miRNA", "experiment", "n_constant", "sitelist", "-uniq_binary",
-                 "-buffer3p_binary"]
-    mirna, experiment, n_constant, sitelist, uniq, buffer3p = parse_arguments(arguments)
+                 "-buffer3p_binary", "-original_binary", 
+                 "-filt_by_original_binary"]
+    (
+        mirna, experiment, n_constant, sitelist, uniq, buffer3p, original,
+        filt_by_original
+    ) = parse_arguments(arguments)
     # Initialize objects:
     _mirna = Mirna(mirna)
     _sitelist = SiteList(_mirna, sitelist, 1)
@@ -40,6 +44,10 @@ def main():
         extension = "%s_uniq" %(extension)
     if buffer3p:
         extension = "%s_buffer3p" %(extension)
+    if original:
+        extension = "%s_original" %(extension)
+    if filt_by_original:
+        extension = "%s_filtbyoriginal" %(extension)
     # Make site table:
     sXc = make_data_table(_sitelist, experiment, extension)
     sXc.columns = CONDITIONS_R[experiment][mirna]

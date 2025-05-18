@@ -94,7 +94,9 @@ GetAnalysisPath <- function(mirna, experiment, condition, analysis_type, ext="",
   print(dir_path)
   # dir_path <- sprintf("%s%s", kDataDir, sub_dir)
   EnsureDirectory(dir_path)
-  sprintf("%s/%s%s.%s", dir_path, condition, ext, suffix)
+  path <- sprintf("%s/%s%s.%s", dir_path, condition, ext, suffix)
+  print(path)
+  path
 }
 
 
@@ -117,7 +119,8 @@ SitesXCounts <- function(mirna, experiment="equilibrium", n_constant=5,
                          multisite=FALSE, split16=NULL, uniq=FALSE,
                          start_mm=FALSE, stop_mm=FALSE, buffer=FALSE,
                          comp=FALSE, sc_k=6, m_k=6, new=FALSE, new2=FALSE,
-                         include_zeros=FALSE, zeros_override=FALSE) {
+                         include_zeros=FALSE, zeros_override=FALSE,
+                         original=FALSE, filt_by_original=FALSE) {
   prog_sitelists <- c("programmed", "programmed_collapsed",
                       "programmed_suppcomp")
   ext <- sprintf("_%s", n_constant)
@@ -140,7 +143,7 @@ SitesXCounts <- function(mirna, experiment="equilibrium", n_constant=5,
     ext <- sprintf("%s_%s", ext, sitelist)
   }
   if (class(start_mm) == "numeric" & class(stop_mm) == "numeric") {
-    ext <- sprintf("%s_m%s.%smmsd", ext, start_mm, stop_mm)            
+    ext <- sprintf("%s_m%s.%smmsd", ext, start_mm, stop_mm)
   }
   condition <- "all_sites"
   if (sitelist %in% kKmerSiteLists) {
@@ -168,8 +171,13 @@ SitesXCounts <- function(mirna, experiment="equilibrium", n_constant=5,
   if (include_zeros) {
    ext <- sprintf("%s_zeros", ext)
   }
+  if (original) {
+    ext <- sprintf("%s_original", ext)
+  }
+  if (filt_by_original) {
+    ext <- sprintf("%s_filtbyoriginal", ext)
+  }
   file <- SubfunctionCall(GetAnalysisPath, ext=ext)
-  print(file)
   sXc <- data.frame(fread(file, sep="\t", header=TRUE, stringsAsFactors=FALSE),
                     row.names=1)
   # Remove "Seq" column, if it exists:
@@ -210,10 +218,11 @@ EquilPars <- function(
   Xval=FALSE, L=FALSE, compcorrect=FALSE, wobble=FALSE, tpomit=FALSE,
   tpomit2=FALSE, tp2rep=FALSE, minkd=FALSE, AGOfixedbypass=FALSE, nbomitc=FALSE,
   sorted=FALSE, collapsemm=FALSE, sumseed=FALSE, start_mm=FALSE, stop_mm=FALSE,
-  new=FALSE, new2=FALSE
+  new=FALSE, new2=FALSE, original=FALSE, filt_by_original=FALSE
 ) {
   analysis_type <- "kds_PAPER"
   condition <- ""
+  combined <- TRUE
   if ((class(start_mm) == "numeric" | class(start_mm) == "integer") &
       (class(stop_mm) == "numeric" | class(stop_mm) == "integer")) {
       str_mm <- sprintf("m%s.%smmsd_", start_mm, stop_mm)
@@ -280,7 +289,7 @@ EquilPars <- function(
   if (new2) {
     ext <- sprintf("%s_new2", ext)
   }
-  
+
 
   # Add 'PAPER' to every file
   # TODO remove this extension from everything.
@@ -291,8 +300,18 @@ EquilPars <- function(
   if (sorted) {
     ext <- sprintf("%s_sorted", ext)
   }
+
+  if (original) {
+    ext <- sprintf("%s_original", ext)
+  }
+
+  if (filt_by_original) {
+    ext <- sprintf("%s_filtbyoriginal", ext)
+  }
+
   # Get path to file.
   params.file <- SubfunctionCall(GetAnalysisPath, ext=ext)
+  print(params.file)
   # system(sprintf("ls -l %s", params.file))
   # Get the parameter file.
   params <- data.frame(read.table(params.file, header=TRUE, row.names=1,
@@ -445,9 +464,10 @@ GetRepressionMatrix <- function(mirna, sitelist, flanks=FALSE, bg_method=3, exri
 ## FUNCTIONS RELATING TO FLANKING DINULCEOTIDE DATA ############################
 ################################################################################
 
-SiteFlanksXCounts <- function(mirna, site, experiment="equilibrium",
-                              n_constant=5, sitelist="resubmissionfinal",
-                              uniq=FALSE, buffer=FALSE) {
+SiteFlanksXCounts <- function(
+  mirna, site, experiment="equilibrium", n_constant=5,
+  sitelist="resubmissionfinal", uniq=FALSE, buffer=FALSE, filt_by_original=FALSE
+) {
   analysis_type <- "site_count_tables"
   condition <- paste0(site, "_flanking")
   ext <- sprintf("_%s_%s", n_constant, sitelist)
@@ -456,6 +476,9 @@ SiteFlanksXCounts <- function(mirna, site, experiment="equilibrium",
   }
   if (buffer) {
     ext <- sprintf("%s_buffer3p", ext)
+  }
+  if (filt_by_original) {
+    ext <- sprintf("%s_filtbyoriginal", ext)
   }
   file <- SubfunctionCall(GetAnalysisPath, ext=ext)
   sitesXcounts <- read.table(file, stringsAsFactors=FALSE)
@@ -468,10 +491,10 @@ SiteFlanksXCounts <- function(mirna, site, experiment="equilibrium",
 }
 
 
-SitesAndSingleFlanksXCounts <- function(mirna, site, experiment="equilibrium",
-                                        n_constant=5,
-                                        sitelist="resubmissionfinal",
-                                        buffer=FALSE) {
+SitesAndSingleFlanksXCounts <- function(
+  mirna, site, experiment="equilibrium", n_constant=5,
+  sitelist="resubmissionfinal", buffer=FALSE, filt_by_original=FALSE
+) {
   sXc <- SubfunctionCall(SitesXCounts)
   fXc <- SubfunctionCall(SiteFlanksXCounts)
   site.ind <- which(rownames(sXc) == site)
@@ -485,7 +508,7 @@ SitesAndSingleFlanksXCounts <- function(mirna, site, experiment="equilibrium",
 
 GetFlankKds <- function(mirna, site, experiment="equilibrium", n_constant=5,
                         sitelist="resubmissionfinal", combined=TRUE,
-                        buffer=FALSE) {
+                        buffer=FALSE, filt_by_original=FALSE) {
 
   analysis_type <- "kds_PAPER"
   condition <- ""
@@ -497,6 +520,9 @@ GetFlankKds <- function(mirna, site, experiment="equilibrium", n_constant=5,
     ext <- sprintf("%s_nocombInput", ext)
   }
   ext <- sprintf("%s_PAPER", ext)
+  if (filt_by_original) {
+    ext <- sprintf("%s_filtbyoriginal", ext)
+  }
   params.file <- SubfunctionCall(GetAnalysisPath, ext=ext)
   data <- fread(params.file, fill=TRUE,header=TRUE,
                        stringsAsFactors=FALSE, showProgress=FALSE)
@@ -506,9 +532,11 @@ GetFlankKds <- function(mirna, site, experiment="equilibrium", n_constant=5,
 }
 
 
-GetFullMirnaSiteFlankKds <- function(mirna, site, experiment="equilibrium",
-                                     n_constant=5, sitelist="resubmissionfinal",
-                                     buffer=FALSE, combined=TRUE) {
+GetFullMirnaSiteFlankKds <- function(
+  mirna, site, experiment="equilibrium", n_constant=5,
+  sitelist="resubmissionfinal", buffer=FALSE, combined=TRUE,
+  filt_by_original=FALSE
+) {
   tick <<- tick + 1
   out <- setNames(rep(NaN, length(kFlanks)), kFlanks)
   f_kds <- SubfunctionCall(GetFlankKds)
@@ -522,9 +550,11 @@ GetFullMirnaSiteFlankKds <- function(mirna, site, experiment="equilibrium",
   return(out)
 }
 
-GetFullMirnaSiteFlankKds_CI <- function(mirna, site, experiment="equilibrium",
-                                     n_constant=5, sitelist="resubmissionfinal",
-                                     buffer=FALSE, combined=TRUE) {
+GetFullMirnaSiteFlankKds_CI <- function(
+  mirna, site, experiment="equilibrium", n_constant=5,
+  sitelist="resubmissionfinal", buffer=FALSE, combined=TRUE,
+  filt_by_original=FALSE
+) {
   tick <<- tick + 1
   out <- setNames(rep(NaN, length(kFlanks)), kFlanks)
   out <- cbind(out, out)
@@ -544,7 +574,8 @@ GetFullMirnaSiteFlankKds_CI <- function(mirna, site, experiment="equilibrium",
 
 GetFlankLinearModel <- function(experiment="equilibrium", n_constant=5,
                                 sitelist="resubmissionfinal", buffer=FALSE,
-                                combined=TRUE, leaveout=FALSE) {
+                                combined=TRUE, filt_by_original=FALSE,
+                                leaveout=FALSE) {
   
   if (leaveout != FALSE) {
     kMirnasEquil <- setdiff(kMirnasEquil, leaveout)
@@ -756,7 +787,8 @@ ParseFlankModelCoefs <- function(model) {
 
 
 GetFlankLMCoefs <- function(experiment="equilibrium", n_constant=5,
-                            sitelist="resubmissionfinal") {
+                            sitelist="resubmissionfinal",
+                            filt_by_original=FALSE) {
   model <- SubfunctionCall(GetFlankLinearModel)
   SubfunctionCall(ParseFlankModelCoefs)
 }
@@ -766,7 +798,7 @@ GetPairingFlankData <- function(mirna, site, condition,
                                 experiment="equilibrium", n_constant=5,
                                 sitelist="resubmissionfinal", buffer=FALSE,
                                 mir.start=1, mir.stop=14, noconstant=FALSE,
-                                alt_mir_exp_cond=NULL,
+                                alt_mir_exp_cond=NULL, filt_by_original=FALSE,
                                 old=FALSE) {
   ############# THIS FUNCTION TAKES DATA GENERATED BY ##########################
   # folder = "/structural_analysis_PAPER_realfinal/"
@@ -787,8 +819,11 @@ GetPairingFlankData <- function(mirna, site, condition,
   if (buffer) {
     ext <- sprintf("%s_buffer3p", ext)
   }
-  if (noconstant == TRUE) {
+  if (noconstant) {
     ext <- sprintf("%s_noconstant", ext)
+  }
+  if (filt_by_original) {
+    ext <- sprintf("%s_filtbyoriginal", ext)
   }
   path <- SubfunctionCall(GetAnalysisPath,
                               condition=sprintf("%s/%s", site, condition),

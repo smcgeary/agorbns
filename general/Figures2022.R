@@ -1590,267 +1590,267 @@ PlotOneThreePrimeSite <- function(
   }
 }
 
-# ################################################################################
-# # FIGURE 3
-# ################################################################################
-# PlotMeanReporterRepression <- function(mirna="let-7a",
-#   experiment="twist_reporter_assay_3p_2_tp", exp_type="parallel",
-#   dual_site=FALSE, all_lin41_UTR=FALSE, height=3.5, xpos=20,
-#   ypos=20, pdf.plot=FALSE
-# ) {
-#   if (mirna == "let-7a") {
-#     log2fc_df_1 <- SubfunctionCall(
-#       GetThreePrimeReporterFoldChanges, mirna="let-7a", rep=1, aggregate=TRUE
-#     )
-#     log2fc_df_2 <- SubfunctionCall(
-#       GetThreePrimeReporterFoldChanges, mirna="let-7a", rep=2, aggregate=TRUE
-#     )
-#     log2fc_df_3 <- SubfunctionCall(
-#       GetThreePrimeReporterFoldChanges, mirna="let-7a-21nt", rep=1,
-#       aggregate=TRUE
-#     )
-#     log2fc_df_4 <- SubfunctionCall(
-#       GetThreePrimeReporterFoldChanges, mirna="let-7a-21nt", rep=2,
-#       aggregate=TRUE
-#     )
-#     log2fc_df <- log2fc_df_1[, 1:4]
-#     # Add each of the replicates to the dataframe.
-#     log2fc_df$log2fc_1 <- log2fc_df_1$log_fc
-#     log2fc_df$log2fc_2 <- log2fc_df_2$log_fc
-#     log2fc_df$log2fc_3 <- log2fc_df_3$log_fc
-#     log2fc_df$log2fc_4 <- log2fc_df_4$log_fc
-#   } else if (mirna == "miR-1") {
-#     log2fc_df_1 <- SubfunctionCall(
-#       GetThreePrimeReporterFoldChanges, mirna="miR-1", rep=1, aggregate=TRUE
-#     )
-#     log2fc_df_2 <- SubfunctionCall(
-#       GetThreePrimeReporterFoldChanges, mirna="miR-1", rep=2, aggregate=TRUE
-#     )
-#     log2fc_df <- log2fc_df_1[, 1:4]
-#     # Add each of the replicates to the dataframe.
-#     log2fc_df$log2fc_1 <- log2fc_df_1$log_fc
-#     log2fc_df$log2fc_2 <- log2fc_df_2$log_fc   
-#   }
-#   if (all_lin41_UTR & dual_site)  width <- 11.46
-#   else if (all_lin41_UTR)         width <- 11
-#   else if (dual_site)             width <- 9.16
-#   else                            width <- 8.8 
-#   # Boolean in which a left-hand shift is given if both the total repression and
-#   # the lin-41 UTR-specific repression is to be plotted.
-#   if (all_lin41_UTR)  point_shift <- 0.2
-#   else                point_shift <- 0
+################################################################################
+# FIGURE 3
+################################################################################
+PlotMeanReporterRepression <- function(mirna="let-7a",
+  experiment="twist_reporter_assay_3p_2_tp", exp_type="parallel",
+  dual_site=FALSE, all_lin41_UTR=FALSE, height=3.5, xpos=20,
+  ypos=20, pdf.plot=FALSE
+) {
+  if (mirna == "let-7a") {
+    log2fc_df_1 <- SubfunctionCall(
+      GetThreePrimeReporterFoldChanges, mirna="let-7a", rep=1, aggregate=TRUE
+    )
+    log2fc_df_2 <- SubfunctionCall(
+      GetThreePrimeReporterFoldChanges, mirna="let-7a", rep=2, aggregate=TRUE
+    )
+    log2fc_df_3 <- SubfunctionCall(
+      GetThreePrimeReporterFoldChanges, mirna="let-7a-21nt", rep=1,
+      aggregate=TRUE
+    )
+    log2fc_df_4 <- SubfunctionCall(
+      GetThreePrimeReporterFoldChanges, mirna="let-7a-21nt", rep=2,
+      aggregate=TRUE
+    )
+    log2fc_df <- log2fc_df_1[, 1:4]
+    # Add each of the replicates to the dataframe.
+    log2fc_df$log2fc_1 <- log2fc_df_1$log_fc
+    log2fc_df$log2fc_2 <- log2fc_df_2$log_fc
+    log2fc_df$log2fc_3 <- log2fc_df_3$log_fc
+    log2fc_df$log2fc_4 <- log2fc_df_4$log_fc
+  } else if (mirna == "miR-1") {
+    log2fc_df_1 <- SubfunctionCall(
+      GetThreePrimeReporterFoldChanges, mirna="miR-1", rep=1, aggregate=TRUE
+    )
+    log2fc_df_2 <- SubfunctionCall(
+      GetThreePrimeReporterFoldChanges, mirna="miR-1", rep=2, aggregate=TRUE
+    )
+    log2fc_df <- log2fc_df_1[, 1:4]
+    # Add each of the replicates to the dataframe.
+    log2fc_df$log2fc_1 <- log2fc_df_1$log_fc
+    log2fc_df$log2fc_2 <- log2fc_df_2$log_fc   
+  }
+  if (all_lin41_UTR & dual_site)  width <- 11.46
+  else if (all_lin41_UTR)         width <- 11
+  else if (dual_site)             width <- 9.16
+  else                            width <- 8.8 
+  # Boolean in which a left-hand shift is given if both the total repression and
+  # the lin-41 UTR-specific repression is to be plotted.
+  if (all_lin41_UTR)  point_shift <- 0.2
+  else                point_shift <- 0
 
-#   if (dual_site) x_denom <- 22
-#   else                x_denom <- 21
-#   # Boolean about where the right-hand side of lines ends.
-#   if (all_lin41_UTR) line_r <- 0
-#   else               line_r <- 0.25/x_denom
+  if (dual_site) x_denom <- 22
+  else                x_denom <- 21
+  # Boolean about where the right-hand side of lines ends.
+  if (all_lin41_UTR) line_r <- 0
+  else               line_r <- 0.25/x_denom
 
-#   if (all_lin41_UTR) {
-#     output_p_values <- data.frame(site=c(), p_vals=c())
-#   }
-#   SubfunctionCall(FigureSaveFile2)
-#   xmin <- 0
-#   xmax <- 1
-#   ymin <- -3
-#   ymax <- 0
-#   mar_use <- c(1, 5, 6.5, 1)
-#   par(mar=mar_use)
-#   BlankPlot()
-#   # Constants defining the vertical heights of the information above the points.
-#   y_const <- abs(ymin)*0.6
-#   y_seed <- 0.74*y_const
-#   y_line_1 <- 0.6*y_const
-#   y_thrp <- 0.40*y_const
-#   y_line_2 <- 0.32*y_const
-#   y_bulge <- 0.18*y_const
-#   segments(x0=xmin, y0=0, x1=xmax, col="gray")
-#   if (dual_site)  config_str <- "dual"
-#   else            config_str <- "single"
-#   x_start <- 0.5/x_denom
-#   base_sites <- c("None", "8mer", "7mer-m8", "7mer-A1", "6mer", "8mer-w6")
-#   if (dual_site) {
-#     log2fc_df <- log2fc_df[which(log2fc_df$Seed == "None" | log2fc_df$Seed == "None_lin41_UTR" | log2fc_df$Location == "dual"), ]
-#   } else {
-#     log2fc_df <- log2fc_df[which(log2fc_df$Seed == "None" | log2fc_df$Location != "dual"), ]
-#   }
-#   print(log2fc_df)
-#   for (base_site in base_sites) {
-#     inds <- which(log2fc_df$Seed == base_site & log2fc_df$ThreePrime == "")
-#     log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
-#     # Calculate background subtraction. ________________________________________
-#     if (base_site == "None")  bg_subtract <- mean(unlist(log2fc_df_use))
-#     x <- rep(x_start, length(unlist(log2fc_df_use)))
-#     y <- unlist(log2fc_df_use) - bg_subtract
-#     # Plot the points associated with the site. ________________________________
-#     points(x - point_shift/x_denom, y, col=kSiteColors[base_site], lwd=1, pch=1, xpd=NA)
-#     # Plot the horizontal line giving the mean repression. _____________________
-#     segments(x0=x[1] - 0.25/x_denom - point_shift/x_denom, x1=x[1] + line_r, y0=mean(y), xpd=NA)
-#     if (all_lin41_UTR) {
-#       y_old <- y
-#       mean_old <- mean(y)
-#       inds <- which(log2fc_df$Seed == paste0(base_site, "_lin41_UTR") & log2fc_df$ThreePrime == "")
-#       log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
-#       x <- rep(x_start, length(unlist(log2fc_df_use)))
-#       y <- unlist(log2fc_df_use) - bg_subtract
-#       y_difs <- y - y_old
-#       se_difference <- sd(y_difs)/sqrt(length(y_difs))
-#       t_statistic <- mean(y_difs)/se_difference
-#       p_val <- 2*pt(t_statistic, df=length(y) - 1)
-#       # This versin of it does it treating the reps as unpaired, which is more
-#       # similar to how the Tukey tests were done.
-#       p_val <- t.test(y, y_old, alternative="two.sided", var.equal=FALSE)$p.value
-#       p_value_row <- data.frame(site=sprintf("%s_%s", base_site, config_str),
-#                                 p_vals=p_val)
-#       output_p_values <- rbind(output_p_values, p_value_row)
-#       colnames(output_p_values) <- c("site", "p_vals")
-#       points(x + point_shift/x_denom, y, col=kSiteColors[base_site], lwd=1, pch=1, xpd=NA)
-#       segments(x0=x[1], x1=x[1] + 0.25/x_denom + point_shift/x_denom, y0=mean(y), xpd=NA)
-#       segments(x0=x[1], x1=x[1], y0=mean_old, y1=mean(y), xpd=NA)
-#     }
+  if (all_lin41_UTR) {
+    output_p_values <- data.frame(site=c(), p_vals=c())
+  }
+  SubfunctionCall(FigureSaveFile2)
+  xmin <- 0
+  xmax <- 1
+  ymin <- -3
+  ymax <- 0
+  mar_use <- c(1, 5, 6.5, 1)
+  par(mar=mar_use)
+  BlankPlot()
+  # Constants defining the vertical heights of the information above the points.
+  y_const <- abs(ymin)*0.6
+  y_seed <- 0.74*y_const
+  y_line_1 <- 0.6*y_const
+  y_thrp <- 0.40*y_const
+  y_line_2 <- 0.32*y_const
+  y_bulge <- 0.18*y_const
+  segments(x0=xmin, y0=0, x1=xmax, col="gray")
+  if (dual_site)  config_str <- "dual"
+  else            config_str <- "single"
+  x_start <- 0.5/x_denom
+  base_sites <- c("None", "8mer", "7mer-m8", "7mer-A1", "6mer", "8mer-w6")
+  if (dual_site) {
+    log2fc_df <- log2fc_df[which(log2fc_df$Seed == "None" | log2fc_df$Seed == "None_lin41_UTR" | log2fc_df$Location == "dual"), ]
+  } else {
+    log2fc_df <- log2fc_df[which(log2fc_df$Seed == "None" | log2fc_df$Location != "dual"), ]
+  }
+  print(log2fc_df)
+  for (base_site in base_sites) {
+    inds <- which(log2fc_df$Seed == base_site & log2fc_df$ThreePrime == "")
+    log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
+    # Calculate background subtraction. ________________________________________
+    if (base_site == "None")  bg_subtract <- mean(unlist(log2fc_df_use))
+    x <- rep(x_start, length(unlist(log2fc_df_use)))
+    y <- unlist(log2fc_df_use) - bg_subtract
+    # Plot the points associated with the site. ________________________________
+    points(x - point_shift/x_denom, y, col=kSiteColors[base_site], lwd=1, pch=1, xpd=NA)
+    # Plot the horizontal line giving the mean repression. _____________________
+    segments(x0=x[1] - 0.25/x_denom - point_shift/x_denom, x1=x[1] + line_r, y0=mean(y), xpd=NA)
+    if (all_lin41_UTR) {
+      y_old <- y
+      mean_old <- mean(y)
+      inds <- which(log2fc_df$Seed == paste0(base_site, "_lin41_UTR") & log2fc_df$ThreePrime == "")
+      log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
+      x <- rep(x_start, length(unlist(log2fc_df_use)))
+      y <- unlist(log2fc_df_use) - bg_subtract
+      y_difs <- y - y_old
+      se_difference <- sd(y_difs)/sqrt(length(y_difs))
+      t_statistic <- mean(y_difs)/se_difference
+      p_val <- 2*pt(t_statistic, df=length(y) - 1)
+      # This versin of it does it treating the reps as unpaired, which is more
+      # similar to how the Tukey tests were done.
+      p_val <- t.test(y, y_old, alternative="two.sided", var.equal=FALSE)$p.value
+      p_value_row <- data.frame(site=sprintf("%s_%s", base_site, config_str),
+                                p_vals=p_val)
+      output_p_values <- rbind(output_p_values, p_value_row)
+      colnames(output_p_values) <- c("site", "p_vals")
+      points(x + point_shift/x_denom, y, col=kSiteColors[base_site], lwd=1, pch=1, xpd=NA)
+      segments(x0=x[1], x1=x[1] + 0.25/x_denom + point_shift/x_denom, y0=mean(y), xpd=NA)
+      segments(x0=x[1], x1=x[1], y0=mean_old, y1=mean(y), xpd=NA)
+    }
 
-#     # Label the information associated with this site. _________________________
-#     if (base_site != "8mer-w6") {
-#     	if (base_site == "None")	base_site <- "No site"
-#       text(x_start, y_seed, label=base_site, adj=0, srt=45, xpd=NA)
-#     }
-#     text(x=x_start, y=y_bulge, label="-", xpd=NA)
-#     text(x=x_start, y=y_thrp, label="-", xpd=NA, adj=c(0.5, 0))
-#     # Update the x-axis value. _________________________________________________
-#     x_start <- x_start + 1/x_denom
-#   }
-#   ########################## Plot the 3-prime sites ############################
-#   thrp_sites <- c("4mer-m13.16", "9mer-m11.19", "9mer-m13.21")
-#   bulges <- c("none", "A", "T", "AAAA", "TTTT")
-#   # Plot horizontal line above plot.
-#   segments(x0=x_start - 1.4/x_denom, y0=y_line_1,
-#            x1=x_start + 14.4/x_denom, xpd=NA)
-#   # Label the base site. _______________________________________________________
-#   text(x=x_start + 6.5/x_denom, y=y_seed, label="8mer-w6", xpd=NA)
-#   for (thrp_site in thrp_sites) {
-#     # Label the pairing range. _________________________________________________
-#     text(x_start + 2/x_denom, y_thrp,
-#          label=gsub("^.*mer-m(.*)\\.(.*)$", replacement="\\1-\\2",
-#                     thrp_site, perl=TRUE),
-#          srt=0, xpd=NA, adj=c(0.5, 0))
-#     # Plot the line segment above the pairing range. ___________________________
-#     segments(x0=x_start - 0.4/x_denom, y0=y_line_2,
-#              x1=x_start + 4.4/x_denom, xpd=NA)
-#     for (bulge in bulges) {
-#       if (bulge == "none")  bulge_use <- ""
-#       else                  bulge_use <- bulge
-#       # Subset the log2fc matrix. ______________________________________________
-#       inds <- which((log2fc_df[, "Seed"] == "8mer-w6") &
-#                     (log2fc_df[, "ThreePrime"] == thrp_site) &
-#                     (log2fc_df[, "Bulge"] == bulge_use))
-#       log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
-#       x <- rep(x_start, length(unlist(log2fc_df_use)))
-#       y <- unlist(log2fc_df_use) - bg_subtract
-#       # Plot the points. _______________________________________________________
-#       points(x - point_shift/x_denom, y, col=kThrpReporterColors[thrp_site], lwd=1, pch=1, xpd=NA)
-#       # Plot the horizontal lne associated with the average. ___________________
-#       segments(x0=x[1] - 0.25/x_denom - point_shift/x_denom, y0=mean(y),
-#                x1=x[1] + line_r, xpd=NA)
-#       # Optionally add the lin-41 UTR repression.
-#       if (all_lin41_UTR) {
-#         y_old <- y
-#         mean_old <- mean(y)
-#         inds <- which((log2fc_df[, "Seed"] == "8mer-w6_lin41_UTR") &
-#                       (log2fc_df[, "ThreePrime"] == thrp_site) &
-#                       (log2fc_df[, "Bulge"] == bulge_use))
-#         log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
-#         x <- rep(x_start, length(unlist(log2fc_df_use)))
-#         y <- unlist(log2fc_df_use) - bg_subtract
+    # Label the information associated with this site. _________________________
+    if (base_site != "8mer-w6") {
+    	if (base_site == "None")	base_site <- "No site"
+      text(x_start, y_seed, label=base_site, adj=0, srt=45, xpd=NA)
+    }
+    text(x=x_start, y=y_bulge, label="-", xpd=NA)
+    text(x=x_start, y=y_thrp, label="-", xpd=NA, adj=c(0.5, 0))
+    # Update the x-axis value. _________________________________________________
+    x_start <- x_start + 1/x_denom
+  }
+  ########################## Plot the 3-prime sites ############################
+  thrp_sites <- c("4mer-m13.16", "9mer-m11.19", "9mer-m13.21")
+  bulges <- c("none", "A", "T", "AAAA", "TTTT")
+  # Plot horizontal line above plot.
+  segments(x0=x_start - 1.4/x_denom, y0=y_line_1,
+           x1=x_start + 14.4/x_denom, xpd=NA)
+  # Label the base site. _______________________________________________________
+  text(x=x_start + 6.5/x_denom, y=y_seed, label="8mer-w6", xpd=NA)
+  for (thrp_site in thrp_sites) {
+    # Label the pairing range. _________________________________________________
+    text(x_start + 2/x_denom, y_thrp,
+         label=gsub("^.*mer-m(.*)\\.(.*)$", replacement="\\1-\\2",
+                    thrp_site, perl=TRUE),
+         srt=0, xpd=NA, adj=c(0.5, 0))
+    # Plot the line segment above the pairing range. ___________________________
+    segments(x0=x_start - 0.4/x_denom, y0=y_line_2,
+             x1=x_start + 4.4/x_denom, xpd=NA)
+    for (bulge in bulges) {
+      if (bulge == "none")  bulge_use <- ""
+      else                  bulge_use <- bulge
+      # Subset the log2fc matrix. ______________________________________________
+      inds <- which((log2fc_df[, "Seed"] == "8mer-w6") &
+                    (log2fc_df[, "ThreePrime"] == thrp_site) &
+                    (log2fc_df[, "Bulge"] == bulge_use))
+      log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
+      x <- rep(x_start, length(unlist(log2fc_df_use)))
+      y <- unlist(log2fc_df_use) - bg_subtract
+      # Plot the points. _______________________________________________________
+      points(x - point_shift/x_denom, y, col=kThrpReporterColors[thrp_site], lwd=1, pch=1, xpd=NA)
+      # Plot the horizontal lne associated with the average. ___________________
+      segments(x0=x[1] - 0.25/x_denom - point_shift/x_denom, y0=mean(y),
+               x1=x[1] + line_r, xpd=NA)
+      # Optionally add the lin-41 UTR repression.
+      if (all_lin41_UTR) {
+        y_old <- y
+        mean_old <- mean(y)
+        inds <- which((log2fc_df[, "Seed"] == "8mer-w6_lin41_UTR") &
+                      (log2fc_df[, "ThreePrime"] == thrp_site) &
+                      (log2fc_df[, "Bulge"] == bulge_use))
+        log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
+        x <- rep(x_start, length(unlist(log2fc_df_use)))
+        y <- unlist(log2fc_df_use) - bg_subtract
 
-#         y_difs <- y - y_old
-#         se_difference <- sd(y_difs)/sqrt(length(y_difs))
-#         t_statistic <- mean(y_difs)/se_difference
-#         p_val <- 2*pt(t_statistic, df=length(y) - 1)
-#         # This versin of it does it treating the reps as unpaired, which is more
-#         # similar to how the Tukey tests were done.
-#         p_val <- t.test(y, y_old, alternative="two.sided", var.equal=FALSE)$p.value
-#         p_value_row <- data.frame(site=sprintf("%s_%s_%s", thrp_site, bulge_use, config_str), p_vals=p_val)
-#         output_p_values <- rbind(output_p_values, p_value_row)
-#         points(x + point_shift/x_denom, y, col=kThrpReporterColors[thrp_site], lwd=1, pch=1, xpd=NA)
-#         segments(x0=x[1], x1=x[1] + 0.25/x_denom + point_shift/x_denom, y0=mean(y), xpd=NA)
-#         segments(x0=x[1], x1=x[1], y0=mean_old, y1=mean(y), xpd=NA)
-#       }
+        y_difs <- y - y_old
+        se_difference <- sd(y_difs)/sqrt(length(y_difs))
+        t_statistic <- mean(y_difs)/se_difference
+        p_val <- 2*pt(t_statistic, df=length(y) - 1)
+        # This versin of it does it treating the reps as unpaired, which is more
+        # similar to how the Tukey tests were done.
+        p_val <- t.test(y, y_old, alternative="two.sided", var.equal=FALSE)$p.value
+        p_value_row <- data.frame(site=sprintf("%s_%s_%s", thrp_site, bulge_use, config_str), p_vals=p_val)
+        output_p_values <- rbind(output_p_values, p_value_row)
+        points(x + point_shift/x_denom, y, col=kThrpReporterColors[thrp_site], lwd=1, pch=1, xpd=NA)
+        segments(x0=x[1], x1=x[1] + 0.25/x_denom + point_shift/x_denom, y0=mean(y), xpd=NA)
+        segments(x0=x[1], x1=x[1], y0=mean_old, y1=mean(y), xpd=NA)
+      }
 
-#       # Format the bulge string. _______________________________________________
-#       if (bulge_use == "") {
-#         bulge_use <- "0"
-#       } else {
-#         bulge_use <- gsub("T", "U", bulge_use)
-#         len_bulge <- nchar(bulge_use)
-#         bulge_nuc <- strsplit(bulge_use, split="")[[1]]
-#         bulge_use <- bquote(
-#           .("+")*.(len_bulge)[.(bulge_nuc)]
-#         )
-#       }
-#       # Add the bulge label. ___________________________________________________
-#       text(x_start, y_bulge, label=bulge_use, adj=0.5, xpd=NA)
-#       # Add the double- or single-, or no asterisk for significance. ___________
-#       site_label <- sprintf("%s-%s", thrp_site, bulge)
-#       # Update the x-axis position. ____________________________________________
-#       x_start <- x_start + 1/x_denom
-#     }
-#   }
-#   ############################## Add lin-41 sites ##############################
-#   if (dual_site) {
-#     ################### Plot the lin-41 sites in all contexts. #################
-#     inds <- which(log2fc_df[, "Seed"] == "lin-41")
-#     log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
-#     x <- rep(x_start, length(unlist(log2fc_df_use)))
-#     y <- unlist(log2fc_df_use) - bg_subtract
-#     # Plot the points. _________________________________________________________
-#     points(x - point_shift/x_denom, y, col="goldenrod", lwd=1, pch=1, xpd=NA)
-#     # Plot the horizontal lne associated with the average. ___________________
-#     segments(x0=x[1] - 0.25/x_denom - point_shift/x_denom, y0=mean(y),
-#              x1=x[1] + line_r, xpd=NA)
-#     text(x_start, y_bulge, label="lin-41 sites", srt=90, adj=0, xpd=NA)
+      # Format the bulge string. _______________________________________________
+      if (bulge_use == "") {
+        bulge_use <- "0"
+      } else {
+        bulge_use <- gsub("T", "U", bulge_use)
+        len_bulge <- nchar(bulge_use)
+        bulge_nuc <- strsplit(bulge_use, split="")[[1]]
+        bulge_use <- bquote(
+          .("+")*.(len_bulge)[.(bulge_nuc)]
+        )
+      }
+      # Add the bulge label. ___________________________________________________
+      text(x_start, y_bulge, label=bulge_use, adj=0.5, xpd=NA)
+      # Add the double- or single-, or no asterisk for significance. ___________
+      site_label <- sprintf("%s-%s", thrp_site, bulge)
+      # Update the x-axis position. ____________________________________________
+      x_start <- x_start + 1/x_denom
+    }
+  }
+  ############################## Add lin-41 sites ##############################
+  if (dual_site) {
+    ################### Plot the lin-41 sites in all contexts. #################
+    inds <- which(log2fc_df[, "Seed"] == "lin-41")
+    log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
+    x <- rep(x_start, length(unlist(log2fc_df_use)))
+    y <- unlist(log2fc_df_use) - bg_subtract
+    # Plot the points. _________________________________________________________
+    points(x - point_shift/x_denom, y, col="goldenrod", lwd=1, pch=1, xpd=NA)
+    # Plot the horizontal lne associated with the average. ___________________
+    segments(x0=x[1] - 0.25/x_denom - point_shift/x_denom, y0=mean(y),
+             x1=x[1] + line_r, xpd=NA)
+    text(x_start, y_bulge, label="lin-41 sites", srt=90, adj=0, xpd=NA)
 
-#     if (all_lin41_UTR) {
-#       y_old <- y
-#       mean_old <- mean(y)
-#       inds <- which(log2fc_df[, "Seed"] == "lin-41_lin41_UTR")
-#       log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
-#       x <- rep(x_start, length(unlist(log2fc_df_use)))
-#       y <- unlist(log2fc_df_use) - bg_subtract
-#       y_difs <- y - y_old
-#       se_difference <- sd(y_difs)/sqrt(length(y_difs))
-#       t_statistic <- mean(y_difs)/se_difference
-#       p_val <- 2*pt(t_statistic, df=length(y) - 1)
-#       # This versin of it does it treating the reps as unpaired, which is more
-#       # similar to how the Tukey tests were done.
-#       p_val <- t.test(y, y_old, alternative="two.sided", var.equal=FALSE)$p.value
-#       p_value_row <- data.frame(site="lin-41", p_vals=p_val)
-#       output_p_values <- rbind(output_p_values, p_value_row)
-#       points(x + point_shift/x_denom, y, col="goldenrod", lwd=1, pch=1, xpd=NA)
-#       segments(x0=x[1], x1=x[1] + 0.25/x_denom + point_shift/x_denom, y0=mean(y), xpd=NA)
-#       segments(x0=x[1], x1=x[1], y0=mean_old, y1=mean(y), xpd=NA)
-#     }
-#   }
-#   ######################### Add the site category labels. ######################
-#   text(0, y_seed, label="Seed match:", adj=1, xpd=NA)
-#   text(0, y_thrp, label="3' pairing:", adj=1, xpd=NA)
-#   text(0, y_bulge, label="Offset (nt):", adj=1, xpd=NA)
-#   # # ############################## Add axes ##################################
-#   AddLinearAxis(2, tick.space=0.5, label.space=1,
-#                 label="Fold change (log2)")
-#   if (dual_site)  label <- "Dual sites"
-#   else            label <- "Single sites"
-#   y_label <- 1.15*y_const
-#   if (all_lin41_UTR)  x_use <- -1.75
-#   else                x_use <- -2.25
-#   text(x=x_use/x_denom, y=y_label, label=label, xpd=NA, adj=c(0, 0))
-#   ############################# Finish the plot ################################
-#   if (class(pdf.plot) == "character") {
-#     dev.off()
-#   }
-#   if (all_lin41_UTR) {
-#     output_p_values_global <<- output_p_values
-#   }
-# }
+    if (all_lin41_UTR) {
+      y_old <- y
+      mean_old <- mean(y)
+      inds <- which(log2fc_df[, "Seed"] == "lin-41_lin41_UTR")
+      log2fc_df_use <- log2fc_df[inds, 5:ncol(log2fc_df)]
+      x <- rep(x_start, length(unlist(log2fc_df_use)))
+      y <- unlist(log2fc_df_use) - bg_subtract
+      y_difs <- y - y_old
+      se_difference <- sd(y_difs)/sqrt(length(y_difs))
+      t_statistic <- mean(y_difs)/se_difference
+      p_val <- 2*pt(t_statistic, df=length(y) - 1)
+      # This versin of it does it treating the reps as unpaired, which is more
+      # similar to how the Tukey tests were done.
+      p_val <- t.test(y, y_old, alternative="two.sided", var.equal=FALSE)$p.value
+      p_value_row <- data.frame(site="lin-41", p_vals=p_val)
+      output_p_values <- rbind(output_p_values, p_value_row)
+      points(x + point_shift/x_denom, y, col="goldenrod", lwd=1, pch=1, xpd=NA)
+      segments(x0=x[1], x1=x[1] + 0.25/x_denom + point_shift/x_denom, y0=mean(y), xpd=NA)
+      segments(x0=x[1], x1=x[1], y0=mean_old, y1=mean(y), xpd=NA)
+    }
+  }
+  ######################### Add the site category labels. ######################
+  text(0, y_seed, label="Seed match:", adj=1, xpd=NA)
+  text(0, y_thrp, label="3' pairing:", adj=1, xpd=NA)
+  text(0, y_bulge, label="Offset (nt):", adj=1, xpd=NA)
+  # # ############################## Add axes ##################################
+  AddLinearAxis(2, tick.space=0.5, label.space=1,
+                label="Fold change (log2)")
+  if (dual_site)  label <- "Dual sites"
+  else            label <- "Single sites"
+  y_label <- 1.15*y_const
+  if (all_lin41_UTR)  x_use <- -1.75
+  else                x_use <- -2.25
+  text(x=x_use/x_denom, y=y_label, label=label, xpd=NA, adj=c(0, 0))
+  ############################# Finish the plot ################################
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+  if (all_lin41_UTR) {
+    output_p_values_global <<- output_p_values
+  }
+}
 
 
 
@@ -6960,10 +6960,12 @@ MakeFigure3 <- function(experiment="twist_reporter_assay_3p_2_tp",
   # A.__________________________________________________________________________
   # Illustrator schematic.
   # B.__________________________________________________________________________
-  # PlotMeanReporterRepression(experiment=experiment, pdf.plot="3.Bi")
-  # PlotMeanReporterRepression(experiment=experiment, dual_site=TRUE, pdf.plot="3.Bii")
-  # PrintTukeyPValues()
-  # PrintTukeyPValues(all_lin41_UTR=TRUE)
+  ## make PreprocessThreePrimeHighThroughputLibrary2
+  ## make CountThreePrimeHighThroughputLibraryVariants2
+  PlotMeanReporterRepression(experiment=experiment, pdf.plot="3.Bi")
+  PlotMeanReporterRepression(experiment=experiment, dual_site=TRUE, pdf.plot="3.Bii")
+  PrintTukeyPValues()
+  PrintTukeyPValues(all_lin41_UTR=TRUE)
 
   # # C.__________________________________________________________________________  
   PlotReporterEfficacyAgainstProgKds(experiment_rep=experiment, pdf.plot="3.C")
@@ -8234,9 +8236,9 @@ MakeFigure7s2 <- function(model_values=FALSE, mm_and_bulge=TRUE) {
 
 
 ############## END FIGURES FOR THE PAPER #######################################
-MakeFigure1()
-MakeFigure2()
-# MakeFigure3()
+# MakeFigure1()
+# MakeFigure2()
+MakeFigure3()
 # MakeFigure4()
 # MakeFigure5()
 # MakeFigure7()

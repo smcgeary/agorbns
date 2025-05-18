@@ -40,13 +40,13 @@ def main():
     time_start = time.time()
     arguments = ["miRNA", "experiment", "condition", "n_constant", "sitelist",
                  "-mir_start", "-split16", "-n_lag", "-alt_mirna", 
-                 "-uniq_binary", "-buffer3p_binary",
-                 "-jobs", "-test_binary"]
+                 "-uniq_binary", "-buffer3p_binary", "-jobs", "-test_binary",
+                 "-original_binary", "-filt_by_original_binary"]
     ## Consider getting rid of n_lag argument.
-    args = parse_arguments(arguments)
-    (mirna, experiment, condition, n_constant, sitelist, mir_start, split16,
-     n_lag, alt_mirna, uniq, buffer3p, jobs, test) = args
-
+    (
+        mirna, experiment, condition, n_constant, sitelist,mir_start, split16,
+        n_lag, alt_mirna, uniq, buffer3p, jobs, test, original, filt_by_original
+    ) = parse_arguments(arguments)
 
     if alt_mirna:
         _mirna = Mirna(alt_mirna)
@@ -98,12 +98,19 @@ def main():
         extension = "%s_uniq" %(extension)
     else:
         read_dir = "reads"
-
     if buffer3p:
         extension = "%s_buffer3p" %(extension)
+    if original:
+        extension = "%s_original" %(extension)
+    if filt_by_original:
+        extension = "%s_filtbyoriginal" %(extension)
 
     if condition == "I_combined":
-        if "tp" in experiment:
+        ## 250316
+        ## Put this in to check the input reads I got from the whitehead server
+        if original:
+            input_list = [(mirna, experiment, "I_combined")]
+        elif "tp" in experiment:
             if mirna == "miR-7-24nt":
                 input_list = [(mirna, experiment, condition)]
             else:
@@ -130,7 +137,13 @@ def main():
 
     # For each file in the input list, perform the multiprocessing:
     for i_input in input_list:
-        reads_path = get_analysis_path(i_input[0], i_input[1], i_input[2], read_dir)
+        print(i_input)
+        print(read_dir)
+        reads_path = get_analysis_path(
+            i_input[0], i_input[1], i_input[2], read_dir, original=original,
+            filt_by_original=filt_by_original
+        )
+        print(reads_path)
         if not jobs:
             jobs = 1
         threads += multiproc_file(reads_path, int(jobs), assign_site, test,

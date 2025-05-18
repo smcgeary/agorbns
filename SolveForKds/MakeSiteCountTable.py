@@ -67,11 +67,12 @@ def main():
         "miRNA", "experiment", "n_constant", "sitelist", "-mir_start",
         "-start_mm", "-stop_mm", "-split16", "-uniq_binary", "-buffer3p_binary",
         "-comp_binary", "-c_k", "-m_k", "-new_binary", "-new2_binary",
-        "-zeros_binary"
+        "-zeros_binary", "-original_binary", "-filt_by_original_binary"
     ]
     (
         mirna, experiment, n_constant, sitelist, mir_start, start_mm, stop_mm,
-        split16, uniq, buffer3p, comp, c_k, m_k, new, new2, zeros
+        split16, uniq, buffer3p, comp, c_k, m_k, new, new2, zeros, original,
+        filt_by_original
     ) = parse_arguments(arguments)
     ### MOD The `new2` argument is there for the modification for the let-7a
     # reporter library experiments, in which the kds associated with the AAAA
@@ -118,10 +119,17 @@ def main():
         extension = "%s_c%sm%s" %(extension, c_k, m_k)
     if buffer3p:
         extension = "%s_buffer3p" %(extension)
+
     if new:
         extension = "%s_new" %(extension)
     elif new2:
         extension = "%s_new2" %(extension)
+
+    if original:
+        extension = "%s_original" %(extension)
+
+    if filt_by_original:
+        extension = "%s_filtbyoriginal" %(extension)
     # Make site table:
     sXc = make_data_table(_sitelist, experiment, extension, buffer3p=buffer3p,
                           comp=comp, include_zeros=zeros)

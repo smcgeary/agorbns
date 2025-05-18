@@ -409,7 +409,8 @@ def parse_arguments(arguments):
     return [args[i] for i in arguments_no_dash]
 
 
-def get_exp_info(mirna, experiment, condition, rep=None, nb=None, tp=None):
+def get_exp_info(mirna, experiment, condition, rep=None, nb=None, tp=None,
+                 raw_original=False, filt_by_original=False):
     """
     Retrieves the complete path to the zipped fastq file 
     in solexa_bartel/mcgeary.
@@ -431,17 +432,10 @@ def get_exp_info(mirna, experiment, condition, rep=None, nb=None, tp=None):
     csv_file = "Libraries.csv"
     # Load the database of experiments:
     with open(csv_file, 'U') as master:
-        print(master)
         library_list = csv.DictReader(master)
-        # print(list(library_list))
         # Determine the experiment to be analyzed
         exp_file = None
-        print(experiment)
-        print(condition)
-        print(mirna)
         for row in library_list:
-            print(row)
-            print(row["miRNA"])
             ## THIS CAN BE UN-COMMENTED AS A DIAGNOSTIC OF WHY THE PREPROCESSING
             ## ISN'T WORKING.
             # if row["SL"] == "15":
@@ -470,14 +464,18 @@ def get_exp_info(mirna, experiment, condition, rep=None, nb=None, tp=None):
         tar_string = ".tar"
     else:
         tar_string = ""
-
-    path = "/lab/solexa_public/Bartel/%s/QualityScore/" % (exp)
-    path = "data/raw/fastq/"
-    print(path)
-    file = "%s-s_%s_1_sequence.txt%s.gz" % (barcode, lane, tar_string)
-    file = "%s.fq.gz" % (SRR_number)
+    path_fastq = "data/raw/fastq_inds/%s_inds" %SRR_number
+    if raw_original:
+        path = "data/raw_original/%s/QualityScore/" % (exp)
+        file = "%s-s_%s_1_sequence.txt%s.gz" % (barcode, lane, tar_string)
+    else:
+        path = "data/raw/fastq/"
+        file = "%s.fq.gz" % (SRR_number)
     full_path = path + file
-    return full_path, spikes, tag, barcode
+    if raw_original or filt_by_original:
+        return full_path, spikes, tag, barcode, path_fastq
+    else:
+        return full_path, spikes, tag, barcode
 
 
 def ensure_directory(directory):
@@ -497,7 +495,7 @@ def ensure_directory(directory):
         os.makedirs(directory)
 
 def get_analysis_path(mirna, experiment, condition, analysis_type, ext = "",
-                      suffix = "txt"):
+                      suffix = "txt", original=False, filt_by_original=False):
     """Generates the intended path and name reads extracted from the fastq
         file.
 
@@ -511,13 +509,15 @@ def get_analysis_path(mirna, experiment, condition, analysis_type, ext = "",
         Returns:
             The string representing the full path to the output file.
     """
-    path_outer = "data/processed/"
+    if original:
+        path_outer= "data/processed_original/"
+    else:
+        path_outer = "data/processed/"
+    if filt_by_original:
+        condition += "_filtbyoriginal"
     path_inner = "%s/%s/%s" % (mirna, experiment, analysis_type)
     directory = path_outer + path_inner
-    print(directory)
-    # sys.stdout.flush()
     ensure_directory(directory)
-
     full_path = "%s/%s%s.%s" % (directory, condition, ext, suffix)
     return full_path
 
@@ -548,7 +548,6 @@ def multiproc_file(path, n_jobs, func, test, *args, **kwargs):
             print("path exists using python command:")
             print(os.path.exists(path))
             wc_proc = Popen("wc -l %s" %(path), shell=True, stdout=PIPE)
-            # print(wc_proc.communicate()[0])
         print("path:")
         print(path)
         if test:
@@ -593,19 +592,23 @@ def multiproc_file(path, n_jobs, func, test, *args, **kwargs):
             else:
                 byte_convert = False
             args = [i for i in args] + [byte_convert]
+            args = args + [i_jobs*process_size]
         if func.__name__ in ["get_read_structural_data", "get_plfold_matrix",
                              "check_GCTTCCG"]:
             args = [i for i in args] + [i_jobs]
         # Boolean conditional used for preprocessing, because the `.txt.tar.gz`
         # files need to be converted from bytes to characters, while the
         # `.txt.gz` files are alreay read as characters.
-
         while n_jobs > 1:
             print(process_size*mult)
             print(process_size)
             print(mult)
             job_reads = [file_in.readline() for i in range(process_size*mult)]
             i_jobs += 1
+            ## THIS PART IS ADDED TO GET THE GLOBAL NUMBERS OF LINES TO BE ABLE
+            ## TO FIGURE OUT WHERE WHAT THE ACTUAL LINE IS OF THE READS.
+            if func.__name__ == "check_read":
+                args[-1] = (i_jobs - 1)*process_size
             if func.__name__ in ["get_read_structural_data", "get_plfold_matrix",
                                  "check_GCTTCCG"]:
                 args[-1] += 1
@@ -618,6 +621,10 @@ def multiproc_file(path, n_jobs, func, test, *args, **kwargs):
             while line:
                 final_job.append(line)
                 line = file_in.readline()
+            ## THIS PART IS ADDED TO GET THE GLOBAL NUMBERS OF LINES TO BE ABLE
+            ## TO FIGURE OUT WHERE WHAT THE ACTUAL LINE IS OF THE READS.
+            if func.__name__ == "check_read":
+                args[-1] = i_jobs*process_size
             if func.__name__ in ["get_read_structural_data", "get_plfold_matrix",
                                  "check_GCTTCCG"]:
                 args[-1] += 1

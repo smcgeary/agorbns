@@ -68,6 +68,17 @@ if ("-L" %in% args) {
   str.L <- ""
 }
 
+
+if ("-filt_by_original" %in% args) {
+  filt_by_original <- TRUE
+  str.filt_by_original <- "_filtbyoriginal"
+} else {
+  filt_by_original <- FALSE
+  str.filt_by_original <- ""
+}
+
+
+
 # MAIN #########################################################################
 mir_list <- unlist(strsplit(mirna, ","))
 exp_list  <- unlist(strsplit(experiment, ","))
@@ -76,8 +87,10 @@ mir_exp_list <- data.frame(mirna=rep(mir_list, length(exp_list)),
 
 
 sXc <- apply(mir_exp_list, 1, function(row) {
-  SitesAndSingleFlanksXCounts(row[1], site, experiment=row[2], n_constant=n_constant,
-                              sitelist=sitelist, buffer=buffer)
+  SitesAndSingleFlanksXCounts(
+    row[1], site, experiment=row[2], n_constant=n_constant, sitelist=sitelist,
+    buffer=buffer, filt_by_original=filt_by_original
+  )
 })
 
 if (length(sXc) > 1) {
@@ -92,16 +105,18 @@ print(str_condition)
 
 
 # Separate site sequences from data file.
-kOutputFile <- GetAnalysisPath(mirna, experiment,
-                               condition=sprintf("%s_%s_%s%s%s_PAPER",
-                                                 n_constant, sitelist, site,
-                                                 str.buffer, str.combined),
-                               analysis_type="kds_PAPER")
+kOutputFile <- GetAnalysisPath(
+  mirna, experiment, condition=sprintf(
+    "%s_%s_%s%s%s_PAPER%s", n_constant, sitelist, site, str.buffer,
+    str.combined, str.filt_by_original
+  ), analysis_type="kds_PAPER"
+)
 print(kOutputFile)
-site.pars <- EquilPars(mir_list[1], exp_list[1], n_constant=n_constant,
-                       sitelist=sitelist, buffer=buffer, combined=combined)
 
-
+site.pars <- EquilPars(
+  mir_list[1], exp_list[1], n_constant=n_constant, sitelist=sitelist,
+  buffer=buffer, combined=combined, filt_by_original=filt_by_original
+)
 
 InitializeFlankParsEquil <- function(sXc, combined=TRUE) {
   n_mir = length(sXc)
@@ -117,6 +132,7 @@ InitializeFlankParsEquil <- function(sXc, combined=TRUE) {
   pars[inds_shared] <- log(site.pars[inds_shared,]$Mean)
   return(pars)
 }
+
 OptimizeEquilFlankPars <- function(sXc, pars=NULL, fixed=fixed, AGOfixed=FALSE) {
     time_start <- proc.time()[3]
     tick <<- 0
@@ -161,28 +177,28 @@ OptimizeEquilFlankPars <- function(sXc, pars=NULL, fixed=fixed, AGOfixed=FALSE) 
     n_z <- length(zero_grad)
     # pars_global <<- initial.pars
     solution <- optim(initial.pars,
-                    CostC,
-                    gr = GradC,
-                    data = data_vec,
-                    dil  = dil,
-                    l = l,
-                    L = L_,
-                    Y = Y,
-                    n_i = n_i,
-                    n_j = n_j,
-                    n_mir = n_mir,
-                    zero_grad = zero_grad,
-                    n_z = n_z,
-                    fixed = fixed,
-                    norm_constant=norm_constant,
-                    upper_ = upper,
-                    lower_ = lower,
-                    plot_ = plot_,
-                    plotname = plotname_,
-                    method = "L-BFGS-B",
-                    lower=lower,
-                    upper=upper,
-                    control = list(maxit=10000000, factr=10000, fnscale=1))
+                      CostC,
+                      gr = GradC,
+                      data = data_vec,
+                      dil  = dil,
+                      l = l,
+                      L = L_,
+                      Y = Y,
+                      n_i = n_i,
+                      n_j = n_j,
+                      n_mir = n_mir,
+                      zero_grad = zero_grad,
+                      n_z = n_z,
+                      fixed = fixed,
+                      norm_constant=norm_constant,
+                      upper_ = upper,
+                      lower_ = lower,
+                      plot_ = plot_,
+                      plotname = plotname_,
+                      method = "L-BFGS-B",
+                      lower=lower,
+                      upper=upper,
+                      control = list(maxit=10000000, factr=10000, fnscale=1))
 
   output.pars <- solution$par
   print(proc.time()[3] - time_start)
@@ -275,7 +291,7 @@ for (j in 0:(ncol(sXc[[1]]) - 4)) {
       sXc.resample.withhold <- sXc.resample
     }
     if (i == 1) {
-      print(colnames(sXc.resample.withhold[[1]]))    
+      print(colnames(sXc.resample.withhold[[1]]))
     }
     if (mirna == "miR-7-23nt" & experiment == "equilibrium2_nb") {
       AGOfixed <- TRUE
@@ -300,7 +316,7 @@ for (j in 0:(ncol(sXc[[1]]) - 4)) {
       print(kOutputFile)
       write.table(file=kOutputFile, output, sep="\t", quote = FALSE)
     })
-    if (sitelist == "12mers") {
+    if (sitelist == "12mers") { # This is never used.
       kds.mean <- log(10^rowMeans(resampled.pars, na.rm=TRUE))
       # print(kds.mean[1:5])
       write.table(file=kOutputFileMean, kds.mean, sep="\t", quote=FALSE,

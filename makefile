@@ -31,10 +31,11 @@ DIR_plfold = AnalyzeStructure/# Used GitHub2019 ********************************
 SCR_plfold = MakeSiteStructureAnalysisFiles.sh # Used GitHub2019 ***************
 
 DIR_as2022 = AssignSiteTypes2022/# Used GitHub2022 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+DIR_ra2022 = ReporterAssay2022/# Used GitHub2022 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 SCR_akpl = AssignKmersProgrammedLib.sh# Used GitHub2022 $$$$$$$$$$$$$$$$$$$$$$$$
 SCR_abs = AssignBipartiteSitesProgrammedLib.sh# GitHub2022 $$$$$$$$$$$$$$$$$$$$$
 SCR_absr = AssignBipartiteSitesRandLib.sh# GitHub2022 $$$$$$$$$$$$$$$$$$$$$$$$$$
-
+SCR_crv2022 = CountReporterVariants2022.sh# GitHub2022 $$$$$$$$$$$$$$$$$$$$$$$$
 
 
 SCR_abms = AssignBipartiteMismatchSitesProgrammedLib.py # Used for ThrP paper
@@ -138,6 +139,25 @@ else
 	BUFFER3P = ''
 endif
 
+ifdef original
+	ORIGINAL = ' -original'
+else
+	ORIGINAL = ''
+endif
+
+ifdef raw_original
+	RAW_ORIGINAL = ' -raw_original'
+else
+	RAW_ORIGINAL = ''
+endif
+
+ifdef filt_by_original
+	FILT_BY_ORIGINAL = ' -filt_by_original'
+else
+	FILT_BY_ORIGINAL = ''
+endif
+
+
 ifdef unique
 	UNIQUE = ' -uniq'
 else
@@ -199,10 +219,6 @@ endif
 LEN_MAX = 11
 LEN_MIN = 4
 
-
-
-
-
 PreprocessAgoPurity :
 	@(job=""; \
 	for MIRNA in miR-1 miR-155; do \
@@ -229,7 +245,7 @@ PreprocessData :
 		DUP_REPS="1 2 3 4"; \
 		for CON in $(COND_P); do \
 			for REP in 1 2; do \
-				job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
+				job=$$job_prefix"$$CON -rep $$REP"$(RAW_ORIGINAL)$(FILT_BY_ORIGINAL)"$(test) -jobs 19"; \
 				echo $$job; \
 				$$job; \
 			done ;\
@@ -237,14 +253,14 @@ PreprocessData :
 	else \
 		DUP_REPS="1 2"; \
 		for CON in $(COND_P); do \
-			job=$$job_prefix"$$CON$(test) -jobs 19"; \
+			job=$$job_prefix"$$CON"$(RAW_ORIGINAL)$(FILT_BY_ORIGINAL)"$(test) -jobs 19"; \
 			echo $$job; \
 			$$job; \
 		done; \
 	fi; \
 	for CON in $(COND_P_DUP); do \
 		for REP in $$DUP_REPS; do \
-			job=$$job_prefix"$$CON -rep $$REP$(test) -jobs 19"; \
+			job=$$job_prefix"$$CON -rep $$REP"$(RAW_ORIGINAL)$(FILT_BY_ORIGINAL)"$(test) -jobs 19"; \
 			echo $$job; \
 			$$job; \
 		done; \
@@ -256,7 +272,7 @@ AssignSites :
 	@(for CON in $(COND); do \
 		job="sbatch $(DIR_as)$(SCR_as) $(mirna) $(exp) $$CON "; \
 		job=$$job"$(n_constant) $(sitelist)"; \
-		job=$$job$(BUFFER3P)" -jobs 19"; \
+		job=$$job$(BUFFER3P)$(ORIGINAL)$(FILT_BY_ORIGINAL)" -jobs 19"; \
 		echo $$job; \
 		$$job; \
 	done)
@@ -273,7 +289,8 @@ AssignMiRNAsAgoPurity :
 AssignFlanks :
 	@(for CON in $(COND); do \
 		job="sbatch $(DIR_as)$(SCR_af) $(mirna) $(exp) $$CON "; \
-		job=$$job"$(n_constant) $(sitelist)"$(BUFFER3P)" -jobs 19"; \
+		job=$$job"$(n_constant) $(sitelist)"; \
+		job=$$job$(BUFFER3P)$(FILT_BY_ORIGINAL)" -jobs 19"; \
 		echo $$job; \
 		$$job; \
 	done)
@@ -281,7 +298,7 @@ AssignFlanks :
 
 
 FitFlankKds :
-	@(job_py="conda run -n agorbns python $(DIR_kd)$(SCR_fc) $(mirna) $(exp) $(n_constant) $(sitelist)"$(BUFFER3P); \
+	@(job_py="conda run -n agorbns python $(DIR_kd)$(SCR_fc) $(mirna) $(exp) $(n_constant) $(sitelist)"$(BUFFER3P)$(FILT_BY_ORIGINAL); \
 	echo $$job_py; \
 	$$job_py; \
 	if [ "$(mirna)" = "miR-7-23nt" ]; then \
@@ -294,8 +311,8 @@ FitFlankKds :
 	echo $$DIR; \
 	for SITE in `cat $$DIR`; do \
 		echo $$SITE; \
-		job1="sbatch $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE"$(BUFFER3P); \
-		# job2="bsub Rscript $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE -nocombI"$(BUFFER3P); \
+		job1="sbatch $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE"$(BUFFER3P)$(FILT_BY_ORIGINAL); \
+		# job2="bsub Rscript $(DIR_kd)$(SCR_fkd) $(mirna) $(exp) $(n_constant) $(sitelist) $$SITE -nocombI"$(BUFFER3P)$(FILT_BY_ORIGINAL); \
 		echo $$job1; \
 		# echo $$job2; \
 		$$job1; \
@@ -305,32 +322,49 @@ FitFlankKds :
 
 
 PreprocessAllEquilibrium :
-	make mirna=miR-1 exp=equilibrium PreprocessData
-	make mirna=let-7a exp=equilibrium PreprocessData
-	make mirna=miR-155 exp=equilibrium PreprocessData
-	make mirna=miR-124 exp=equilibrium PreprocessData
-	make mirna=lsy-6 exp=equilibrium PreprocessData
-	make mirna=miR-7-23nt exp=equilibrium2_nb PreprocessData
-	make mirna=mir-1 exp=equil_pilot PreprocessData
-	make mirna=miR-1 exp=equilibrium_tp PreprocessData
-	make mirna=miR-124 exp=equilibrium_2_tp PreprocessData
-	make mirna=miR-7-24nt exp=equilibrium_tp PreprocessData	
-	job="sbatch $(DIR_pp)$(SCR_pp) miR-1 kin_pilot I_TGT -jobs 19"; \
-	echo $$job; \
-	$$job; \
-	job="sbatch $(DIR_pp)$(SCR_pp) miR-7-24nt equilibrium3_nb I -jobs 19"; \
+	# make mirna=miR-1 exp=equilibrium filt_by_original=1 PreprocessData
+	# make mirna=let-7a exp=equilibrium filt_by_original=1 PreprocessData
+	# make mirna=miR-155 exp=equilibrium filt_by_original=1 PreprocessData
+	# make mirna=miR-124 exp=equilibrium filt_by_original=1 PreprocessData
+	# make mirna=lsy-6 exp=equilibrium filt_by_original=1 PreprocessData
+	# make mirna=miR-7-23nt exp=equilibrium2_nb filt_by_original=1 PreprocessData
+	# make mirna=mir-1 exp=equil_pilot filt_by_original=1 PreprocessData
+	# make mirna=miR-1 exp=equilibrium_tp filt_by_original=1 PreprocessData
+	# make mirna=miR-124 exp=equilibrium_2_tp filt_by_original=1 PreprocessData
+	# make mirna=miR-7-24nt exp=equilibrium_tp filt_by_original=1 PreprocessData	
+	# job="sbatch $(DIR_pp)$(SCR_pp) miR-1 kin_pilot I_TGT -filt_by_original -jobs 19"; \
+	# echo $$job; \
+	# $$job; \
+	job="sbatch $(DIR_pp)$(SCR_pp) miR-7-24nt equilibrium3_nb I -filt_by_original -jobs 19"; \
 	echo $$job; \
 	$$job
+
+	# make mirna=miR-1 exp=equilibrium PreprocessData
+	# make mirna=let-7a exp=equilibrium PreprocessData
+	# make mirna=miR-155 exp=equilibrium PreprocessData
+	# make mirna=miR-124 exp=equilibrium PreprocessData
+	# make mirna=lsy-6 exp=equilibrium PreprocessData
+	# make mirna=miR-7-23nt exp=equilibrium2_nb PreprocessData
+	# make mirna=mir-1 exp=equil_pilot PreprocessData
+	# make mirna=miR-1 exp=equilibrium_tp PreprocessData
+	# make mirna=miR-124 exp=equilibrium_2_tp PreprocessData
+	# make mirna=miR-7-24nt exp=equilibrium_tp PreprocessData	
+	# job="sbatch $(DIR_pp)$(SCR_pp) miR-1 kin_pilot I_TGT -jobs 19"; \
+	# echo $$job; \
+	# $$job; \
+	# job="sbatch $(DIR_pp)$(SCR_pp) miR-7-24nt equilibrium3_nb I -jobs 19"; \
+	# echo $$job; \
+	# $$job
 
 
 
 AssignSitesAllEquilibrium :
-	make mirna=miR-1 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) buffer=1 AssignSites
-	make mirna=let-7a exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
-	make mirna=miR-155 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
-	make mirna=miR-124 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
-	make mirna=lsy-6 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
-	make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=$(n_constant) sitelist=$(sitelist) AssignSites
+	make mirna=miR-1 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) buffer=1 filt_by_original=1 AssignSites
+	make mirna=let-7a exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) filt_by_original=1 AssignSites
+	make mirna=miR-155 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) filt_by_original=1 AssignSites
+	make mirna=miR-124 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) filt_by_original=1 AssignSites
+	make mirna=lsy-6 exp=equilibrium n_constant=$(n_constant) sitelist=$(sitelist) filt_by_original=1 AssignSites
+	make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=$(n_constant) sitelist=$(sitelist) filt_by_original=1 AssignSites
 
 AssignAllSitesEquilibriumAllSiteLists :
 	# make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=canonical buffer=1 AssignSites
@@ -443,6 +477,36 @@ AssignBipartiteSitesRandom :
 		$$job; \
 	done)
 
+
+PreprocessThreePrimeHighThroughputLibrary2 :
+	# sbatch $(DIR_pp)$(SCR_pp) miR-1 twist_reporter_assay_3p_2_tp duplex_parallel -rep 1 -jobs 19
+	sbatch $(DIR_pp)$(SCR_pp) let-7a twist_reporter_assay_3p_2_tp duplex_parallel -rep 1 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel -rep 1 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 1 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 1 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 1 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) miR-1 twist_reporter_assay_3p_2_tp duplex_parallel -rep 2 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) let-7a twist_reporter_assay_3p_2_tp duplex_parallel -rep 2 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel -rep 2 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 2 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 2 -jobs 19
+	# sbatch $(DIR_pp)$(SCR_pp) let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 2
+
+
+CountThreePrimeHighThroughputLibraryVariants2 :
+	sbatch $(DIR_ra2022)$(SCR_crv2022) let-7a twist_reporter_assay_3p_2_tp duplex_parallel -rep 1 -jobs 19
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp duplex_parallel 1
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp duplex_parallel 1
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel 1
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel 1
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel 1
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel 1
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp duplex_parallel 2
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp duplex_parallel 2
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel 2
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel 2
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel 2
+	# bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel 2
 
 
 
@@ -1533,31 +1597,31 @@ PreprocessThreePrimeHighThroughputLibrary :
 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_tp no_duplex_parallel -rep 2
 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_tp no_duplex_parallel -rep 2
 
-PreprocessThreePrimeHighThroughputLibrary2 :
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp duplex_series -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp duplex_series -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_series -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_series -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp no_duplex_series -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_series -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp duplex_parallel -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp duplex_parallel -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 1
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp duplex_series -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp duplex_series -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_series -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_series -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp no_duplex_series -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_series -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp duplex_parallel -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp duplex_parallel -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 2
-	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 2
+# PreprocessThreePrimeHighThroughputLibrary2 :
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp duplex_series -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp duplex_series -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_series -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_series -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp no_duplex_series -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_series -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp duplex_parallel -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp duplex_parallel -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 1
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp duplex_series -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp duplex_series -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_series -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_series -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp no_duplex_series -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_series -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp duplex_parallel -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp duplex_parallel -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 2
+# 	bsub -q 18 -n 20 -R span[hosts=1] python PreProcessReads/MakeReadFile.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel -rep 2
 
 
 
@@ -1588,32 +1652,6 @@ CountThreePrimeHighThroughputLibraryVariants :
 	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_tp no_duplex_parallel 2
 	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_tp no_duplex_parallel 2
 
-
-CountThreePrimeHighThroughputLibraryVariants2 :
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp duplex_series 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp duplex_series 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_series 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_series 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp no_duplex_series 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_series 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp duplex_parallel 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp duplex_parallel 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel 1
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp duplex_series 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp duplex_series 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_series 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_series 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp no_duplex_series 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_series 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp duplex_parallel 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp duplex_parallel 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp duplex_parallel 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py miR-1 twist_reporter_assay_3p_2_tp no_duplex_parallel 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a twist_reporter_assay_3p_2_tp no_duplex_parallel 2
-	bsub -q 18 -n 20 -R span[hosts=1] python ThreePrimePaperLet7ReporterAssay/CountReporterVariants3p.py let-7a-21nt twist_reporter_assay_3p_2_tp no_duplex_parallel 2
 
 
 

@@ -39,12 +39,14 @@ PlotEquilSiteWithInput <- function(mirna, column, experiment="equilibrium",
                                    n_constant=5, sitelist="resubmissionfinal",
                                    uniq=FALSE, combined=TRUE, singleonly=TRUE,
                                    height=4.5, width=4.5, buffer=FALSE,
+                                   original=FALSE, filt_by_original=FALSE,
                                    pdf.plot=FALSE) {
   sXc <- SubfunctionCall(SitesXCounts)
   x <- Norm(sXc[,1 + combined])
   y <- Norm(sXc[,column])
   site.colors <- kSiteColors[rownames(sXc)]
   print(23)
+  # break
   SubfunctionCall(FigureSaveFile)
   print(24)
   xmin <- 5e-4
@@ -64,7 +66,8 @@ PlotEquilSiteWithInput <- function(mirna, column, experiment="equilibrium",
   Points(x, y, col=site.colors)
   R <- y/x
   names(R) <- rownames(sXc)
-  A.stock <- kAgoStock[mirna, "equilibrium"] 
+  A.stock <- kAgoStock[mirna, "equilibrium"]
+  print(A.stock)
   A <- as.numeric(colnames(sXc)[column])/100*A.stock
   A.pM <- round(A*1000, 1)
   xy <- GetPlotFractionalCoords(0.05, 0.95, log='xy')
@@ -90,6 +93,7 @@ PlotSiteEnrichments <- function(mirna, experiment="equilibrium", n_constant=5,
                                 added.text=FALSE, datalines=FALSE,
                                 modellines=TRUE, leg_rescale=1, write_kds=FALSE,
                                 height=4.5, width=8.1, xpos=20, ypos=20,
+                                original=FALSE, filt_by_original=FALSE,
                                 pdf.plot=FALSE) {
   ################## LOAD AND PROCESS COUNT DATA ###############################
   # Note: The "remove_sites" boolean is whether or not to remove sites that have
@@ -128,27 +132,45 @@ PlotSiteEnrichments <- function(mirna, experiment="equilibrium", n_constant=5,
     pars.matrix <- pars.matrix[names_keep, , drop=FALSE]
   }
   # Log10-transform the data, and remove the `_Kd` and `_$(mirna)` suffix.
+  print(pars.matrix)
   pars.model <- log10(pars.matrix$Mean)
+  print(pars.model)
+  # pars.model[length(pars.model)] <- pars.model[length(pars.model)] - 0.03
   names(pars.model) <- rownames(pars.matrix)
   names(pars.model)[nrow(sXc) + 1] <- "bg"
   names(pars.model)[nrow(sXc) + 2] <- "AGO"
+  # print(pars.model)
+  # break
 
   # Ago dilution in the data:
   A.dil.data <- sapply(colnames(data), as.numeric)
+  # print("A.dil.data:")
+  # print(A.dil.data)
   # Get the 
   A.stock.measured <- kAgoStock[mirna, experiment]
-  A.stock.pars <- 10^pars.model["AGO"]
+  # print("A.stock.measured:")
+  # print(A.stock.measured)
+  # A.stock.pars <- 10^pars.model["AGO"]
+  # print("A.stock.pars:")
+  # print(A.stock.pars)
   pM_from_dil <- A.stock.measured*1000/100
+  # print("pM_from_dil:")
+  # print(pM_from_dil)
   A.pM.data <- A.dil.data*pM_from_dil
-
+  # print("A.pM.data:")
+  # print(A.pM.data)
   xmin <- signif(min(A.pM.data)/(10^0.25), 1)
   xmax <- signif(max(A.pM.data)*(10^0.75), 1)
+  # print("xmin and xmax:")
+  # print(c(xmin, xmax))
   A.dil.model <- exp(seq(log(min(A.pM.data)/(10^0.25)/pM_from_dil),
                          log(max(A.pM.data)*(10^0.25)/pM_from_dil),
                      length=100))
 
   A.pM.model <-A.dil.model/100*A.stock.measured *1000
-
+  # print(min(A.pM.model))
+  # print(max(A.pM.model))
+  # break
   # Get the model curves.
   model <- SubfunctionCall(EquilSingleSiteModelFreq, pars=pars.model,
                            A.dil=A.dil.model)
@@ -196,12 +218,15 @@ PlotSiteEnrichments <- function(mirna, experiment="equilibrium", n_constant=5,
                           y.intersp=0.86, yjust=0)
     kd.matrix <- pars.matrix[1:(nrow(data)-1),][rank_by_kd, ]
     kds <- kd.matrix$Mean
+    print(kds)
+    # break
     # Part where text is formatted:
     kd_mags <- floor(log10(kds))
     # error_upper <- (kd.matrix$Upper_CI-kds)/(10^kd_mags)
     error_lower <- (kds - kd.matrix$Lower_CI)/(10^kd_mags)
     # error_mags_upper <- floor(log10(error_upper))
     error_mags_lower <- floor(log10(error_lower))
+    print(error_lower)
     text_matrix <- cbind(kds/(10^kd_mags), c(error_lower),
                              -error_mags_lower)
     # Plot the title to the legend ("Relative Kd:").
@@ -272,6 +297,7 @@ PlotSiteKds <- function(mirna, experiment="equilibrium", n_constant=5,
                         added.text=FALSE, L=FALSE, trim_mir_name=TRUE,
                         buffer=FALSE, compcorrect=FALSE, tpomit=FALSE,
                         wobble=FALSE, plot.nconstant=FALSE, showalignment=FALSE,
+                        filt_by_original=FALSE,
                         height=5, width=6, xpos=20, ypos=20, pdf.plot=FALSE) {
   # Get kds for all site-types of the mirna.
   sXc <- SubfunctionCall(SitesXCounts)
@@ -517,7 +543,7 @@ PlotSiteOccupancy <- function(mirna, experiment="equilibrium", n_constant=5,
                               singleonly=TRUE, combined=TRUE, width=10,
                               buffer=FALSE, uniq=FALSE, adjusted_height=FALSE,
                               bgoff=FALSE, collapse_AA=FALSE, L=FALSE,
-                              compcorrect=FALSE, wobble=FALSE,
+                              compcorrect=FALSE, wobble=FALSE, filt_by_original=FALSE,
                               pdf.plot=FALSE, xpos=20, ypos=20) {
   # Get the site count matrix and the parameter matrix.
   sXc <- SubfunctionCall(SitesXCounts)
@@ -1040,7 +1066,7 @@ PlotSiteOccupancy <- function(mirna, experiment="equilibrium", n_constant=5,
 # 3A____________________________________________________________________________
 PlotPositionalKds <- function(experiment="equilibrium", n_constant=5,
                               buffer=FALSE, sitelist="centered11",
-                              combined=TRUE, sigleonly=TRUE,
+                              combined=TRUE, sigleonly=TRUE, filt_by_original=FALSE,
                               width=10, height=5, pdf.plot=FALSE) {
   # Get kds for all site-types of the mirna.
   SubfunctionCall(FigureSaveFile)
@@ -1123,7 +1149,8 @@ PlotPositionalKds <- function(experiment="equilibrium", n_constant=5,
 Plot8merVs7merCombined <- function(experiment="equilibrium", n_constant=5,
                                    sitelist="resubmissionfinal", buffer=FALSE,
                                    singleonly=TRUE, dG.table=3, height=4,
-                                   width=5, pdf.plot=FALSE) {
+                                   width=5, filt_by_original=FALSE,
+                                   pdf.plot=FALSE) {
   # dG.df <- read.table(file=paste0("canonical_sites_mfe_", dG.table, ".txt"))
   # colnames(dG.df) <- gsub("(^.*)\\.(.*$)", colnames(dG.df), replace="\\1-\\2")
   R <- 1.987e-3 # in kcal K-1 mol-1
@@ -1198,7 +1225,8 @@ Plot8merVs7merCombined <- function(experiment="equilibrium", n_constant=5,
 # 3C____________________________________________________________________________
 PlotSiteKdsVsSPS <- function(experiment="equilibrium", n_constant=5,
                              sitelist="resubmissionfinal", combined=TRUE, buffer=FALSE,
-                             dG.table=3, height=8.5, pdf.plot=FALSE) {
+                             filt_by_original=FALSE, dG.table=3, height=8.5,
+                             pdf.plot=FALSE) {
   dG.df <- read.table("general/miRNA_canonical_site_energies.txt")
   colnames(dG.df) <- gsub("(^.*)\\.(.*$)", colnames(dG.df), replace="\\1-\\2")
   print(dG.df)
@@ -1454,8 +1482,8 @@ PlotSiteFlankEnrichments <- function(mirna,  site, experiment="equilibrium",
                                      n_constant=5, sitelist="resubmissionfinal",
                                      combined=TRUE, combined_site=TRUE,
                                      buffer=FALSE, bgoff=FALSE,
-                                     L=FALSE, height=5, width=6,
-                                     pdf.plot=FALSE) {
+                                     L=FALSE, filt_by_original=FALSE,
+                                     height=5, width=6, pdf.plot=FALSE) {
   sXc <- SubfunctionCall(SitesAndSingleFlanksXCounts)
   pars.matrix <- SubfunctionCall(GetFlankKds)
   pars.matrix <- pars.matrix[grep("mer|None|^AGO|^bg", rownames(pars.matrix)), ]
@@ -1527,7 +1555,8 @@ PlotSiteFlankKds <- function(mirna, experiment="equilibrium", n_constant=5,
                              combined_sites=TRUE, singleonly=TRUE, buffer=FALSE,
                              xmin=log10(1e-7),
                              adjusted_height=FALSE, plot.nconstant=FALSE,
-                             height=5, width=8, xpos=20, ypos=20, pdf.plot=FALSE) {
+                             filt_by_original=FALSE, height=5, width=8, xpos=20,
+                             ypos=20, pdf.plot=FALSE) {
 
   pars.matrix <- SubfunctionCall(EquilPars, combined=combined_sites)
   site.kds <- pars.matrix[1:(nrow(pars.matrix) - 3), ]
@@ -1558,10 +1587,12 @@ PlotSiteFlankKds <- function(mirna, experiment="equilibrium", n_constant=5,
   tick <<- 1
   flank.kds <- sapply(sites, GetFullMirnaSiteFlankKds, mirna=mirna,
                       experiment=experiment, n_constant=n_constant,
-                      sitelist=sitelist, combined=combined, buffer=buffer)
+                      sitelist=sitelist, combined=combined, buffer=buffer,
+                      filt_by_original=filt_by_original)
   flank.kds_CI <- sapply(sites, GetFullMirnaSiteFlankKds_CI, mirna=mirna,
                       experiment=experiment, n_constant=n_constant,
-                      sitelist=sitelist, combined=combined, buffer=buffer)
+                      sitelist=sitelist, combined=combined, buffer=buffer,
+                      filt_by_original=filt_by_original)
   flank.kds_uCI <- flank.kds_CI[1:nrow(flank.kds), ]
   flank.kds_lCI <- flank.kds_CI[(nrow(flank.kds) + 1):(2*nrow(flank.kds)), ]
   rownames(flank.kds_uCI) <- rownames(flank.kds)
@@ -1583,7 +1614,7 @@ PlotSiteFlankKds <- function(mirna, experiment="equilibrium", n_constant=5,
                           sites=data.sites,
                           cols=data.colors,
                           stringsAsFactors=FALSE)
-  if (pdf.plot == "4.B") {
+  if (grepl("4.B", pdf.plot)) {
     xmin <- log10(1e-5)
   }
   xmax <- log10(7)
@@ -1634,7 +1665,7 @@ PlotSiteFlankKds <- function(mirna, experiment="equilibrium", n_constant=5,
        y=unique(flanks.df$rank),
        labels=ConvertTtoUandMmtoX(unique(flanks.df$sites)),
        adj=0, col= "black", xpd=NA)
-  if (pdf.plot == "4.B") {
+  if (grepl("4.B", pdf.plot)) {
     bar_pos <- -4.5
   } else {
     bar_pos <- -6.5
@@ -1650,6 +1681,7 @@ PlotSiteFlankKds <- function(mirna, experiment="equilibrium", n_constant=5,
 # 4C-left_______________________________________________________________________
 PlotFlankLinModel <- function (experiment="equilibrium", n_constant=5,
                                sitelist="resubmissionfinal", leaveoneout=TRUE,
+                               filt_by_original=FALSE,
                                new_way=TRUE, height=5,
                                width=5, pdf.plot=FALSE) {
   # Extract the flanking dinucleotides:
@@ -1724,7 +1756,8 @@ PlotFlankLinModel <- function (experiment="equilibrium", n_constant=5,
 # 4C-right______________________________________________________________________
 PlotFlankLinModelCoefficients <- function(experiment="equilibrium",
                                           n_constant=5,
-                                          sitelist="resubmissionfinal", width=4,
+                                          sitelist="resubmissionfinal", 
+                                          filt_by_original=FALSE, width=4,
                                           height=5, xpos=20, ypos=20,
                                           pdf.plot=FALSE) {
   coefs <- SubfunctionCall(GetFlankLMCoefs)
@@ -1800,13 +1833,12 @@ PlotFlankLinModelCoefficients <- function(experiment="equilibrium",
 
 
 # 4D____________________________________________________________________________
-PlotStructureVsFlankingKds <- function(mirna, site, condition="I_combined",
-                                       combined=TRUE, buffer=FALSE,
-                                       experiment="equilibrium", n_constant=5,
-                                       sitelist="resubmissionfinal", mir.start=1, mir.stop=14,
-                                       absolute=TRUE, noconstant=FALSE,
-                                       height=5, width=5, xpos=20, ypos=20,
-                                       pdf.plot=FALSE) {
+PlotStructureVsFlankingKds <- function(
+  mirna, site, condition="I_combined", combined=TRUE, buffer=FALSE,
+  experiment="equilibrium", n_constant=5, sitelist="resubmissionfinal",
+  mir.start=1, mir.stop=14, absolute=TRUE, noconstant=FALSE,
+  filt_by_original=FALSE, height=5, width=5, xpos=20, ypos=20, pdf.plot=FALSE
+) {
   # Window size for normalizing the pl_fold with the accessibility:
   win <- 1/(mir.stop - mir.start + 1)
   # Get the flanking kds:
@@ -2151,29 +2183,38 @@ PlotMiR1_KmersCorrelation <- function(n_constant=5, kmer_len=9, buffer=TRUE,
 ## FIGURES FOR RBNS EQUILIBRIUM PAPER ##########################################
 MakeFigure1 <- function(uniq=FALSE) {
   ## To make this figure need run these commands in the command line:
-  ## make PreprocessAllEquilibrium
-  ## make AssignSites mirna=miR-1 exp=equilibrium n_constant=5 buffer=1 sitelist=canonical
-  ## python SolveForKds/MakeSiteCountTable.py miR-1 equilibrium 5 canonical -buffer
+  ## make PreprocessAllEquilibrium filt_by_original=1
+  ## make AssignSites mirna=miR-1 exp=equilibrium n_constant=5 buffer=1 sitelist=canonical filt_by_original=1
+  ## python SolveForKds/MakeSiteCountTable.py miR-1 equilibrium 5 canonical -buffer -filt_by_original
   message("Making Fig. 1")
+  # PlotEquilSiteWithInput("miR-1", 7, sitelist="canonical", combined=FALSE,
+  #                        buffer=TRUE, original=FALSE, pdf.plot="1.C")
+
   PlotEquilSiteWithInput("miR-1", 7, sitelist="canonical", combined=FALSE,
-                         buffer=TRUE, pdf.plot="1.C")
+                         buffer=TRUE, filt_by_original=TRUE, pdf.plot="1.C_filt")
+
   message("Done 1.C")
   ## python SolveForKds/MakeMultiSiteCountTable.py miR-1 equilibrium 5 canonical -buffer3p
-  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 canonical -buffer3p -nocombI -single
+  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 canonical -buffer3p -nocombI -single -filt_by_original
+  # PlotSiteEnrichments("miR-1", sitelist="canonical", combined=FALSE,
+  #                     buffer=TRUE, write_kds=TRUE, original=FALSE, pdf.plot="1.D")
   PlotSiteEnrichments("miR-1", sitelist="canonical", combined=FALSE,
-                      buffer=TRUE, write_kds=TRUE, pdf.plot="1.D")
+                      buffer=TRUE, write_kds=TRUE, filt_by_original=TRUE, pdf.plot="1.D_filt")
+
+
   message("Done 1.D")
-  ## make AssignSites mirna=miR-1 exp=equilibrium n_constant=5 buffer=1 sitelist=resubmissionfinal
-  ## python SolveForKds/MakeSiteCountTable.py miR-1 equilibrium 5 resubmissionfinal -buffer
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-1 equilibrium 5 resubmissionfinal -buffer
-  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer -nocombI -single
-  PlotSiteEnrichments("miR-1", combined=FALSE, remove_sites=FALSE, buffer=TRUE,
-                      pdf.plot="1.E")
+  ## make AssignSites mirna=miR-1 exp=equilibrium n_constant=5 buffer=1 sitelist=resubmissionfinal -filt_by_original
+  ## python SolveForKds/MakeSiteCountTable.py miR-1 equilibrium 5 resubmissionfinal -buffer -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-1 equilibrium 5 resubmissionfinal -buffer -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer3p -single -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer3p -nocombI -single -filt_by_original
+  PlotSiteEnrichments("miR-1", combined=FALSE, remove_sites=FALSE, buffer=TRUE, filt_by_original=TRUE,
+                      pdf.plot="1.E_filt")
   message("Done 1.E")
-  PlotSiteKds("miR-1", combined=FALSE, remove_sites=FALSE,
-              buffer=TRUE, pdf.plot="1.F")
+  PlotSiteKds("miR-1", combined=FALSE, remove_sites=FALSE, filt_by_original=TRUE,
+              buffer=TRUE, pdf.plot="1.F_filt")
   message("Done 1.F")
-  PlotSiteOccupancy("miR-1", combined=FALSE, buffer=TRUE, pdf.plot="1.G")
+  PlotSiteOccupancy("miR-1", combined=FALSE, buffer=TRUE, filt_by_original=TRUE, pdf.plot="1.G_filt")
   message("Done Fig. 1")
 }
 
@@ -2181,32 +2222,32 @@ MakeFigure1 <- function(uniq=FALSE) {
 
 MakeFigure2 <- function() {
   message("Making Fig. 2")
-  ## make AssignSites mirna=let-7a exp=equilibrium n_constant=5 sitelist=resubmissionfinal
-  ## python SolveForKds/MakeSiteCountTable.py let-7a equilibrium 5 resubmissionfinal 
-  ## python SolveForKds/MakeMultiSiteCountTable.py let-7a equilibrium 5 resubmissionfinal 
-  ## Rscript SolveForKds/FitSiteKds.R let-7a equilibrium 5 resubmissionfinal -single
-  ## make AssignSites mirna=lsy-6 exp=equilibrium n_constant=5 sitelist=resubmissionfinal
-  ## python SolveForKds/MakeSiteCountTable.py lsy-6 equilibrium 5 resubmissionfinal 
-  ## python SolveForKds/MakeMultiSiteCountTable.py lsy-6 equilibrium 5 resubmissionfinal 
-  ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 resubmissionfinal -single
+  ## make AssignSites mirna=let-7a exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1
+  ## python SolveForKds/MakeSiteCountTable.py let-7a equilibrium 5 resubmissionfinal -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py let-7a equilibrium 5 resubmissionfinal -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R let-7a equilibrium 5 resubmissionfinal -single -filt_by_original
+  ## make AssignSites mirna=lsy-6 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1
+  ## python SolveForKds/MakeSiteCountTable.py lsy-6 equilibrium 5 resubmissionfinal -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py lsy-6 equilibrium 5 resubmissionfinal -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 resubmissionfinal -single -filt_by_original
 
-  PlotSiteKds("let-7a", adjusted_height=TRUE, pdf.plot="2.Ai")
-  PlotSiteOccupancy("let-7a", adjusted_height=TRUE, pdf.plot="2.Aii")
-  ## make AssignSites mirna=miR-155 exp=equilibrium n_constant=5 sitelist=resubmissionfinal
-  ## python SolveForKds/MakeSiteCountTable.py miR-155 equilibrium 5 resubmissionfinal 
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-155 equilibrium 5 resubmissionfinal 
-  ## Rscript SolveForKds/FitSiteKds.R miR-155 equilibrium 5 resubmissionfinal -single
+  PlotSiteKds("let-7a", adjusted_height=TRUE, filt_by_original=TRUE, pdf.plot="2.Ai_filt")
+  PlotSiteOccupancy("let-7a", adjusted_height=TRUE, filt_by_original=TRUE, pdf.plot="2.Aii_filt")
+  ## make AssignSites mirna=miR-155 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1
+  ## python SolveForKds/MakeSiteCountTable.py miR-155 equilibrium 5 resubmissionfinal -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-155 equilibrium 5 resubmissionfinal -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-155 equilibrium 5 resubmissionfinal -single -filt_by_original
 
   PlotSiteKds("miR-155", adjusted_height=TRUE, pdf.plot="2.Bi")
   PlotSiteOccupancy("miR-155", adjusted_height=TRUE, pdf.plot="2.Bii")
-  ## make AssignSites mirna=miR-124 exp=equilibrium n_constant=5 sitelist=resubmissionfinal
-  ## python SolveForKds/MakeSiteCountTable.py miR-124 equilibrium 5 resubmissionfinal 
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-124 equilibrium 5 resubmissionfinal 
-  ## Rscript SolveForKds/FitSiteKds.R miR-124 equilibrium 5 resubmissionfinal -single
-  PlotSiteKds("miR-124", collapse_AA=TRUE, adjusted_height=TRUE,
-              pdf.plot="2.Ci")
+  ## make AssignSites mirna=miR-124 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1
+  ## python SolveForKds/MakeSiteCountTable.py miR-124 equilibrium 5 resubmissionfinal -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-124 equilibrium 5 resubmissionfinal -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-124 equilibrium 5 resubmissionfinal -single -filt_by_original
+  PlotSiteKds("miR-124", collapse_AA=TRUE, adjusted_height=TRUE, filt_by_original=TRUE,
+              pdf.plot="2.Ci_filt")
   PlotSiteOccupancy("miR-124", collapse_AA=TRUE, compcorrect=FALSE,
-                    adjusted_height=TRUE, pdf.plot="2.Cii")
+                    adjusted_height=TRUE, filt_by_original=TRUE, pdf.plot="2.Cii_filt")
 
   message("Done Fig. 2")
 }
@@ -2215,50 +2256,51 @@ MakeFigure3 <- function() {
   message("Making Fig. 3")
   ## make n_constant=5 sitelist=centered11 AssignSitesAllEquilibrium
 
-  ## python SolveForKds/MakeSiteCountTable.py miR-1 equilibrium 5 centered11 -buffer
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-1 equilibrium 5 centered11 -buffer
-  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 centered11 -buffer -nocombI -single
+  ## python SolveForKds/MakeSiteCountTable.py miR-1 equilibrium 5 centered11 -buffer -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-1 equilibrium 5 centered11 -buffer -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 centered11 -buffer3p -nocombI -single -filt_by_original
 
-  ## python SolveForKds/MakeSiteCountTable.py let-7a equilibrium 5 centered11
-  ## python SolveForKds/MakeMultiSiteCountTable.py let-7a equilibrium 5 centered11
-  ## Rscript SolveForKds/FitSiteKds.R let-7a equilibrium 5 centered11 -single
+  ## python SolveForKds/MakeSiteCountTable.py let-7a equilibrium 5 centered11 -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py let-7a equilibrium 5 centered11 -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R let-7a equilibrium 5 centered11 -single -filt_by_original
 
-  ## python SolveForKds/MakeSiteCountTable.py miR-155 equilibrium 5 centered11
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-155 equilibrium 5 centered11
-  ## Rscript SolveForKds/FitSiteKds.R miR-155 equilibrium 5 centered11 -single
+  ## python SolveForKds/MakeSiteCountTable.py miR-155 equilibrium 5 centered11 -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-155 equilibrium 5 centered11 -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-155 equilibrium 5 centered11 -single -filt_by_original
 
-  ## python SolveForKds/MakeSiteCountTable.py miR-124 equilibrium 5 centered11
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-124 equilibrium 5 centered11
-  ## Rscript SolveForKds/FitSiteKds.R miR-124 equilibrium 5 centered11 -single
+  ## python SolveForKds/MakeSiteCountTable.py miR-124 equilibrium 5 centered11 -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-124 equilibrium 5 centered11 -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-124 equilibrium 5 centered11 -single -filt_by_original
 
-  ## python SolveForKds/MakeSiteCountTable.py lsy-6 equilibrium 5 centered11
-  ## python SolveForKds/MakeMultiSiteCountTable.py lsy-6 equilibrium 5 centered11
-  ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 centered11 -single
+  ## python SolveForKds/MakeSiteCountTable.py lsy-6 equilibrium 5 centered11 -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py lsy-6 equilibrium 5 centered11 -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 centered11 -single -filt_by_original
 
-  ## make mirna=miR-7-23nt exp=equilibrium n_constant=5 sitelist=resubmissionfinal AssignSites
-  ## python SolveForKds/MakeSiteCountTable.py miR-7-23nt equilibrium2_nb 5 centered11
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-7-23nt equilibrium2_nb 5 centered11
-  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 centered11 -single
-
-
-
-  PlotPositionalKds(pdf.plot="3.A")
-
-  ## python SolveForKds/MakeSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal
-  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal -single
+  ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=centered11 filt_by_original=1 AssignSites
+  ## python SolveForKds/MakeSiteCountTable.py miR-7-23nt equilibrium2_nb 5 centered11 -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-7-23nt equilibrium2_nb 5 centered11 -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 centered11 -single -filt_by_original
 
 
-  Plot8merVs7merCombined(pdf.plot="3.B")
+
+  PlotPositionalKds(filt_by_original=TRUE, pdf.plot="3.A_filt")
+
+  ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal filt_by_original=1 AssignSites
+  ## python SolveForKds/MakeSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal -filt_by_original
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal -single -filt_by_original
+
+
+  Plot8merVs7merCombined(filt_by_original=TRUE, pdf.plot="3.B_filt")
 
   ## python SolveForKds/MakeEnergyTable.py
-  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer -nocombI
-  ## Rscript SolveForKds/FitSiteKds.R let-7a equilibrium 5 resubmissionfinal
-  ## Rscript SolveForKds/FitSiteKds.R miR-155 equilibrium 5 resubmissionfinal
-  ## Rscript SolveForKds/FitSiteKds.R miR-124 equilibrium 5 resubmissionfinal
-  ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 resubmissionfinal
-  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal
-  PlotSiteKdsVsSPS(pdf.plot="3.C")
+  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer3p -nocombI -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R let-7a equilibrium 5 resubmissionfinal -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-155 equilibrium 5 resubmissionfinal -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-124 equilibrium 5 resubmissionfinal -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 resubmissionfinal -filt_by_original
+  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal -filt_by_original
+  PlotSiteKdsVsSPS(filt_by_original=TRUE, pdf.plot="3.C_filt")
   # Currently unavailable because repression file not in repo.
   # PlotSiteKdsVsRepression("miR-1", combined=FALSE, buffer=TRUE, pdf.plot="3.D")
   # PlotSiteKdsVsRepression("let-7a", pdf.plot="3.E")
@@ -2272,42 +2314,49 @@ MakeFigure3 <- function() {
 
 MakeFigure4 <- function() {
   message("Making Fig. 4")
-  ## make AssignFlanks mirna=miR-1 exp=equilibrium n_constant=5 buffer=1 sitelist=resubmissionfinal
-  ## python SolveForKds/MakeFlankCountTable.py miR-1 equilibrium 5 resubmissionfinal -buffer
-  #### Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer
-  ## Rscript SolveForKds/FitFlankKds.R miR-1 equilibrium 5 resubmissionfinal 8mer -buffer
-  PlotSiteFlankEnrichments("miR-1", "8mer", combined=TRUE, combined_site=FALSE,
-                           buffer=TRUE, pdf.plot="4.A")
+  ## make mirna=miR-1 exp=equilibrium n_constant=5 buffer=1 sitelist=resubmissionfinal filt_by_original=1 AssignFlanks #
+  ## python SolveForKds/MakeFlankCountTable.py miR-1 equilibrium 5 resubmissionfinal -buffer3p -filt_by_original #
+  ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer3p -filt_by_original #
+  ## Rscript SolveForKds/FitFlankKds.R miR-1 equilibrium 5 resubmissionfinal 8mer -buffer3p -filt_by_original #
+  PlotSiteFlankEnrichments(
+    "miR-1", "8mer", combined=TRUE, combined_site=FALSE, buffer=TRUE,
+    filt_by_original=TRUE, pdf.plot="4.A_filt"
+  )
+  ## make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=resubmissionfinal buffer=1 filt_by_original=1 FitFlankKds #
+  PlotSiteFlankKds(
+    "miR-1", combined=TRUE, combined_site=FALSE, buffer=TRUE,
+    filt_by_original=TRUE, pdf.plot="4.B_filt"
+  )
+  ## make mirna=let-7a exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 AssignFlanks #
+  ## make mirna=miR-155 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 AssignFlanks #
+  ## make mirna=miR-124 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 AssignFlanks #
+  ## make mirna=lsy-6 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 AssignFlanks #
 
-  ## make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=resubmissionfinal buffer=1 FitFlankKds
-  PlotSiteFlankKds("miR-1", combined=TRUE, combined_site=FALSE, buffer=TRUE,
-                   pdf.plot="4.B")
+  ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal6merm8 filt_by_original=1 AssignSites #
+  ## python SolveForKds/MakeSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal6merm8 -filt_by_original #
+  ## python SolveForKds/MakeMultiSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal6merm8 -filt_by_original #
+  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal6merm8 -filt_by_original #
+  ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal6merm8 filt_by_original=1 AssignFlanks #
 
-  ## make mirna=let-7a exp=equilibrium n_constant=5 sitelist=resubmissionfinal AssignFlanks
-  ## make mirna=miR-155 exp=equilibrium n_constant=5 sitelist=resubmissionfinal AssignFlanks
-  ## make mirna=miR-124 exp=equilibrium n_constant=5 sitelist=resubmissionfinal AssignFlanks
-  ## make mirna=lsy-6 exp=equilibrium n_constant=5 sitelist=resubmissionfinal AssignFlanks
+  ## make mirna=let-7a exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 FitFlankKds #
+  ## make mirna=miR-155 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 FitFlankKds #
+  ## make mirna=miR-124 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 FitFlankKds #
+  ## make mirna=lsy-6 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 FitFlankKds #
+  ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal6merm8 filt_by_original=1 FitFlankKds #
+  PlotFlankLinModel(filt_by_original=TRUE, pdf.plot="4.C_left_filt")
+  PlotFlankLinModelCoefficients(filt_by_original=TRUE,
+                                pdf.plot="4.C_right_filt")
 
-  ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal6merm8 AssignSites
-  ## python SolveForKds/MakeSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal6merm8
-  ## python SolveForKds/MakeMultiSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal6merm8
-  ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal6merm8
-  ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal6merm8 AssignFlanks
-
-  ## make mirna=let-7a exp=equilibrium n_constant=5 sitelist=resubmissionfinal FitFlankKds
-  ## make mirna=miR-155 exp=equilibrium n_constant=5 sitelist=resubmissionfinal FitFlankKds
-  ## make mirna=miR-124 exp=equilibrium n_constant=5 sitelist=resubmissionfinal FitFlankKds
-  ## make mirna=lsy-6 exp=equilibrium n_constant=5 sitelist=resubmissionfinal FitFlankKds
-  ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal6merm8 FitFlankKds
-  PlotFlankLinModel(pdf.plot="4.C_left")
-  PlotFlankLinModelCoefficients(pdf.plot="4.C_right")
-
-  # sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond let-7a_equilibrium_I -buffer3p -jobs 19
-  # sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond miR-124_equilibrium_I -buffer3p -jobs 19
-  # sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -buffer3p -jobs 19
-  # sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond miR-1_kin_pilot_I_TGT -buffer3p -jobs 19
-  PlotStructureVsFlankingKds("miR-1", "8mer", condition="I_combined", combined=TRUE, buffer=TRUE,
-                             pdf.plot="4.D")
+  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond let-7a_equilibrium_I -buffer3p -filt_by_original -jobs 19
+  ##### python AnalyzeStructure/MakeSiteStructureAnalysisFiles.py miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond let-7a_equilibrium_I -buffer3p -filt_by_original -test
+  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond miR-124_equilibrium_I -buffer3p -filt_by_original -jobs 19
+  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -buffer3p -filt_by_original -jobs 19
+  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond miR-1_kin_pilot_I_TGT -buffer3p -filt_by_original -jobs 19
+  PlotStructureVsFlankingKds(
+    "miR-1", "8mer", condition="I_combined", combined=TRUE, buffer=TRUE,
+    filt_by_original=TRUE,
+    pdf.plot="4.D_filt"
+  )
   message("Done Fig. 4")
 }
 
@@ -2428,9 +2477,9 @@ MakeRefereeResponseFigure <- function() {
 
 
  
-MakeFigure1()
-MakeFigure2()
-MakeFigure3()
+# MakeFigure1()
+# MakeFigure2()
+# MakeFigure3()
 MakeFigure4()
 # MakeFigureS1()
 # MakeFigureS2()

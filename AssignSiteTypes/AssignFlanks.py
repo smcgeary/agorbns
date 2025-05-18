@@ -6,27 +6,8 @@ imp.load_source("general", "general/general.py")
 imp.load_source("RBNS_methods", "general/RBNS_methods.py")
 from general import *
 from RBNS_methods import *
-# from sitetypes import get_seq_site_map
 
-
-# # FUNCTIONS
-# def LCSuff(seq1, seq2):
-#     if len(seq1) == 0 or len(seq2) == 0:
-#         return("")
-#     elif seq1[-1] == seq2[-1]:
-#         return(LCSuff(seq1[:-1], seq2[:-1]) + seq1[-1])
-#     else:
-#         return("")
-
-# def LCSubString(seq1, seq2):
-#     pres1 = [seq1[:i] for i in range(1, len(seq1) + 1)]
-#     pres2 = [seq2[:i] for i in range(1, len(seq2) + 1)]
-#     pre_pairs = [(i, j) for i in pres1 for j in pres2]
-#     LCs = [LCSuff(i[0], i[1]) for i in pre_pairs]
-#     LCmax = max([len(i) for i in LCs])
-#     return [i for i in LCs if len(i) == LCmax]
-
-
+# FUNCTIONS
 def assign_flanks_to_read(read_seqs, _mirna, _sitelist, experiment,
                              n_constant, rand_length, buffer3p):
     time_start = time.time()
@@ -45,10 +26,12 @@ def assign_flanks_to_read(read_seqs, _mirna, _sitelist, experiment,
 def main():
     time_start = time.time()
     arguments = ["miRNA", "experiment", "condition", "n_constant", "sitelist",
-                 "-buffer3p_binary", "-jobs", "-test_binary"]
+                 "-buffer3p_binary", "-jobs", "-test_binary",
+                 "-filt_by_original_binary"]
     args = parse_arguments(arguments)
     (mirna, experiment, condition,
-     n_constant, sitelist, buffer3p, jobs, test) = args
+     n_constant, sitelist, buffer3p, jobs, test, filt_by_original) = args
+    
     _mirna = Mirna(mirna)
 
     if experiment in ["equil_mmseed_nb", "equil_seed_nb"]:
@@ -61,6 +44,10 @@ def main():
 
     if buffer3p:
         extension = "%s_buffer3p" %(extension)
+
+    if filt_by_original:
+        extension = "%s_filtbyoriginal" %(extension)
+
 
     if condition == "I_combined":
         if "tp" in experiment:
@@ -87,7 +74,7 @@ def main():
     threads = []
     for i_input in input_list:
         print(i_input)
-        reads_path = get_analysis_path(i_input[0], i_input[1], i_input[2], "reads")
+        reads_path = get_analysis_path(i_input[0], i_input[1], i_input[2], "reads", filt_by_original=filt_by_original)
         if not jobs:
             jobs = 1
         threads += multiproc_file(reads_path, int(jobs), assign_flanks_to_read,

@@ -1526,6 +1526,11 @@ BgRNA <- function(x, l, bg) {
 EquilSingleSiteModelFreq <- function(pars, sXc, A.dil=NULL, combined=TRUE,
                                  addbg=TRUE, flowthrough=FALSE) {
   # Assign the kds and stock Ago concentration:
+  # print("combined:")
+  # print(combined)
+  # print(pars)
+  # print(sXc)
+  # break
   names(pars) <- gsub("(.*)_Kd", names(pars), replace="\\1")
   names(pars) <- gsub("(.*)_Kd", names(pars), replace="\\1")
   kds     <- 10^pars[rownames(sXc)]

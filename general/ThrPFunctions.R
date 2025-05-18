@@ -3519,93 +3519,92 @@ MakePairingMatrix <- function(
 #   }
 # }
 
-# #
-# GetThreePrimeReporterCounts <- function(
-#   mirna, experiment, condition, analysis_type="counts", rep=1, add_bulges=FALSE,
-#   aggregate=FALSE, all_lin41_UTR=FALSE
+GetThreePrimeReporterCounts <- function(
+  mirna, experiment, condition, analysis_type="counts", rep=1, add_bulges=FALSE,
+  aggregate=FALSE, all_lin41_UTR=FALSE
 
-# ) {
-#   file_path <- SubfunctionCall(GetAnalysisPath, ext=sprintf(",%s_120nt", rep))
-#   counts_df <- read.table(file_path, stringsAsFactors=FALSE, header=TRUE, sep="\t")
-#   # Remove the unmapped counts.
-#   counts_df <- counts_df[-nrow(counts_df), ]
-#   # Normalize to counts per million mapped reads.
-#   counts_df[, "Counts"] <- counts_df[, "Counts"]/sum(counts_df[, "Counts"])*1e6
-#   if (add_bulges) {
-#     counts_df$Bulge <- gsub("(A|T)", replacement="N", counts_df$Bulge)
-#     counts_df_new <- aggregate(
-#       x=counts_df$Counts,
-#       by=list(counts_df$Seed, counts_df$Location, counts_df$ThreePrime,
-#               counts_df$Bulge, counts_df$Context),
-#       FUN=sum
-#     )
-#     colnames(counts_df_new) <- c("Seed", "Location", "ThreePrime", "Bulge", "Context", "Counts")
+) {
+  file_path <- SubfunctionCall(GetAnalysisPath, ext=sprintf(",%s_120nt", rep))
+  counts_df <- read.table(file_path, stringsAsFactors=FALSE, header=TRUE, sep="\t")
+  # Remove the unmapped counts.
+  counts_df <- counts_df[-nrow(counts_df), ]
+  # Normalize to counts per million mapped reads.
+  counts_df[, "Counts"] <- counts_df[, "Counts"]/sum(counts_df[, "Counts"])*1e6
+  if (add_bulges) {
+    counts_df$Bulge <- gsub("(A|T)", replacement="N", counts_df$Bulge)
+    counts_df_new <- aggregate(
+      x=counts_df$Counts,
+      by=list(counts_df$Seed, counts_df$Location, counts_df$ThreePrime,
+              counts_df$Bulge, counts_df$Context),
+      FUN=sum
+    )
+    colnames(counts_df_new) <- c("Seed", "Location", "ThreePrime", "Bulge", "Context", "Counts")
 
-#     counts_df <- counts_df_new
-#   }
-#   if (aggregate) {
-#     # Convert the `No_site_#` sites to a single `None`.
-#     counts_df[, "Seed"] <- gsub("^No_site_[0-9]{1,2}$", "None", counts_df[, "Seed"])
-#     # Add up all of the site-type possibilities.
-#     sum_df <- aggregate(
-#       x=counts_df$Counts,
-#       by=list(counts_df$Seed, counts_df$Location, counts_df$ThreePrime,
-#               counts_df$Bulge),
-#       FUN=sum
-#     )
-#     counts_df_global <<- counts_df[which(counts_df$Seed == "8mer" &
-#                                       counts_df$Location == "left"), ]
-#     colnames(sum_df) <- c("Seed", "Location", "ThreePrime", "Bulge", "Counts")
-#     # Optional portion in which all of the lin-41 UTR sequence contexts are
-#     # added to the dataframe.
-#     if (all_lin41_UTR) {
-#       # Get all of the lin-41 3-prime UTR contexts.
-#       counts_lin41_df <- counts_df[counts_df$Context == "lin-41_context", ]
-#       # Make an analogous dataframe to that of the first summed matrix.
-#       # Note: the only purpose this serves in practice is to sum the counts for
-#       # the seven distinct no-sites corresponding to the lin-41 sequence
-#       # context.
-#       sum_lin41_df <- aggregate(
-#         x=counts_lin41_df$Counts,
-#         by=list(counts_lin41_df$Seed, counts_lin41_df$Location,
-#                 counts_lin41_df$ThreePrime, counts_lin41_df$Bulge),
-#         FUN=sum
-#       )
-#       colnames(sum_lin41_df) <- c("Seed", "Location", "ThreePrime",
-#                                   "Bulge", "Counts")
-#       sum_lin41_df$Seed <- paste0(sum_lin41_df$Seed, "_lin41_UTR")
-#       sum_df <- rbind(sum_df, sum_lin41_df)
-#     }
-#     # # Add the lin-41 3'UTR into the dataframe.
-#     # lin_41_row <- counts_df[counts_df$Seed == "lin-41" & counts_df$Context == "lin-41_context", ]
-#     # lin_41_row[1] <- "lin-41_UTR"
-#     # print(lin_41_row)
-#     # lin_41_row <- lin_41_row[c("Seed", "Location",
-#     #                            "ThreePrime", "Bulge", "Counts")]
-#     # sum_df <- rbind(sum_df, lin_41_row)
-#     counts_df <- sum_df
-#   }
-#   return(counts_df)
-# }
+    counts_df <- counts_df_new
+  }
+  if (aggregate) {
+    # Convert the `No_site_#` sites to a single `None`.
+    counts_df[, "Seed"] <- gsub("^No_site_[0-9]{1,2}$", "None", counts_df[, "Seed"])
+    # Add up all of the site-type possibilities.
+    sum_df <- aggregate(
+      x=counts_df$Counts,
+      by=list(counts_df$Seed, counts_df$Location, counts_df$ThreePrime,
+              counts_df$Bulge),
+      FUN=sum
+    )
+    counts_df_global <<- counts_df[which(counts_df$Seed == "8mer" &
+                                      counts_df$Location == "left"), ]
+    colnames(sum_df) <- c("Seed", "Location", "ThreePrime", "Bulge", "Counts")
+    # Optional portion in which all of the lin-41 UTR sequence contexts are
+    # added to the dataframe.
+    if (all_lin41_UTR) {
+      # Get all of the lin-41 3-prime UTR contexts.
+      counts_lin41_df <- counts_df[counts_df$Context == "lin-41_context", ]
+      # Make an analogous dataframe to that of the first summed matrix.
+      # Note: the only purpose this serves in practice is to sum the counts for
+      # the seven distinct no-sites corresponding to the lin-41 sequence
+      # context.
+      sum_lin41_df <- aggregate(
+        x=counts_lin41_df$Counts,
+        by=list(counts_lin41_df$Seed, counts_lin41_df$Location,
+                counts_lin41_df$ThreePrime, counts_lin41_df$Bulge),
+        FUN=sum
+      )
+      colnames(sum_lin41_df) <- c("Seed", "Location", "ThreePrime",
+                                  "Bulge", "Counts")
+      sum_lin41_df$Seed <- paste0(sum_lin41_df$Seed, "_lin41_UTR")
+      sum_df <- rbind(sum_df, sum_lin41_df)
+    }
+    # # Add the lin-41 3'UTR into the dataframe.
+    # lin_41_row <- counts_df[counts_df$Seed == "lin-41" & counts_df$Context == "lin-41_context", ]
+    # lin_41_row[1] <- "lin-41_UTR"
+    # print(lin_41_row)
+    # lin_41_row <- lin_41_row[c("Seed", "Location",
+    #                            "ThreePrime", "Bulge", "Counts")]
+    # sum_df <- rbind(sum_df, lin_41_row)
+    counts_df <- sum_df
+  }
+  return(counts_df)
+}
 
-# GetThreePrimeReporterFoldChanges <- function(
-#   mirna, exp_type, experiment="twist_reporter_assay_3p_2_tp", rep=1,
-#   add_bulges=FALSE, aggregate=FALSE, all_lin41_UTR=FALSE
-# ) {
-#   counts_df <<- SubfunctionCall(GetThreePrimeReporterCounts,
-#                                condition=sprintf("duplex_%s", exp_type))
-#   counts_bg_df <<- SubfunctionCall(GetThreePrimeReporterCounts,
-#                                   condition=sprintf("no_duplex_%s", exp_type))
-#   counts_global_bg <<- counts_df_global
-#   # counts_bg_df <- counts_bg_df[-which(counts_bg_df$Seed == ""), ]
-#   log_fc <- log(counts_df[, "Counts"]/counts_bg_df[, "Counts"], 2)
-#   fc_df <- cbind(counts_df, log_fc)
-#   # print(all_lin41_UTR)
-#   # print("in fold changes")
-#   # print(head(fc_df, 10))
-#   # print(tail(fc_df, 10))
-#   return(fc_df)
-# }
+GetThreePrimeReporterFoldChanges <- function(
+  mirna, exp_type, experiment="twist_reporter_assay_3p_2_tp", rep=1,
+  add_bulges=FALSE, aggregate=FALSE, all_lin41_UTR=FALSE
+) {
+  counts_df <<- SubfunctionCall(GetThreePrimeReporterCounts,
+                               condition=sprintf("duplex_%s", exp_type))
+  counts_bg_df <<- SubfunctionCall(GetThreePrimeReporterCounts,
+                                  condition=sprintf("no_duplex_%s", exp_type))
+  counts_global_bg <<- counts_df_global
+  # counts_bg_df <- counts_bg_df[-which(counts_bg_df$Seed == ""), ]
+  log_fc <- log(counts_df[, "Counts"]/counts_bg_df[, "Counts"], 2)
+  fc_df <- cbind(counts_df, log_fc)
+  # print(all_lin41_UTR)
+  # print("in fold changes")
+  # print(head(fc_df, 10))
+  # print(tail(fc_df, 10))
+  return(fc_df)
+}
 
 
 

@@ -24,7 +24,7 @@ def make_data_table(_sitelist, site, experiment, extension):
         # counts_flank_sites_map = {flank: 0 for flank in flanks}
         flank_path = get_analysis_path(mirna, experiment, cond, "flanks",
                                        extension)
-
+        print(flank_path)
         alt = pd.read_csv(flank_path, sep="\t", index_col=0)
         print(alt)
         if cond == "I_combined" and site == "8mer":
@@ -41,9 +41,11 @@ def main():
     time_start = time.time()
     # Define all the relevant arguments.
     arguments = ["miRNA", "experiment", "n_constant", "sitelist",
-    "-buffer3p_binary"]
-    (mirna, experiment,
-     n_constant, sitelist, buffer3p) = parse_arguments(arguments)
+    "-buffer3p_binary", "-original_binary", "-filt_by_original_binary"]
+    (
+        mirna, experiment, n_constant, sitelist, buffer3p, original,
+        filt_by_original
+    ) = parse_arguments(arguments)
     # Initialize objects:
     _mirna = Mirna(mirna)
     _sitelist = SiteList(_mirna, sitelist, 1)
@@ -56,6 +58,12 @@ def main():
     extension = "_%s_%s" %(n_constant, sitelist)
     if buffer3p:
         extension = "%s_buffer3p" %(extension)
+    if original:
+        extension = "%s_original" %(extension)
+    if filt_by_original:
+        extension = "%s_filtbyoriginal" %(extension)
+
+    print(extension)
     for site in _sitelist["names"]:
         # Get site-flanking count table:
         sfXc = make_data_table(_sitelist, site, experiment, extension)

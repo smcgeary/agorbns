@@ -247,6 +247,21 @@ if ("-new2" %in% args) {
   str.new2 <- ""
 }
 
+if ("-original" %in% args) {
+  original <- TRUE
+  str.original <- "_original"
+} else {
+  original <- FALSE
+  str.original <- ""
+}
+
+if ("-filt_by_original" %in% args) {
+  filt_by_original <- TRUE
+  str.filt_by_original <- "_filtbyoriginal"
+} else {
+  filt_by_original <- FALSE
+  str.filt_by_original <- ""
+}
 
 # MAIN #########################################################################
 # 1. Get data table:
@@ -260,7 +275,8 @@ sXc <- apply(mir_exp_list, 1, function(row) {
   sXc_i <- SitesXCounts(
     row[1], experiment=row[2], n_constant=n_constant, sitelist=sitelist,
     mirna.start=mirna.start, uniq=uniq, buffer=buffer, start_mm=start_mm,
-    stop_mm=stop_mm, new=new, new2=new2
+    stop_mm=stop_mm, new=new, new2=new2, original=original,
+    filt_by_original=filt_by_original
   )
   # This swaps the "8mer&4mer-m9.12|NA|8mer" sites in the progthrp counts for
   # the "8mer&4mer-m9.12|NA|Supp" site types, to cut down on the number of sites
@@ -279,9 +295,11 @@ sXc <- apply(mir_exp_list, 1, function(row) {
                    sXc_i_collapsed[grep("&", rownames(sXc_i_collapsed)), ])
   }
   if (single) {
-    msXc <- SitesXCounts(row[1], experiment=row[2], n_constant=n_constant,
-                         sitelist=sitelist, mirna.start=mirna.start,
-                         uniq=uniq, buffer=buffer, multisite=TRUE)
+    msXc <- SitesXCounts(
+      row[1], experiment=row[2], n_constant=n_constant, sitelist=sitelist,
+      mirna.start=mirna.start, uniq=uniq, buffer=buffer, multisite=TRUE,
+      original=original, filt_by_original=filt_by_original
+    )
     regex_split         <- ",\\(\\d*\\),"
     regex_split_capture <- ",\\((\\d*)\\),"
     regex_site <- "[^,]*"
@@ -428,18 +446,29 @@ str_condition <- sprintf(
 
 
 kOutputFileMean <- GetAnalysisPath(
-  mir_list[[1]], experiment, condition=sprintf("%s_logmean", str_condition),
+  mir_list[[1]], experiment, condition=sprintf(
+    "%s_logmean%s%s", str_condition, str.original, str.filt_by_original
+  ),
   analysis_type="kds_PAPER"
 )
-
 kOutputFileProg <- GetAnalysisPath(
-  mir_list[[1]], experiment, condition=sprintf("%s_sorted", str_condition),
+  mir_list[[1]], experiment, condition=sprintf(
+    "%s_sorted%s%s", str_condition, str.original, str.filt_by_original
+  ),
   analysis_type="kds_PAPER"
 )
 
 kOutputFileProg_temp <- GetAnalysisPath(
-  mir_list[[1]], experiment, condition=str_condition, analysis_type="kds_PAPER"
+  mir_list[[1]], experiment, condition=sprintf(
+    "%s%s%s", str_condition, str.original, str.filt_by_original
+  ), analysis_type="kds_PAPER"
 )
+
+print(kOutputFileMean)
+print(kOutputFileProg)
+print(kOutputFileProg_temp)
+
+
 
 # Assign the standard deviation, and the plot names for the optimization
 # routine.
@@ -581,9 +610,9 @@ OptimizeEquilSitePars <- function(sXc, pars=NULL, fixed=fixed, AGOfixed=FALSE,
   }
   # ind_l <- which(colnames(sXc[[1]]) == "I_combined")
   ind_l <- 1 + combined
-  # l <- Norm(sXc[[1]][, ind_l] + 1)*L_
-  l <- Norm(sXc[[1]][, ind_l])*L_
-  print("here)")
+  l <- Norm(sXc[[1]][, ind_l] + 1)*L_
+  # l <- Norm(sXc[[1]][, ind_l])*L_
+  # print("here)")
   Y <- colSums(data)
   dil <- as.numeric(gsub(",[1234]$", colnames(data), replace=""))/100.0
   n_i <- nrow(data)
@@ -615,7 +644,7 @@ OptimizeEquilSitePars <- function(sXc, pars=NULL, fixed=fixed, AGOfixed=FALSE,
   # that 
   t_global <<- 0
   time_interval <<- proc.time()[3]
-  message("About to enter the optimization routine.")
+  # message("About to enter the optimization routine.")
   solution <- optim(initial.pars,
                     CostC,
                     gr = GradC,
@@ -641,7 +670,7 @@ OptimizeEquilSitePars <- function(sXc, pars=NULL, fixed=fixed, AGOfixed=FALSE,
                     control = list(maxit=1000000, factr=factr, fnscale=1))
   # Print the total amount of time the optimization took.
   time_elapsed <- proc.time()[3] - time_start
-  print(time_elapsed)
+  # print(time_elapsed)
   # Return the optimized parameters.
   pars <- solution$par
   pars/log(10)
@@ -732,8 +761,11 @@ for (j in 0:max_j) {
                        resampled.pars.sort[, ceiling(0.975*i_full)])
     colnames(output) <- c("Full","Mean", "Lower_CI", "Median", "Upper_CI")
     sapply(mir_list, function(mirna) {
-      kOutputFile <- GetAnalysisPath(mirna, experiment, condition=str_condition,
-                               analysis_type="kds_PAPER")
+      kOutputFile <- GetAnalysisPath(
+        mirna, experiment, condition=sprintf(
+          "%s%s%s", str_condition, str.original, str.filt_by_original
+        ), analysis_type="kds_PAPER"
+      )
       print(kOutputFile)
       write.table(file=kOutputFile, output, sep="\t", quote = FALSE)
     })
@@ -747,8 +779,11 @@ for (j in 0:max_j) {
   }
 }
 
-write.table(file=sprintf("general/temp_%s_final_new_kds.txt", mirna),
-            output, sep="\t", quote=FALSE)
+print("final means:")
+print(rowMeans(resampled.pars, na.rm=TRUE))
+
+# write.table(file=sprintf("general/temp_%s_final_new_kds.txt", mirna),
+            # output, sep="\t", quote=FALSE)
 
 print("done")
 warnings()

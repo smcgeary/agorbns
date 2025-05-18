@@ -177,10 +177,10 @@ def get_read_structural_data(read_seqs, _mirna, _sitelist, site, experiment,
     for i_r, r in enumerate(read_seqs):
         # Get the read number:
         read = r.strip()
-        print(r)
+        # print(r)
         # Make Read object.
         _read = Read(read, rand_length, _mirna, n_constant, experiment)
-        sys.stdout.flush()
+        # sys.stdout.flush()
         # Find all sites within the read
         add_sites_from_read(_sitelist, _read, buffer_=buffer3p)
         if _read.sites[0].name != "None":
@@ -224,8 +224,16 @@ def get_read_structural_data(read_seqs, _mirna, _sitelist, site, experiment,
                 row = pd.DataFrame([flank, p_acc_pl, p_acc_geo, AU_cs, AU_win,
                                     AU_read, AU_win_wo, AU_read_wo],
                                    index=col_names).T
+                # print("row")
+                # print(row)
+                # sys.stdout.flush()
+                # print("flank_struct_map[flank]")
+                # print(flank_struct_map[flank])
+                # sys.stdout.flush()
                 # Add read info to flank content
-                flank_struct_map[flank] = flank_struct_map[flank].append(row)
+                flank_struct_map[flank] = pd.concat(
+                    [flank_struct_map[flank], row], ignore_index=True
+                )
 
     return flank_struct_map
 
@@ -237,13 +245,14 @@ def main():
     time_start = time.time()
 
     # Define all the relevant arguments.
-    arguments = ["miRNA", "experiment", "condition", "n_constant", "sitelist",
-                 "site", "win_start", "win_stop", "-alt_mir_exp_cond",
-                 "-buffer3p_binary", "-jobs", "-test_binary"]
+    arguments = [
+        "miRNA", "experiment", "condition", "n_constant", "sitelist", "site",
+        "win_start", "win_stop", "-alt_mir_exp_cond", "-buffer3p_binary",
+        "-jobs", "-test_binary", "-filt_by_original_binary"
+    ]
     (
         mirna, experiment, condition, n_constant, sitelist, site, win_start,
-        win_stop, alt_mir_exp_cond, buffer3p, 
-        jobs, test
+        win_stop, alt_mir_exp_cond, buffer3p, jobs, test, filt_by_original 
     ) = parse_arguments(arguments)
 
 
@@ -302,8 +311,11 @@ def main():
     threads = []
     for i_input in input_list:
         print(i_input)
-        reads_path = get_analysis_path(i_input[0], i_input[1], i_input[2],
-                                       "reads")
+        reads_path = get_analysis_path(
+            i_input[0], i_input[1], i_input[2], "reads",
+            filt_by_original=filt_by_original
+        )
+        print(reads_path)
         if not jobs:
             jobs = 1
         threads += multiproc_file(reads_path, int(jobs),
@@ -329,12 +341,15 @@ def main():
         extension = "%s_buffer3p" %(extension)
     if test:
         extension = "%s_test" %(extension)
+    if filt_by_original:
+        extension = "%s_filtbyoriginal" %(extension)
     # Write the output files. Here it is only written for the 8mer site type.
     out_path = get_analysis_path(
         mirna, experiment, condition,
         "structural_analysis/%s" %(site), ext=extension
     )
     print(out_path)
+    sys.exit()
     output.to_csv(out_path, sep="\t", header=True, index=False)
     print_time_elapsed(time_start)
 
