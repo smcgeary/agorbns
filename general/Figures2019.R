@@ -47,6 +47,9 @@ PlotEquilSiteWithInput <- function(mirna, column, experiment="equilibrium",
   site.colors <- kSiteColors[rownames(sXc)]
   print(23)
   # break
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   print(24)
   xmin <- 5e-4
@@ -139,8 +142,6 @@ PlotSiteEnrichments <- function(mirna, experiment="equilibrium", n_constant=5,
   names(pars.model) <- rownames(pars.matrix)
   names(pars.model)[nrow(sXc) + 1] <- "bg"
   names(pars.model)[nrow(sXc) + 2] <- "AGO"
-  # print(pars.model)
-  # break
 
   # Ago dilution in the data:
   A.dil.data <- sapply(colnames(data), as.numeric)
@@ -185,6 +186,9 @@ PlotSiteEnrichments <- function(mirna, experiment="equilibrium", n_constant=5,
 	  ymin <- 0.2
 	  ymax <- 300
   }
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   BlankPlot(log="xy", adjusted=TRUE)
   ######### Make the title ####################################################
@@ -219,7 +223,6 @@ PlotSiteEnrichments <- function(mirna, experiment="equilibrium", n_constant=5,
     kd.matrix <- pars.matrix[1:(nrow(data)-1),][rank_by_kd, ]
     kds <- kd.matrix$Mean
     print(kds)
-    # break
     # Part where text is formatted:
     kd_mags <- floor(log10(kds))
     # error_upper <- (kd.matrix$Upper_CI-kds)/(10^kd_mags)
@@ -367,6 +370,9 @@ PlotSiteKds <- function(mirna, experiment="equilibrium", n_constant=5,
     height <- (ymax*0.68 + 5)/4
   } else {
     height <- 4.5
+  }
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
   }
   SubfunctionCall(FigureSaveFile)
   par(mar=c(3, 0.5, 2, 2))
@@ -634,6 +640,9 @@ PlotSiteOccupancy <- function(mirna, experiment="equilibrium", n_constant=5,
   xmax_orig <- xmax
   ymin <- 0
   ymax <- height_ratio
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   BlankPlot(log="x", adjusted=TRUE)
   if (length(grep("miR-7", mirna)) > 0) {
@@ -1069,6 +1078,9 @@ PlotPositionalKds <- function(experiment="equilibrium", n_constant=5,
                               combined=TRUE, sigleonly=TRUE, filt_by_original=FALSE,
                               width=10, height=5, pdf.plot=FALSE) {
   # Get kds for all site-types of the mirna.
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   xmin <- 1e-4
   xmax <- 10
@@ -1158,6 +1170,9 @@ Plot8merVs7merCombined <- function(experiment="equilibrium", n_constant=5,
   total_x <- c(1)
   total_y <- c(1)
   print(1157)
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   xmin <- 0
   xmax <- length(kMirnasEquil)*4 + 7
@@ -1232,6 +1247,9 @@ PlotSiteKdsVsSPS <- function(experiment="equilibrium", n_constant=5,
   print(dG.df)
   R <- 1.987e-3 # in kcal K-1 mol-1
   T <- 310.15 # in K
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   ymin <- 1e-3
   ymax <- 1e6
@@ -1382,6 +1400,9 @@ PlotSiteKdsVsRepression <- function(mirna, experiment="equilibrium",
   l.xy <- GetPlotFractionalCoords(fx=-0.005, fy=-0.01, log='x', inv='x')
   yjust <- 0
   l.cex <- 1
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   BlankPlot(log='x', inv='x', adjusted=adjusted)
   AddLogAxis(1, label="Relative Kd", adj=TRUE)
@@ -1477,6 +1498,7 @@ PlotSiteKdsVsRepression <- function(mirna, experiment="equilibrium",
 ################################################################################
 # FIGURE 4
 ################################################################################
+
 # 4A____________________________________________________________________________
 PlotSiteFlankEnrichments <- function(mirna,  site, experiment="equilibrium",
                                      n_constant=5, sitelist="resubmissionfinal",
@@ -1517,6 +1539,9 @@ PlotSiteFlankEnrichments <- function(mirna,  site, experiment="equilibrium",
   # Set up the plotting limits
   ymin <- 0.2
   ymax <- 500
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   BlankPlot(log="xy", adjusted=TRUE)
   # Generate tickmarks for axis.
@@ -1625,6 +1650,9 @@ PlotSiteFlankKds <- function(mirna, experiment="equilibrium", n_constant=5,
   } else {
     height <- 5
   }
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   xpd=NA
   ranks <- unique(flanks.df$rank)
@@ -1689,6 +1717,9 @@ PlotFlankLinModel <- function (experiment="equilibrium", n_constant=5,
   # flank.lm <<- flank.lm
   # Data analysis for the 1st plot:
   # First linear model; splitting up all flanks by 5p and 3p sequence.
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   # 1st Plot:
   if (new_way) {
@@ -1768,7 +1799,9 @@ PlotFlankLinModelCoefficients <- function(experiment="equilibrium",
   xmax <- 24
   R <- 1.987e-3 # in kcal K-1 mol-1
   T <- 310.15 # in K
-
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   BlankPlot(inv='y')
   axis(1, at=c(4, 8, 12, 16)-2, labels=c("5p1", "5p2", "3p1", "3p2"),
@@ -1865,6 +1898,9 @@ PlotStructureVsFlankingKds <- function(
   xmax <- 1e-1
   ymin <- 0.0003
   ymax <- 0.2
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   BlankPlot(log='xy', inv='y')
   # Plot the line showing the linear fit of the relationshp:
@@ -1938,6 +1974,9 @@ PlotAllSamplePlFlanks <- function(mirna, site, condition, mir.start=1,
   ymin <- 0
   ymax <- 1
   # if (class(pdf.plot) == "character") pdf.plot <- paste0(pdf.plot, "_left")
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   BlankPlot(log='x')
   # Make the ECDF for the input, 0.4 Ago, and the resampled:
@@ -1992,18 +2031,10 @@ PlotAllSamplePlFlanks <- function(mirna, site, condition, mir.start=1,
 
 # S1A___________________________________________________________________________
 PlotAgoPrepPurity <- function(experiment="AGO_purity", height=4.5, width=4.5,
-                              xpos=20, ypos=20, pdf.plot=FALSE) {
-  # if (geo_test) str_geotest <- "_geotest"
-  # else          str_geotest <- ""
-  # if (geo_test) {
-  #   break
-  # }
-  # if (unique || no_marker || no_adapter || geo_test) {
-  #   break
-  # }
+                              xpos=20, ypos=20, filt_by_original=FALSE, pdf.plot=FALSE) {
   # Gets the expression data within the experiment:
   out <- do.call("cbind", lapply(c("miR-1", "miR-155"), function(mirna) {
-        counts <- GetMirnaCountData(mirna, "S1006_P")
+        counts <- GetMirnaCountData(mirna, "S1006_P", filt_by_original=filt_by_original)
         count_total <- rowSums(counts)
         names(count_total) <- rownames(counts)
         count_total
@@ -2013,23 +2044,35 @@ PlotAgoPrepPurity <- function(experiment="AGO_purity", height=4.5, width=4.5,
   out_global <<- out
   exclude_rows <- c("Unmapped", "18nt_marker", "30nt_marker", "5p_adapter", "3p_adapter")
   print(exclude_rows)
-  # Takes out the markers and unpammped categories from the table.
+  
+  # Takes out the markers and unmapped categories from the table.
   unmapped  <- out["Unmapped", ]
   out <- out[!(rownames(out) %in% exclude_rows),]
   # Isolate the exogenously loaded miRNA in the S100 extract
   exog_rows <- c("miR-1", "miR-155")
   spike_rows <- c("dme-miR-14-5p", "xtr-miR-427")
   spike_df <- out[spike_rows, ]
+  print(spike_df)
   exog_df <- t(t(out[exog_rows, ])/colSums(spike_df))
+  print(exog_df)
   endog_df <- t(t(out[setdiff(rownames(out), c(exog_rows, spike_rows)), ])/colSums(spike_df))
   row_order <- order(-rowSums(endog_df))
   endog_df <- endog_df[row_order,]
   ind_mir4521 <- grep("miR-4521", rownames(endog_df))
+  print(endog_df[ind_mir4521, ])
   endog_df <- rbind(endog_df[-ind_mir4521,], endog_df[ind_mir4521,])
   endog_df <- rbind(endog_df[1:10, ], colSums(endog_df[11:nrow(endog_df), ]))
+  print(endog_df)
   rownames(endog_df)[nrow(endog_df)] <- "Remaining miRNAs"
   norm_df <- rbind(exog_df, endog_df)
+  print(norm_df)
   norm_df <- round(t(t(norm_df)/colSums(norm_df))*1e6, 1)
+  print(norm_df)
+  
+  # Update the pdf name if using filtered data
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
   SubfunctionCall(FigureSaveFile)
   xmin <- 0
   xmax <- 1
@@ -2097,6 +2140,7 @@ PlotAgoPrepPurity <- function(experiment="AGO_purity", height=4.5, width=4.5,
 
 # S1B___________________________________________________________________________
 PlotMiR1_KmersCorrelation <- function(n_constant=5, kmer_len=9, buffer=TRUE,
+                                      filt_by_original=FALSE,
                                       pdf.plot=FALSE, height=4.5, width=4.5) {
   mirna <- "miR-1"
   exps <- c("equil_pilot", "equil_pilot", "equilibrium", "equilibrium")
@@ -2106,10 +2150,17 @@ PlotMiR1_KmersCorrelation <- function(n_constant=5, kmer_len=9, buffer=TRUE,
   } else {
     str.buffer <- ""
   }
+  if (filt_by_original) {
+    str.filt <- "_filtbyoriginal"
+  } else {
+    str.filt <- ""
+  }
+
   counts <- apply(cbind(exps, conditions), 1, function(row) {
     path <- GetAnalysisPath(mirna, row[1], row[2], analysis_type="kmers_cutoff_resub",
-                                 ext=sprintf("_%s_k%s%s", n_constant, kmer_len,
-                                             str.buffer))
+                                 ext=sprintf("_%s_k%s%s%s", n_constant, kmer_len,
+                                             str.buffer, str.filt)
+                            )
     print(path)
     fread(path)[[2]]
   })
@@ -2131,6 +2182,9 @@ PlotMiR1_KmersCorrelation <- function(n_constant=5, kmer_len=9, buffer=TRUE,
   for (site in rev(kSeedSites)) {
     seq <- GetSiteSeq(mirna, site)
     cols[grep(seq, kmers)] <- kSiteColors[site]
+  }
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
   }
   SubfunctionCall(FigureSaveFile)
   xmin <- 1e-1
@@ -2177,6 +2231,500 @@ PlotMiR1_KmersCorrelation <- function(n_constant=5, kmer_len=9, buffer=TRUE,
 }
 
 
+PlotEnrichmentsAgainstKds <- function(mirna, experiment="equilibrium",
+                                      n_constant=5,
+                                      sitelist="resubmissionfinal",
+                                      plotlist=FALSE, uniq=FALSE, combined=TRUE,
+                                      L=FALSE, buffer=FALSE, singleonly=FALSE,
+                                      leg_rescale=1, width=4.5, height=4.5,
+                                      filt_by_original=FALSE,
+                                      pdf.plot=FALSE) {
+  # Load the data:
+  sXc <- SubfunctionCall(SitesXCounts)
+  if (mirna %in% c("miR-7-23nt", "miR-7-24nt", "miR-7-25nt")) {
+    mirna_temp <- "miR-7"
+  }
+  pars.matrix <- SubfunctionCall(EquilPars)
+  pars.model <- log10(pars.matrix$Mean)
+  names(pars.model) <- rownames(pars.matrix)
+  names(pars.model)[nrow(sXc) + 1] <- "bg"
+  names(pars.model)[nrow(sXc) + 2] <- "AGO"
+  data <- GetDataEquil(sXc)
+  l <- SubfunctionCall(GetInputEquil)
+  if (L) {
+    l <- l/sum(l) * as.numeric(L)
+  }
+  # Ago dilution in the data:
+  pars <- pars.model
+  A.dil.data <- sapply(colnames(data), as.numeric)
+  A.stock.measured <- kAgoStock[mirna, "equilibrium"]
+  A.stock.pars <- 10^pars.model["AGO"]
+  pM_from_dil <- A.stock.measured*1000/100
+  A.pM.data <- A.dil.data*pM_from_dil
+  xmin <- 0.001
+  xmax <- 3
+  data.R <- EquilEnrichments(data, l)
+  # Set up the plotting limits
+  ymin <- 4e-1
+  ymax <- 1e3
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
+  SubfunctionCall(FigureSaveFile)
+  BlankPlot(log="xy", inv="x", adjusted=TRUE)
+  # Generate tickmarks for axis.
+  xy <- GetPlotFractionalCoords(fx=0.05, fy=0.95, log='xy', inv='x')
+  title.text <- mirna
+  text(xy[1], xy[2], labels = title.text, adj=c(0, 1))
+  names(pars.model) <- gsub("(.*)_Kd", names(pars.model), replace="\\1")
+
+  site_order <- order(pars.matrix$Mean[1:(nrow(data)-1)])
+  kd.matrix <- pars.matrix[1:(nrow(data)-1),][site_order, ]
+  sites.ordered <- rownames(data)[site_order]
+  kds <- c(kd.matrix$Mean, 1)
+  names(kds) <- c(rownames(kd.matrix), "None")
+  cols <- rep("black", nrow(sXc))
+  names(cols) <- sites.ordered
+  cols <- c(kSiteColors[sites.ordered], None="black")
+
+  sample_cols <- sapply(seq(25, 75, length.out=5), function(num) {
+    sprintf("gray%s", ceiling(num))
+    })
+  names(sample_cols) <- colnames(data)
+
+  xy <- GetPlotFractionalCoords(fx=0.05, fy=0.90, log='xy', inv='x')
+  Legend(xy, legend=c(ConvertTtoUandMmtoX(sites.ordered), "None"),
+         col=c(cols, "black"), y.intersp=0.9*leg_rescale)
+
+  A_stock <- kAgoStock[mirna, "equilibrium"]
+  dils <- as.numeric(colnames(data.R))
+  A_j <- A_stock*dils/100*1000
+  mags <- floor(log10(A_j))
+
+  # vals <- round(A_j, sapply(mags, function(mag_i) {
+  #   print(max(-mag_i + 1, 0))
+  #   max(-mag_i + 1, 0)
+  # }))
+  vals <- signif(A_j, 2)
+  vals_formated <- sapply(1:length(vals), function(i) {
+    sprintf("%s pM ",format(vals[i], nsmall=max(-mags[i] + 1, 0)))
+  })
+  colnames(pars.matrix) <- vals_formated
+
+
+  xy <- GetPlotFractionalCoords(fx=0.90, fy=0.375, log='xy', inv='x')
+  Legend(xy, legend=vals_formated, col=rep(NA, length(vals_formated)), lty=0,
+         y.intersp=0.9*leg_rescale, adj=1)
+
+  names(kds) <- sapply(names(kds), function(name_kd) {
+    substr(name_kd, 1, nchar(name_kd) - 3)
+    })
+
+  xy <- GetPlotFractionalCoords(fx=0.675, fy=0.375, log='xy', inv='x')
+  legend(x=xy[1], y=xy[2], legend=rep("", ncol(data.R)), col=sample_cols, lty=1,
+         seg.len=0.8, lwd=1.5, y.intersp=0.9*leg_rescale, bty="n")
+
+
+
+  names(kds)[length(kds)] <- c("None")
+
+  segments(xmax, ymin, xmin, ymax, lty=2)
+  sapply(colnames(data.R), function(col) {
+    lines(kds/kds["None"], data.R[names(kds),col]/data.R["None",col],
+          col=sample_cols[col], xpd=NA, lwd=1.5)      
+    Points(kds/kds["None"], data.R[names(kds),col]/data.R["None",col], col=cols)
+  })
+  AddLogAxis(1, label="Relative Kd", adj=TRUE)
+  AddLogAxis(2, label="Enrichment")
+
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+
+
+# S1C___________________________________________________________________________
+PlotPositionalEnrichment <- function(mirna, experiment="equilibrium",
+                                     condition=40, n_constant=5,
+                                     sitelist="resubmissionextendedfinal",
+                                     sites=kSeedSites, showdil=FALSE, xpos=20,
+                                     ypos=20, width=4.5, height=4.5, combI=FALSE,
+                                     buffer=FALSE, filt_by_original=TRUE,
+                                     pdf.plot=FALSE) {
+  sXc <- SubfunctionCall(SingleSitesXCounts)
+  if (combI) {
+    I <- SubfunctionCall(GetPositionalSites, condition="I_combined", single=TRUE,
+                         buffer=buffer)
+  } else {
+    I <- SubfunctionCall(GetPositionalSites, condition="I", single=TRUE,
+                         buffer=buffer)
+  }
+  A <- SubfunctionCall(GetPositionalSites,
+                       single=TRUE, buffer=buffer)
+  if (condition == 12.6) {
+    condition <- 12.65
+  } else if (condition == 1.26) {
+    condition <- 1.265
+  }
+  condition <- as.character(condition)
+  R_all <- A/sum(sXc[, condition])/(I/sum(sXc[, 1]))
+  R_overall_2 <- rowSums(A)/sum(sXc[, condition])/(rowSums(I)/sum(sXc[, 1]))
+  R_overall <- Norm(sXc[, condition])/Norm(sXc[, 1])
+  R_all <- data.matrix(R_all)
+  # R_all[which(is.na(R_all))] <- 1
+  names(R_overall) <- rownames(sXc)
+  if (length(sites)==0) {
+    sites <- rownames(sXc)
+  }
+  sites_use <- intersect(sites, rownames(sXc))
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
+  SubfunctionCall(FigureSaveFile)
+  xmin <- 2
+  if (identical(sites, kSeedSites)) {
+    xmax <- 40
+    offsets <- c(2, 2, 1, 1, 2, 0)
+  } else {
+    # Regex to remove the region after the period.
+    # Need to get rid of wobbles
+    sites_use <- grep("w", sites_use, invert=TRUE, value=TRUE)
+    print(sites_use)
+    ending_positions <- as.integer(gsub("^(.*)\\.(.*)$", sites_use,
+                                        replace="\\2", perl=TRUE))
+    print(ending_positions)
+    offsets <- -ending_positions - min(-ending_positions)
+  }
+  xmax <- 39
+
+  names(offsets) <- sites_use
+
+  ymin <- 1e-1
+  ymax <- 1e3
+  BlankPlot(log='y')
+  print(sites_use)
+  if (sites == k3PSites) {
+    print("THREE PEE SITES")
+    color_function <- colorRampPalette(c(kSiteColors["11mer-m9.19"],
+                                     kSiteColors["9mer-m11.19"]))
+    cols <- color_function(length(sites_use))
+    names(cols) <- sites_use
+  } else {
+    cols <- kSiteColors[sites_use]
+    names(cols) <- sites_use
+  }
+  for (site in sites_use) {
+    segments(xmin, R_overall_2[site], xmax, R_overall_2[site],
+             col=ConvertRColortoRGB(cols[site], alpha=0.5))
+
+    frac_A <- A[site, ]/sum(sXc[, condition])
+    frac_I <- I[site, ]/sum(sXc[, 1])
+    # Portion of code that only takes the "N0–N36" portion of the enrichment profiles
+    col_inds <- grep("N", names(frac_A))
+    R <- R_all[site,]
+    R_names <- names(R)
+    R <- unlist(c(rep(NaN, offsets[site]), R[1:(length(R) - offsets[site])]))
+    names(R) <- R_names
+    R <- R[ceiling(xmin):floor(xmax)]
+    Points(1:length(R), R, col=cols[site], line=TRUE)        
+  }
+  AddLinearAxis(1, tick.space=1, label.space=1, label="Position",
+                alt_lab=    c(1,  5, 10, 15, 20, 25, 30, 35, 37),
+                alt_lab_pos=c(6, 10, 15, 20, 25, 30, 35, 40, 42))
+  AddLogAxis(2, label="Enrichment")
+  xy <- GetPlotFractionalCoords(0.05, 1, log='y')
+  mirna.split <- paste0(strsplit(mirna, split="-")[[1]][1:2], collapse="-")
+  text(xy[1], xy[2], labels=mirna.split, adj=c(0, 1))  
+  if (showdil) {
+    xy <- GetPlotFractionalCoords(0.05, 1, log='y')
+    text(xy[1], xy[2], labels=condition, adj=c(0, 1))    
+  }
+  xy <- GetPlotFractionalCoords(0, 0, log='y')
+  Legend(xy, legend=sites_use[1:(length(sites_use)/2)],
+         col=cols[1:(length(sites_use)/2)],
+         xjust=0, yjust=0)
+  xy <- GetPlotFractionalCoords(0.5, 0, log='y')
+  Legend(xy, legend=sites_use[(length(sites_use)/2 + 1):length(sites_use)],
+         col=cols[(length(sites_use)/2 + 1):length(sites_use)],
+         xjust=0, yjust=0)
+
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+
+
+# S1C___________________________________________________________________________
+PlotWorstSiteKdCrossValScatter <- function(mirna, experiment="equilibrium",
+                                           n_constant=5, sitelist="resubmissionfinal",
+                                           buffer=FALSE, combined=TRUE,
+                                           singleonly=FALSE, papersites=FALSE,
+                                           filt_by_original=FALSE,
+                                           height=4.5, width=4.5,
+                                           adjusted_height=FALSE, xpos=20,
+                                           ypos=20, pdf.plot=FALSE) {
+  # Get kds for all site-types of the mirna.
+  sXc <- SubfunctionCall(SitesXCounts)
+  pars.matrix <- SubfunctionCall(EquilPars, Xval=TRUE)
+
+  if (papersites) {
+    pars.matrix_paper <- SubfunctionCall(EquilPars, sitelist="paper")
+    pars.matrix <- pars.matrix[intersect(rownames(pars.matrix_paper),
+                                         rownames(pars.matrix)), ]
+    sites <- gsub("_Kd", replace="", grep("_Kd", rownames(pars.matrix), value=TRUE))
+    sXc <- sXc[sites, ]
+  }
+  xmin <- 1e-4
+  xmax <- 10
+  ymin <- xmin
+  ymax <- xmax
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
+  SubfunctionCall(FigureSaveFile)
+  pars.matrix <- pars.matrix[, -1]
+  A_stock <- kAgoStock[mirna, "equilibrium"]
+  dils <- as.numeric(gsub("X.", replace="", colnames(pars.matrix)))
+  A_j <- A_stock*dils/100*1000
+  colnames(pars.matrix) <- A_j
+  cor_mat <- cor(log(pars.matrix))
+  min_cor_mat <- min(cor_mat)
+  leave_bool <- FALSE
+  BlankPlot(log='xy', inv='xy')
+  for (i in seq(1, 5)) {
+    for (j in seq(1, 5)) {
+      if (cor_mat[i, j] == min_cor_mat) {
+        kds_x <- pars.matrix[, i]
+        kds_y <- pars.matrix[, j]
+        AddLogAxis(1,
+                   label=sprintf("Fitted parameters; %s pM sample removed",
+                                 signif(A_j[i], 2)))
+        AddLogAxis(2,
+                   label=sprintf("Fitted parameters; %s pM sample removed",
+                                 signif(A_j[j], 2)))
+        abline(0, 1, lty=2)
+        Points(kds_x, kds_y, col=kSiteColors[c(rownames(sXc), "bg", "AGO")])
+        xy <- GetPlotFractionalCoords(0.05, 0.95, log='xy', inv='xy')
+        AddCorrelationToPlot(log(kds_x), log(kds_y), xy[1], xy[2],
+                             rsquared=TRUE, adj=c(0, 1))
+        leave_bool <- TRUE
+        break
+      }
+      if (leave_bool) {
+        break
+      }
+    }
+    if (leave_bool) {
+      break
+    }
+  }
+  ################################### LEGEND ###################################
+  xy <- GetPlotFractionalCoords(1.12, 0, log='xy', inv='xy')
+  legend_text <- c(sapply(kSeedSites, function(site) {
+    as.expression(bquote(.(site)~italic(K)[D]))
+    }), AGO_mir1_label, "[Nonspecific RNA]") 
+  Legend(xy, legend=legend_text, col=kSiteColors[c(kSeedSites, "bg", "AGO")],
+         xjust=1, yjust=0, y.intersp=0.9)
+  #################################### EXIT ####################################
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+# S1D___________________________________________________________________________
+PlotSiteKdCrossValMatrix <- function(mirna, experiment="equilibrium",
+                                     n_constant=5, sitelist="resubmissionfinal",
+                                     buffer=FALSE, combined=TRUE,
+                                     singleonly=FALSE, papersites=FALSE,
+                                     filt_by_original=FALSE,
+                                     height=4.5, width=4.5, xpos=20, ypos=20,
+                                     pdf.plot=FALSE) {
+  # Get kds for all site-types of the mirna.
+  sXc <- SubfunctionCall(SitesXCounts)
+  pars.matrix <- SubfunctionCall(EquilPars, Xval=TRUE)
+  if (papersites) {
+    pars.matrix_paper <- SubfunctionCall(EquilPars, sitelist="paper")
+    pars.matrix <- pars.matrix[intersect(rownames(pars.matrix_paper),
+                                         rownames(pars.matrix)), ]
+    sites <- gsub("_Kd", replace="", grep("_Kd", rownames(pars.matrix),
+                                          value=TRUE))
+    sXc <- sXc[sites, ]
+  }
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
+  SubfunctionCall(FigureSaveFile)
+  pars.matrix <- pars.matrix[, -1]
+  cor_mat <- cor(log(pars.matrix))
+
+  A_stock <- kAgoStock[mirna, "equilibrium"]
+  dils <- as.numeric(gsub("X.", replace="", colnames(pars.matrix)))
+  A_j <- A_stock*dils/100*1000
+  colnames(pars.matrix) <- sprintf("%s pM", signif(A_j, 2))
+  cor_mat <- cor(log(pars.matrix))
+  cor_title <- expression("Pairwise"~italic(r)^2~" when removing each sample:")
+  corrplot(cor_mat^2, title=cor_title, type="lower", number.digits=3,
+           method="number", diag=FALSE, addgrid.col="black", shade.col="white",
+           addCoef.col="black", col="black", cl.pos="n", bg=NULL,
+           tl.pos="lt", tl.col="black", mar=c(1, 0, 3, 1),
+           number.font=1, cex.main=1)
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+# S1E___________________________________________________________________________
+PlotSalomonComparison <- function(main_text_seq=TRUE, filt_by_original=FALSE,
+                                  pdf.plot=FALSE, width=4.5, height=4.5){
+  # wee_et_al <- read.table("Wee_et_al_data.txt", sep="\t", header=TRUE)
+  # The Kds in the salomon et al dataset are in nM.
+  salomon_et_al <- read.table("salomon_et_al.txt", sep="\t", header=TRUE, stringsAsFactors=FALSE)
+  salomon_et_al <- salomon_et_al[1:11,]
+  salomon_et_al$Sequence <- gsub("(?: |-)", salomon_et_al$Sequence, replace="", perl=TRUE)
+  salomon_et_al$Sequence <- gsub("U", salomon_et_al$Sequence, replace="T", perl=TRUE)
+  salomon_et_al$Sequence <- sapply(salomon_et_al$Sequence, function(i) {
+    substr(i, 92, 92 + 11)
+    })
+
+  kds_1.4 <- exp(data.frame(fread(paste0("/lab/solexa_bartel/mcgeary/AgoRBNS/let-7a",
+                                     "/equilibrium/kds_PAPER/5_12mers_1-4_PAPER",
+                                     "_logmean.txt"), sep="\t"), row.names=1)/log(10))
+
+  kds_2.5 <- exp(data.frame(fread(paste0("/lab/solexa_bartel/mcgeary/AgoRBNS/let-7a",
+                                     "/equilibrium/kds_PAPER/5_12mers_2-5_PAPER",
+                                     "_logmean.txt"), sep="\t"), row.names=1)/log(10))
+  kds_3.6 <- exp(data.frame(fread(paste0("/lab/solexa_bartel/mcgeary/AgoRBNS/let-7a",
+                                     "/equilibrium/kds_PAPER/5_12mers_3-6_PAPER",
+                                     "_logmean.txt"), sep="\t"), row.names=1)/log(10))
+
+  kds_4.7 <- exp(data.frame(fread(paste0("/lab/solexa_bartel/mcgeary/AgoRBNS/let-7a",
+                                     "/equilibrium/kds_PAPER/5_12mers_4-7_PAPER",
+                                     "_logmean.txt"), sep="\t"), row.names=1)/log(10))
+
+
+  kds_5.8 <- exp(data.frame(fread(paste0("/lab/solexa_bartel/mcgeary/AgoRBNS/let-7a",
+                                     "/equilibrium/kds_PAPER/5_12mers_5-8_PAPER",
+                                     "_logmean.txt"), sep="\t"), row.names=1)/log(10))
+  all_12mer_kds <- list(kds_1.4, kds_2.5, kds_3.6, kds_4.7, kds_5.8)
+  salomon_et_al_seed_only <- salomon_et_al[c(2, 5, 6, 7, 8, 9, 10, 11),]
+  final_target_kds <- rep(NaN, nrow(salomon_et_al_seed_only))
+  names(final_target_kds) <- salomon_et_al_seed_only$Sequence
+  # Why is this here?
+  for (target in salomon_et_al_seed_only$Sequence) {
+    if (main_text_seq & target == "ATCTACAGCAAC") {
+      target_use <- "ATCTACGACAAC"
+    } else if (main_text_seq & target == "ATCTACCGAAAC") {
+      target_use <- "ATCTACCAGAAC"
+    } else {
+      target_use <- target
+    }
+    target_kds <- c()
+    for (i in seq(5)) {
+      kds_inds <- grep(target_use, rownames(all_12mer_kds[[i]]))
+      target_kds <- c(target_kds, all_12mer_kds[[i]][kds_inds,])
+      final_target_kds[target] <- exp(mean(log(target_kds)))
+    }
+  }
+  salomon_kds <- salomon_et_al_seed_only[, 7]/salomon_et_al_seed_only[1, 7]
+  salomon_kds <- salomon_et_al_seed_only[, 7]
+
+  print(salomon_kds)
+  # final_target_kds <- final_target_kds*10
+
+  # Make the second comparison:
+  Becker_et_al_delG <- c(`8mer`=-13.70166171, `7mer-m8`=-12.89980191,
+                        `7mer-A1`=-12.65070981, `6mer`=-12.10140861)
+  R <- 1.987e-3 # in kcal K-1 mol-1
+  T <- 310.15 # in K
+
+  #Convert Becker ∆G to Kd in nM.
+  Becker_et_al_Kds <- exp(Becker_et_al_delG/(R*T))*1e9
+  # These Kds are relative Kds.
+  McGeary_Lin_Kds <- SubfunctionCall(EquilPars, mirna="let-7a",
+                                     experiment="equilibrium")
+  McGeary_Lin_Kds <- McGeary_Lin_Kds[paste0(kCanonicalSites, "_Kd", sep=""), 1]
+  if (filt_by_original && class(pdf.plot) == "character") {
+    pdf.plot <- paste0(pdf.plot, "_filt")
+  }
+  SubfunctionCall(FigureSaveFile)
+  # par(mar= c(3, 3, 2, 4))
+
+  xmin <- 1e-3
+  xmax <- 1e3
+  ymin <- 1e-4
+  ymax <- 1e1
+  BlankPlot(log='xy', inv='xy')
+  AddLogAxis(1, label="Kd (nM)")
+  AddLogAxis(2, label="Relative Kd; AGO-RBNS")
+  # AddLogAxis(4, label="Kd; Becker, et al. (pM)")
+  data <- data.frame(salomon_name = salomon_et_al_seed_only$Site,
+                     salomon_kds = salomon_kds,
+                     rbns_name = c("8mer", "mm2-3", "mm3-4", "mm4-5", "mm5-6",
+                                   "mm6-7", "6mer-A1", "7mer-A1"),
+                     rbns_kds = final_target_kds,
+                     cols = c("purple", "red", "orange", "orange", "green",
+                              "forestgreen", "cyan", "blue"),
+                              stringsAsFactors=FALSE)
+  data <- data[!is.na(data$rbns_kds), ]
+  # Make the linear model fits for each of the two comparisons:
+  lm_becker <- lm(log10(Becker_et_al_Kds) ~ log10(McGeary_Lin_Kds))
+  lm_becker <<- lm_becker
+  lm_salomon <- lm(log10(data$salomon_kds) ~ log10(data$rbns_kds))
+  x_lm_seq <- seq(-4, 1)
+  b <- lm_salomon$coefficients[1]
+  m <- lm_salomon$coefficients[2]
+  y_salomon <- m*x_lm_seq + b
+  x_becker <- seq(-4, -1.5, length.out=10)
+  b <- lm_becker$coefficients[1]
+  m <- lm_becker$coefficients[2]
+  y_becker <- m*x_becker + b
+  # Plot the two trend lines.
+  lines(10^y_becker, 10^x_becker, lwd=0.5, lty=2)
+  lines(10^y_salomon, 10^x_lm_seq, lwd=0.5, lty=2)
+  # Plot the two data sets:
+  # Points(McGeary_Lin_Kds, Becker_et_al_Kds, col=kSiteColors[kCanonicalSites],
+  #        pch=1)
+  Points(data$salomon_kds, data$rbns_kds, col=data$cols)
+  Points(Becker_et_al_Kds, McGeary_Lin_Kds, col=kSiteColors[kCanonicalSites],
+         pch=1, pt.lwd=1)
+
+  # Salomon et al text
+  # Title
+  xy <- GetPlotFractionalCoords(0.05, 0.95, log='xy', inv='xy')
+  # text(xy[1], xy[2], label="Becker et al., 2019", adj=c(0, 1))
+  text(xy[1], xy[2], label=expression("Becker"~italic("et al")*"., 2019"),
+       adj=c(0, 1))
+  # Legend
+  xy <- GetPlotFractionalCoords(0.025, 0.93, log='xy', inv='xy')
+  legend(xy[1], xy[2], legend=kCanonicalSites, col=kSiteColors[kCanonicalSites],
+         xjust=0, yjust=1, y.intersp=0.85, pt.lwd=1, pt.cex=1.2, pch=1, cex=1,
+         bty="n")
+  # Correlation
+  xy <- GetPlotFractionalCoords(0.35, 0.65, log='xy', inv='xy')
+  AddCorrelationToPlot(log(McGeary_Lin_Kds), log(Becker_et_al_Kds), xy[1],
+                       xy[2], rsquared=TRUE, adj=c(1, 1))
+
+  # Becker et al., 2019
+  # Title
+  xy <- GetPlotFractionalCoords(1.05, 0.53, log='xy', inv='xy')
+  text(xy[1], xy[2], label=expression("Salomon"~italic("et al")*"., 2015"), adj=c(1, 1), xpd=NA)
+  # Legend
+  xy <- GetPlotFractionalCoords(1.05, 0.51, log='xy', inv='xy')
+  Legend(xy, legend=data$rbns_name, col=data$cols, xjust=1, yjust=1,
+         y.intersp=0.85)
+  # Correlation
+  xy <- GetPlotFractionalCoords(1.05, 0.85, log='xy', inv='xy')
+  AddCorrelationToPlot(log(salomon_kds), log(final_target_kds), xy[1], xy[2],
+                       rsquared=TRUE, adj=c(1, 1))
+  if (class(pdf.plot) == "character") {
+    dev.off()
+  }
+}
+
+
+
 
 
 
@@ -2190,8 +2738,8 @@ MakeFigure1 <- function(uniq=FALSE) {
   # PlotEquilSiteWithInput("miR-1", 7, sitelist="canonical", combined=FALSE,
   #                        buffer=TRUE, original=FALSE, pdf.plot="1.C")
 
-  PlotEquilSiteWithInput("miR-1", 7, sitelist="canonical", combined=FALSE,
-                         buffer=TRUE, filt_by_original=TRUE, pdf.plot="1.C_filt")
+  # PlotEquilSiteWithInput("miR-1", 7, sitelist="canonical", combined=FALSE,
+  #                        buffer=TRUE, filt_by_original=TRUE, pdf.plot="1.C")
 
   message("Done 1.C")
   ## python SolveForKds/MakeMultiSiteCountTable.py miR-1 equilibrium 5 canonical -buffer3p
@@ -2199,7 +2747,7 @@ MakeFigure1 <- function(uniq=FALSE) {
   # PlotSiteEnrichments("miR-1", sitelist="canonical", combined=FALSE,
   #                     buffer=TRUE, write_kds=TRUE, original=FALSE, pdf.plot="1.D")
   PlotSiteEnrichments("miR-1", sitelist="canonical", combined=FALSE,
-                      buffer=TRUE, write_kds=TRUE, filt_by_original=TRUE, pdf.plot="1.D_filt")
+                      buffer=TRUE, write_kds=TRUE, filt_by_original=TRUE, pdf.plot="1.D")
 
 
   message("Done 1.D")
@@ -2208,14 +2756,14 @@ MakeFigure1 <- function(uniq=FALSE) {
   ## python SolveForKds/MakeMultiSiteCountTable.py miR-1 equilibrium 5 resubmissionfinal -buffer -filt_by_original
   ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer3p -single -filt_by_original
   ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer3p -nocombI -single -filt_by_original
-  PlotSiteEnrichments("miR-1", combined=FALSE, remove_sites=FALSE, buffer=TRUE, filt_by_original=TRUE,
-                      pdf.plot="1.E_filt")
-  message("Done 1.E")
-  PlotSiteKds("miR-1", combined=FALSE, remove_sites=FALSE, filt_by_original=TRUE,
-              buffer=TRUE, pdf.plot="1.F_filt")
-  message("Done 1.F")
-  PlotSiteOccupancy("miR-1", combined=FALSE, buffer=TRUE, filt_by_original=TRUE, pdf.plot="1.G_filt")
-  message("Done Fig. 1")
+  # PlotSiteEnrichments("miR-1", combined=FALSE, remove_sites=FALSE, buffer=TRUE, filt_by_original=TRUE,
+  #                     pdf.plot="1.E")
+  # message("Done 1.E")
+  # PlotSiteKds("miR-1", combined=FALSE, remove_sites=FALSE, filt_by_original=TRUE,
+  #             buffer=TRUE, pdf.plot="1.F")
+  # message("Done 1.F")
+  # PlotSiteOccupancy("miR-1", combined=FALSE, buffer=TRUE, filt_by_original=TRUE, pdf.plot="1.G")
+  # message("Done Fig. 1")
 }
 
 
@@ -2231,8 +2779,8 @@ MakeFigure2 <- function() {
   ## python SolveForKds/MakeMultiSiteCountTable.py lsy-6 equilibrium 5 resubmissionfinal -filt_by_original
   ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 resubmissionfinal -single -filt_by_original
 
-  PlotSiteKds("let-7a", adjusted_height=TRUE, filt_by_original=TRUE, pdf.plot="2.Ai_filt")
-  PlotSiteOccupancy("let-7a", adjusted_height=TRUE, filt_by_original=TRUE, pdf.plot="2.Aii_filt")
+  PlotSiteKds("let-7a", adjusted_height=TRUE, filt_by_original=TRUE, pdf.plot="2.Ai")
+  PlotSiteOccupancy("let-7a", adjusted_height=TRUE, filt_by_original=TRUE, pdf.plot="2.Aii")
   ## make AssignSites mirna=miR-155 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1
   ## python SolveForKds/MakeSiteCountTable.py miR-155 equilibrium 5 resubmissionfinal -filt_by_original
   ## python SolveForKds/MakeMultiSiteCountTable.py miR-155 equilibrium 5 resubmissionfinal -filt_by_original
@@ -2245,9 +2793,9 @@ MakeFigure2 <- function() {
   ## python SolveForKds/MakeMultiSiteCountTable.py miR-124 equilibrium 5 resubmissionfinal -filt_by_original
   ## Rscript SolveForKds/FitSiteKds.R miR-124 equilibrium 5 resubmissionfinal -single -filt_by_original
   PlotSiteKds("miR-124", collapse_AA=TRUE, adjusted_height=TRUE, filt_by_original=TRUE,
-              pdf.plot="2.Ci_filt")
+              pdf.plot="2.Ci")
   PlotSiteOccupancy("miR-124", collapse_AA=TRUE, compcorrect=FALSE,
-                    adjusted_height=TRUE, filt_by_original=TRUE, pdf.plot="2.Cii_filt")
+                    adjusted_height=TRUE, filt_by_original=TRUE, pdf.plot="2.Cii")
 
   message("Done Fig. 2")
 }
@@ -2283,7 +2831,7 @@ MakeFigure3 <- function() {
 
 
 
-  PlotPositionalKds(filt_by_original=TRUE, pdf.plot="3.A_filt")
+  PlotPositionalKds(filt_by_original=TRUE, pdf.plot="3.A")
 
   ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal filt_by_original=1 AssignSites
   ## python SolveForKds/MakeSiteCountTable.py miR-7-23nt equilibrium2_nb 5 resubmissionfinal -filt_by_original
@@ -2291,7 +2839,7 @@ MakeFigure3 <- function() {
   ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal -single -filt_by_original
 
 
-  Plot8merVs7merCombined(filt_by_original=TRUE, pdf.plot="3.B_filt")
+  Plot8merVs7merCombined(filt_by_original=TRUE, pdf.plot="3.B")
 
   ## python SolveForKds/MakeEnergyTable.py
   ## Rscript SolveForKds/FitSiteKds.R miR-1 equilibrium 5 resubmissionfinal -buffer3p -nocombI -filt_by_original
@@ -2300,7 +2848,7 @@ MakeFigure3 <- function() {
   ## Rscript SolveForKds/FitSiteKds.R miR-124 equilibrium 5 resubmissionfinal -filt_by_original
   ## Rscript SolveForKds/FitSiteKds.R lsy-6 equilibrium 5 resubmissionfinal -filt_by_original
   ## Rscript SolveForKds/FitSiteKds.R miR-7-23nt equilibrium2_nb 5 resubmissionfinal -filt_by_original
-  PlotSiteKdsVsSPS(filt_by_original=TRUE, pdf.plot="3.C_filt")
+  PlotSiteKdsVsSPS(filt_by_original=TRUE, pdf.plot="3.C")
   # Currently unavailable because repression file not in repo.
   # PlotSiteKdsVsRepression("miR-1", combined=FALSE, buffer=TRUE, pdf.plot="3.D")
   # PlotSiteKdsVsRepression("let-7a", pdf.plot="3.E")
@@ -2320,12 +2868,12 @@ MakeFigure4 <- function() {
   ## Rscript SolveForKds/FitFlankKds.R miR-1 equilibrium 5 resubmissionfinal 8mer -buffer3p -filt_by_original #
   PlotSiteFlankEnrichments(
     "miR-1", "8mer", combined=TRUE, combined_site=FALSE, buffer=TRUE,
-    filt_by_original=TRUE, pdf.plot="4.A_filt"
+    filt_by_original=TRUE, pdf.plot="4.A"
   )
   ## make mirna=miR-1 exp=equilibrium n_constant=5 sitelist=resubmissionfinal buffer=1 filt_by_original=1 FitFlankKds #
   PlotSiteFlankKds(
     "miR-1", combined=TRUE, combined_site=FALSE, buffer=TRUE,
-    filt_by_original=TRUE, pdf.plot="4.B_filt"
+    filt_by_original=TRUE, pdf.plot="4.B"
   )
   ## make mirna=let-7a exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 AssignFlanks #
   ## make mirna=miR-155 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 AssignFlanks #
@@ -2343,19 +2891,18 @@ MakeFigure4 <- function() {
   ## make mirna=miR-124 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 FitFlankKds #
   ## make mirna=lsy-6 exp=equilibrium n_constant=5 sitelist=resubmissionfinal filt_by_original=1 FitFlankKds #
   ## make mirna=miR-7-23nt exp=equilibrium2_nb n_constant=5 sitelist=resubmissionfinal6merm8 filt_by_original=1 FitFlankKds #
-  PlotFlankLinModel(filt_by_original=TRUE, pdf.plot="4.C_left_filt")
+  PlotFlankLinModel(filt_by_original=TRUE, pdf.plot="4.C_left")
   PlotFlankLinModelCoefficients(filt_by_original=TRUE,
-                                pdf.plot="4.C_right_filt")
+                                pdf.plot="4.C_right")
 
-  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond let-7a_equilibrium_I -buffer3p -filt_by_original -jobs 19
-  ##### python AnalyzeStructure/MakeSiteStructureAnalysisFiles.py miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond let-7a_equilibrium_I -buffer3p -filt_by_original -test
-  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond miR-124_equilibrium_I -buffer3p -filt_by_original -jobs 19
-  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -buffer3p -filt_by_original -jobs 19
-  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond miR-1_kin_pilot_I_TGT -buffer3p -filt_by_original -jobs 19
+  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond let-7a_equilibrium_I -buffer3p -filt_by_original -jobs 19 #
+  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond miR-124_equilibrium_I -buffer3p -filt_by_original -jobs 19 #
+  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -buffer3p -filt_by_original -jobs 19 #
+  ## sbatch AnalyzeStructure/MakeSiteStructureAnalysisFiles.sh miR-1 equilibrium I 5 resubmissionfinal 8mer 1 14 -alt_mir_exp_cond miR-1_kin_pilot_I_TGT -buffer3p -filt_by_original -jobs 19 #
   PlotStructureVsFlankingKds(
     "miR-1", "8mer", condition="I_combined", combined=TRUE, buffer=TRUE,
     filt_by_original=TRUE,
-    pdf.plot="4.D_filt"
+    pdf.plot="4.D"
   )
   message("Done Fig. 4")
 }
@@ -2364,28 +2911,31 @@ MakeFigureS1 <- function() {
   message("Making fig. S1")
 
   ## make PreprocessAgoPurity
+  ##  make raw_original=1 PreprocessAgoPurity
+  ##  make filt_by_original=1 PreprocessAgoPurity
+  
   ## make AssignMiRNAsAgoPurity
+  ## make filt_by_original=1 AssignMiRNAsAgoPurity
 
-  PlotAgoPrepPurity(pdf.plot="S1.A")
-  print("done")
-  break
-  PlotMiR1_KmersCorrelation(pdf.plot="S1.B", kmer_len=9)
+  PlotAgoPrepPurity(filt_by_original=TRUE, pdf.plot="S1.A")
+  PlotMiR1_KmersCorrelation(pdf.plot="S1.B", kmer_len=9, filt_by_original=TRUE)
   PlotEnrichmentsAgainstKds("miR-1", sitelist="canonical", buffer=TRUE,
-                            combined=FALSE, pdf.plot="S1.C")
-  PlotPositionalEnrichment("miR-1", buffer=TRUE, pdf.plot="S1.Di") # checked
-  PlotPositionalEnrichment("let-7a", pdf.plot="S1.Dii") # checked
-  PlotPositionalEnrichment("miR-155", pdf.plot="S1.Diii") # checked
-  PlotPositionalEnrichment("miR-124", pdf.plot="S1.Div") # checked
-  PlotPositionalEnrichment("lsy-6", pdf.plot="S1.Dv") # checked
-  PlotPositionalEnrichment("miR-7-23nt", exp="equilibrium2_nb", pdf.plot="S1.Dvi")
-  PlotPositionalEnrichment("miR-155", sites=k3PSites, pdf.plot="S1.Ei") # checked
-  PlotPositionalEnrichment("miR-124", sites=k3PSites, pdf.plot="S1.Eii") # checked
-  PlotPositionalEnrichment("lsy-6", sites=k3PSites, pdf.plot="S1.Eiii") # checked  break
+                            combined=FALSE, filt_by_original=TRUE,
+                            pdf.plot="S1.C")
+  PlotPositionalEnrichment("miR-1", buffer=TRUE, filt_by_original=TRUE, pdf.plot="S1.Di") # checked
+  PlotPositionalEnrichment("let-7a", filt_by_original=TRUE, pdf.plot="S1.Dii") # checked
+  PlotPositionalEnrichment("miR-155", filt_by_original=TRUE, pdf.plot="S1.Diii") # checked
+  PlotPositionalEnrichment("miR-124", filt_by_original=TRUE, pdf.plot="S1.Div") # checked
+  PlotPositionalEnrichment("lsy-6", filt_by_original=TRUE, pdf.plot="S1.Dv") # checked
+  PlotPositionalEnrichment("miR-7-23nt", exp="equilibrium2_nb", filt_by_original=TRUE, pdf.plot="S1.Dvi")
+  PlotPositionalEnrichment("miR-155", sites=k3PSites, filt_by_original=TRUE, pdf.plot="S1.Ei") # checked
+  PlotPositionalEnrichment("miR-124", sites=k3PSites, filt_by_original=TRUE, pdf.plot="S1.Eii") # checked
+  PlotPositionalEnrichment("lsy-6", sites=k3PSites, filt_by_original=TRUE, pdf.plot="S1.Eiii") # checked  break
   PlotWorstSiteKdCrossValScatter("miR-1", sitelist="canonical", combined=FALSE,
-                                 buffer=TRUE, pdf.plot="S1.F") # checked
+                                 buffer=TRUE, filt_by_original=TRUE, pdf.plot="S1.F") # checked
   PlotSiteKdCrossValMatrix("miR-1", sitelist="canonical", combined=FALSE,
-                           buffer=TRUE, pdf.plot="S1.G") # checked
-  PlotSalomonComparison(pdf.plot="S1.H") # checked
+                           buffer=TRUE, filt_by_original=TRUE, pdf.plot="S1.G") # checked
+  PlotSalomonComparison(filt_by_original=TRUE, pdf.plot="S1.H") # checked
   message("Done fig. S1")
 }
 
@@ -2480,7 +3030,7 @@ MakeRefereeResponseFigure <- function() {
 # MakeFigure1()
 # MakeFigure2()
 # MakeFigure3()
-MakeFigure4()
+# MakeFigure4()
 # MakeFigureS1()
 # MakeFigureS2()
 # MakeFigureS3()

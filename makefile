@@ -223,7 +223,7 @@ PreprocessAgoPurity :
 	@(job=""; \
 	for MIRNA in miR-1 miR-155; do \
 		job="sbatch $(DIR_pp)$(SCR_mp) $$MIRNA AGO_purity S1006_P"; \
-		job=$$job"$(test) -jobs 19"; \
+		job=$$job$(RAW_ORIGINAL)$(FILT_BY_ORIGINAL)"$(test) -jobs 19"; \
 		echo $$job; \
 		$$job; \
 	done)
@@ -281,7 +281,7 @@ AssignMiRNAsAgoPurity :
 	@(job=""; \
 	for MIRNA in miR-1 miR-155; do \
 		job="sbatch $(DIR_as)$(SCR_am) $$MIRNA AGO_purity S1006_P"; \
-		job=$$job"$(test) -jobs 19"; \
+		job=$$job"$(test)"$(ORIGINAL)$(FILT_BY_ORIGINAL)" -jobs 19"; \
 		echo $$job; \
 		$$job; \
 	done)

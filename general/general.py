@@ -884,9 +884,10 @@ DNTS = ["A", "C", "G", "T"]
 
 
 
-# def get_job_ids():
-#     return(Popen("bjobs | cut -d ' ' -f 1", shell=True,
-#           stdout=PIPE, stderr=PIPE).communicate()[0].decode().split("\n"))[1:-1]
+def get_job_ids():
+    ### NOTE this only works with SLURM systems.
+    return(Popen("squeue -u $USER | tail -n +2 | awk '{print $1}'", shell=True,
+          stdout=PIPE, stderr=PIPE).communicate()[0].decode().split("\n"))[:-1]
 
 # def get_job_hosts():
 #     return(Popen("bjobs | cut -c 46- | cut -d ' ' -f 1", shell=True,
@@ -908,35 +909,35 @@ DNTS = ["A", "C", "G", "T"]
 # def logit(vector, maximum):
 #     return(-np.log(maximum/vector - 1))
 
-# def make_args_string(args, arguments):
-#     # Returns the command line string to use after calling a particular sript
-#     # given:
-#     # arg = This is the list of argument values give by the user.
-#     # arguments = This is the string of argument labels used by argparse.
-#     # 1. First make a list of tuples associating each argument label with its
-#     # argument value.
-#     arg_tuples = [(i[1], i[0]) for i in zip(args, arguments) if i[0]]
-#     # 2. Enumerate over the list of argument tuples making two changes:
-#     for i, arg_i in enumerate(arg_tuples):
-#         arg_name, arg = arg_i
-#         # 2.1. If the argument name doesn't begin with "-", remove it from the
-#         # list, because it is a positional argument, rather than flag, and
-#         # therefor doesn't need a label in the command line calling of the
-#         # script.
-#         if arg_name[0] != "-":
-#             arg_name = ""
-#         # If the argument name does have a "-", it is a flag, and any "_binary"
-#         # suffix should be removed because that suffix should only exist within
-#         # the python script.
-#         elif "_binary" in arg_name:
-#             arg_name = "".join(arg_name.split("_binary"))
-#             arg = ""
-#         arg_tuples[i] = (arg_name, arg)
-#     # 3. Remove the nested tuple structure of the argument list, removing
-#     # any blank entries (should only be blank) due to the mising name.
-#     arg_tuples = [str(j) for i in arg_tuples for j in i if j != ""]
-#     arg_str = " ".join(arg_tuples)
-#     return(arg_str)
+def make_args_string(args, arguments):
+    # Returns the command line string to use after calling a particular sript
+    # given:
+    # arg = This is the list of argument values give by the user.
+    # arguments = This is the string of argument labels used by argparse.
+    # 1. First make a list of tuples associating each argument label with its
+    # argument value.
+    arg_tuples = [(i[1], i[0]) for i in zip(args, arguments) if i[0]]
+    # 2. Enumerate over the list of argument tuples making two changes:
+    for i, arg_i in enumerate(arg_tuples):
+        arg_name, arg = arg_i
+        # 2.1. If the argument name doesn't begin with "-", remove it from the
+        # list, because it is a positional argument, rather than flag, and
+        # therefor doesn't need a label in the command line calling of the
+        # script.
+        if arg_name[0] != "-":
+            arg_name = ""
+        # If the argument name does have a "-", it is a flag, and any "_binary"
+        # suffix should be removed because that suffix should only exist within
+        # the python script.
+        elif "_binary" in arg_name:
+            arg_name = "".join(arg_name.split("_binary"))
+            arg = ""
+        arg_tuples[i] = (arg_name, arg)
+    # 3. Remove the nested tuple structure of the argument list, removing
+    # any blank entries (should only be blank) due to the mising name.
+    arg_tuples = [str(j) for i in arg_tuples for j in i if j != ""]
+    arg_str = " ".join(arg_tuples)
+    return(arg_str)
 
 
 
@@ -1015,8 +1016,8 @@ def randomword(length):
 
 
 
-# def intersection(lst1, lst2): 
-#     return list(set(lst1) & set(lst2))
+def intersection(lst1, lst2): 
+    return list(set(lst1) & set(lst2))
 
 
 # temp_text = ["CATTCCCTAGGTCAAATCCTCCATTCCACATTCCCACTCG",
@@ -1800,7 +1801,20 @@ def get_site_seq(mirna, start, stop, wobble=False,
 
 
 def main():
-    # print(get_miRNA_mfes("miR-1", 1, 8, ))
+    import subprocess
+    arg_str = "let-7a equilibrium I 5 9 -n_ex 0 -alt_miRNA miR-1 -temp_path 1750645793.477607_esfwghkvuvvejhjxfqvb.txt -filt_by_original"
+    shell_call = ("sbatch AssignSiteTypes/"
+                    "AssignKmers.sh %s" %arg_str)
+    print(shell_call)
+    # Open up the subprocess that submits this call to the shell.
+    p1 = subprocess.Popen([shell_call], shell=True,
+                            stdout = subprocess.PIPE)
+    # Get the output of the subprocess, convert it to a utf-8 string
+    # (which is required since python 3).
+    p1_output = str(p1.communicate()[0], "utf-8").split("\n")[0].split(" ")[-1]
+    print(p1_output)
+
+
     return
 
 

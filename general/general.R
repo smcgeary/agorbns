@@ -101,11 +101,12 @@ GetAnalysisPath <- function(mirna, experiment, condition, analysis_type, ext="",
 
 
 GetMirnaCountData <- function(mirna, condition, unique=FALSE, no_adapter=FALSE,
-                              no_marker=FALSE) {
+                              no_marker=FALSE, filt_by_original=FALSE) {
   ext <- ""
   if (unique)  ext <- sprintf("%s_unique", ext)
   if (no_adapter) ext <- sprintf("%s_noadapter", ext)
   if (no_marker) ext <- sprintf("%s_nomarker", ext)
+  if (filt_by_original) ext <- sprintf("%s_filtbyoriginal", ext)
   path <- GetAnalysisPath(mirna, "AGO_purity", condition,
                            "AGO_pur_counts", ext=ext)
   file_counts <- read.table(path, sep="\t", header=TRUE, row.names=1)
@@ -222,7 +223,9 @@ EquilPars <- function(
 ) {
   analysis_type <- "kds_PAPER"
   condition <- ""
-  combined <- TRUE
+  # combined <- TRUE
+  print(mirna)
+  print(combined)
   if ((class(start_mm) == "numeric" | class(start_mm) == "integer") &
       (class(stop_mm) == "numeric" | class(stop_mm) == "integer")) {
       str_mm <- sprintf("m%s.%smmsd_", start_mm, stop_mm)

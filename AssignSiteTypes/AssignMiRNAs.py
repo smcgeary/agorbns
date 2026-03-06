@@ -154,12 +154,11 @@ def assign_mirna(read_seqs, seq_mirna_map, test):
 def main():
     time_start = time.time()
     arguments = ["miRNA", "experiment", "condition", "-jobs", "-test_binary",
-                 "-no_marker_binary", "-no_adapter_binary"]
+                 "-no_marker_binary", "-no_adapter_binary", "-filt_by_original_binary"]
     args = parse_arguments(arguments)
-    mirna, experiment, condition, jobs, test, no_marker, no_adapter = args
+    mirna, experiment, condition, jobs, test, no_marker, no_adapter, filt_by_original = args
     if not jobs:
         jobs = 20
-
 
     ext = ""
     if not no_adapter:
@@ -174,10 +173,14 @@ def main():
         ext += "_nomarker"
     if test:
         ext += "_test"
+    if filt_by_original:
+        ext += "_filtbyoriginal"
 
     args = [seq_mirna_map, test]
 
-    reads_path = get_analysis_path(mirna, experiment, condition, "reads")
+    # Updated to include filt_by_original parameter
+    reads_path = get_analysis_path(mirna, experiment, condition, "reads", 
+                                   filt_by_original=filt_by_original)
     threads = multiproc_file(reads_path, int(jobs), assign_mirna, test, *args)
 
     mirna_count_dict = {name : sum([len(thread[seq_mirna_map[name]])
